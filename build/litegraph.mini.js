@@ -1891,12 +1891,7 @@ class LGraphNode {
       return this.setDirtyCanvas(!1, !0), n && this.graph.connectionChange(this, l), null;
     if ((G = LiteGraph.debug) == null || G.call(LiteGraph, "DBG targetSlot", a), ((L = s.onConnectInput) == null ? void 0 : L.call(s, a, h.type, h, this, t)) === !1 || ((T = this.onConnectOutput) == null ? void 0 : T.call(this, t, o.type, o, s, a)) === !1)
       return null;
-    if (s.inputs[a] && s.inputs[a].link != null && (this.graph.beforeChange(), s.disconnectInput(a, { doProcessChange: !1 }), n = !0), (E = h.links) != null && E.length)
-      switch (h.type) {
-        case LiteGraph.EVENT:
-          LiteGraph.allow_multi_output_for_events || (this.graph.beforeChange(), this.disconnectOutput(t, !1, { doProcessChange: !1 }), n = !0);
-          break;
-      }
+    s.inputs[a] && s.inputs[a].link != null && (this.graph.beforeChange(), s.disconnectInput(a, { doProcessChange: !1 }), n = !0), (E = h.links) != null && E.length && h.type === LiteGraph.EVENT && (LiteGraph.allow_multi_output_for_events || (this.graph.beforeChange(), this.disconnectOutput(t, !1, { doProcessChange: !1 }), n = !0));
     var u;
     return LiteGraph.use_uuids ? u = LiteGraph.uuidv4() : u = ++this.graph.last_link_id, l = new LiteGraph.LLink(
       u,
@@ -2566,10 +2561,7 @@ const _LGraphCanvas = class _LGraphCanvas {
         default:
           (t = LiteGraph.log) == null || t.call(LiteGraph, "pointerType unknown " + ev.pointerType);
       }
-    if (r.button !== void 0)
-      switch (this.userInput_button = r.button, r.button) {
-      }
-    return r.buttons !== void 0 && (this.userInput_button_s = r.buttons), this.userInput_touches = r.changedTouches !== void 0 && r.changedTouches.length !== void 0 ? r.changedTouches : !1, this.userInput_touches && this.userInput_touches.length && ((s = LiteGraph.debug) == null || s.call(LiteGraph, "check multiTouches", r.changedTouches)), this.processMouseDown(r);
+    return r.button !== void 0 && (this.userInput_button = r.button, r.button), r.buttons !== void 0 && (this.userInput_button_s = r.buttons), this.userInput_touches = r.changedTouches !== void 0 && r.changedTouches.length !== void 0 ? r.changedTouches : !1, this.userInput_touches && this.userInput_touches.length && ((s = LiteGraph.debug) == null || s.call(LiteGraph, "check multiTouches", r.changedTouches)), this.processMouseDown(r);
   }
   processMouseDown(r) {
     var et, Z, it, z, U, V, B, K, lt;
@@ -3415,7 +3407,7 @@ const _LGraphCanvas = class _LGraphCanvas {
    * @method renderInfo
    **/
   renderInfo(r, t, s) {
-    t = t || 10, s = s || this.canvas.height - 80, r.save(), r.translate(t, s), r.font = "10px Arial", r.fillStyle = "#888", r.textAlign = "left", this.graph ? (r.fillText("T: " + this.graph.globaltime.toFixed(2) + "s", 5, 13 * 1), r.fillText("I: " + this.graph.iteration, 5, 13 * 2), r.fillText("N: " + this.graph._nodes.length + " [" + this.visible_nodes.length + "]", 5, 13 * 3), r.fillText("V: " + this.graph._version, 5, 13 * 4), r.fillText("FPS:" + this.fps.toFixed(2), 5, 13 * 5)) : r.fillText("No graph selected", 5, 13 * 1), r.restore();
+    t = t || 10, s = s || this.canvas.height - 80, r.save(), r.translate(t, s), r.font = "10px Arial", r.fillStyle = "#888", r.textAlign = "left", this.graph ? (r.fillText("T: " + this.graph.globaltime.toFixed(2) + "s", 5, 13), r.fillText("I: " + this.graph.iteration, 5, 26), r.fillText("N: " + this.graph._nodes.length + " [" + this.visible_nodes.length + "]", 5, 39), r.fillText("V: " + this.graph._version, 5, 52), r.fillText("FPS:" + this.fps.toFixed(2), 5, 65)) : r.fillText("No graph selected", 5, 13), r.restore();
   }
   /**
    * draws the back canvas (the one containing the background and the connections)
@@ -5331,11 +5323,7 @@ const _LGraphCanvas = class _LGraphCanvas {
     function n() {
       panel.content.innerHTML = "";
       const p = (_, g, m) => {
-        switch (_) {
-          default:
-            m && m.key && (_ = m.key), m.values && (g = Object.values(m.values).indexOf(g)), s[_] = g;
-            break;
-        }
+        m && m.key && (_ = m.key), m.values && (g = Object.values(m.values).indexOf(g)), s[_] = g;
       };
       var c = LiteGraph.availableCanvasOptions;
       c.sort();
@@ -6170,6 +6158,7 @@ j = new WeakSet(), dt = function() {
         case "ArrowLeft":
           break;
         case "ArrowRight":
+        // right do same as enter
         case "Enter":
           if (n.selectedOption !== !1)
             n.allOptions[n.selectedOption] ? ((R = LiteGraph.debug) == null || R.call(LiteGraph, "ContextElement simCLICK", n.allOptions[iO]), n.allOptions[n.selectedOption].do_click && n.allOptions[n.selectedOption].do_click(n.options.event, f)) : ((D = LiteGraph.debug) == null || D.call(LiteGraph, "ContextElement selection wrong", n.selectedOption), n.selectedOption = n.selectedOption !== !1 ? Math.min(Math.max(n.selectedOption, 0), n.allOptions.length - 1) : 0);
@@ -7473,6 +7462,7 @@ const rt = class rt {
         return this.graph ? this.graph.vars : {};
       case rt.GLOBALSCOPE:
         return global;
+      // @BUG: not sure what to do with this now
       default:
         return LiteGraph.Globals;
     }
@@ -9251,6 +9241,9 @@ class logicFor {
       case "break":
         this.stopped = !0;
         break;
+      /* case "reset":
+          this.stopped = false;
+      break;*/
       case "do":
         this.started = !0, this.stopped = !1, this.execute();
         break;

@@ -9,7 +9,7 @@
     "scripts": {
         "build": "node scripts/build-vite.mjs",
         "docs": "jsdoc -c ./docs/.jsdoc.config -d ./docs -r --verbose --debug",
-        "server": "nodemon scripts/server.js",
+        "server": "nodemon server/js/server.js",
         "test": "node --experimental-vm-modules node_modules/jest-cli/bin/jest.js",
         "lint": "npx eslint src",
         "lint:fix": "npx eslint --fix src"
@@ -32,7 +32,6 @@
     "devDependencies": {
         "@stylistic/eslint-plugin": "^5.8.0",
         "eslint": "^10.0.0",
-        "express": "^5.2.1",
         "jest-cli": "^30.2.0",
         "jsdoc": "^4.0.5",
         "nodemon": "^3.1.11",

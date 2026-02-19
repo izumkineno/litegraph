@@ -1,4 +1,4 @@
-import { mkdir, rm } from "node:fs/promises";
+import { cp, mkdir, rm, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "vite";
@@ -19,6 +19,21 @@ const bundles = [
     {
         entry: "src/entries/litegraph.core.js",
         fileBase: "litegraph.core",
+    },
+];
+
+const resourcesToCopy = [
+    {
+        from: "css",
+        to: "resources/css",
+    },
+    {
+        from: "editor/imgs",
+        to: "resources/editor/imgs",
+    },
+    {
+        from: "nodes_data",
+        to: "resources/nodes_data",
     },
 ];
 
@@ -47,6 +62,18 @@ async function buildBundle({ entry, fileBase }) {
     });
 }
 
+async function copyBuildResources() {
+    for (const { from, to } of resourcesToCopy) {
+        const sourcePath = path.resolve(projectRoot, from);
+        const targetPath = path.resolve(outDir, to);
+        const sourceStat = await stat(sourcePath);
+
+        await mkdir(path.dirname(targetPath), { recursive: true });
+        await cp(sourcePath, targetPath, { recursive: sourceStat.isDirectory() });
+        console.log(`Copied ${from} -> build/${to}`);
+    }
+}
+
 await rm(outDir, { recursive: true, force: true });
 await mkdir(outDir, { recursive: true });
 
@@ -54,3 +81,5 @@ for (const bundle of bundles) {
     console.log(`Building ${bundle.fileBase}.js ...`);
     await buildBundle(bundle);
 }
+
+await copyBuildResources();

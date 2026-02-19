@@ -45,7 +45,7 @@ or
 npm i @mr_pebble/litegraph
 ```
 
-Or downloading the ```build/litegraph.js``` and ```css/litegraph.css``` version from this repository.
+Or downloading the `build/litegraph.js` and `build/resources/css/litegraph.css` files from this repository.
 
 ## Repository docs and scripts
 
@@ -54,7 +54,7 @@ Or downloading the ```build/litegraph.js``` and ```css/litegraph.css``` version 
 - Project changelog: [`docs/project/CHANGELOG.md`](docs/project/CHANGELOG.md)
 - Project roadmap: [`docs/project/ROADMAP.md`](docs/project/ROADMAP.md)
 - UI/UX design system (ui-ux-pro-max): [`design-system/litegraph/MASTER.md`](design-system/litegraph/MASTER.md)
-- Build/dev scripts: [`scripts/build-vite.mjs`](scripts/build-vite.mjs), [`scripts/server.js`](scripts/server.js)
+- Build/dev scripts: [`scripts/build-vite.mjs`](scripts/build-vite.mjs), [`server/js/server.js`](server/js/server.js)
 
 ## First project ##
 

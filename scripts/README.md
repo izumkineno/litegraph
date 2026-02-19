@@ -1,7 +1,8 @@
 # Scripts
 
 - Build bundle outputs: [`build-vite.mjs`](build-vite.mjs)
-- Local demo server: [`server.js`](server.js)
+- Local demo server: [`../server/js/server.js`](../server/js/server.js)
+- Build-time copied runtime assets: `../build/resources/`
 
 Run via npm scripts from the repository root:
 

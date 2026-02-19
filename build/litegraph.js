@@ -1891,12 +1891,7 @@ class LGraphNode {
       return this.setDirtyCanvas(!1, !0), a && this.graph.connectionChange(this, u), null;
     if ((L = LiteGraph.debug) == null || L.call(LiteGraph, "DBG targetSlot", s), ((G = r.onConnectInput) == null ? void 0 : G.call(r, s, h.type, h, this, t)) === !1 || ((O = this.onConnectOutput) == null ? void 0 : O.call(this, t, o.type, o, r, s)) === !1)
       return null;
-    if (r.inputs[s] && r.inputs[s].link != null && (this.graph.beforeChange(), r.disconnectInput(s, { doProcessChange: !1 }), a = !0), (b = h.links) != null && b.length)
-      switch (h.type) {
-        case LiteGraph.EVENT:
-          LiteGraph.allow_multi_output_for_events || (this.graph.beforeChange(), this.disconnectOutput(t, !1, { doProcessChange: !1 }), a = !0);
-          break;
-      }
+    r.inputs[s] && r.inputs[s].link != null && (this.graph.beforeChange(), r.disconnectInput(s, { doProcessChange: !1 }), a = !0), (b = h.links) != null && b.length && h.type === LiteGraph.EVENT && (LiteGraph.allow_multi_output_for_events || (this.graph.beforeChange(), this.disconnectOutput(t, !1, { doProcessChange: !1 }), a = !0));
     var l;
     return LiteGraph.use_uuids ? l = LiteGraph.uuidv4() : l = ++this.graph.last_link_id, u = new LiteGraph.LLink(
       l,
@@ -2566,10 +2561,7 @@ const _LGraphCanvas = class _LGraphCanvas {
         default:
           (t = LiteGraph.log) == null || t.call(LiteGraph, "pointerType unknown " + ev.pointerType);
       }
-    if (n.button !== void 0)
-      switch (this.userInput_button = n.button, n.button) {
-      }
-    return n.buttons !== void 0 && (this.userInput_button_s = n.buttons), this.userInput_touches = n.changedTouches !== void 0 && n.changedTouches.length !== void 0 ? n.changedTouches : !1, this.userInput_touches && this.userInput_touches.length && ((r = LiteGraph.debug) == null || r.call(LiteGraph, "check multiTouches", n.changedTouches)), this.processMouseDown(n);
+    return n.button !== void 0 && (this.userInput_button = n.button, n.button), n.buttons !== void 0 && (this.userInput_button_s = n.buttons), this.userInput_touches = n.changedTouches !== void 0 && n.changedTouches.length !== void 0 ? n.changedTouches : !1, this.userInput_touches && this.userInput_touches.length && ((r = LiteGraph.debug) == null || r.call(LiteGraph, "check multiTouches", n.changedTouches)), this.processMouseDown(n);
   }
   processMouseDown(n) {
     var X, F, V, $, U, H, z, K, tt;
@@ -3415,7 +3407,7 @@ const _LGraphCanvas = class _LGraphCanvas {
    * @method renderInfo
    **/
   renderInfo(n, t, r) {
-    t = t || 10, r = r || this.canvas.height - 80, n.save(), n.translate(t, r), n.font = "10px Arial", n.fillStyle = "#888", n.textAlign = "left", this.graph ? (n.fillText("T: " + this.graph.globaltime.toFixed(2) + "s", 5, 13 * 1), n.fillText("I: " + this.graph.iteration, 5, 13 * 2), n.fillText("N: " + this.graph._nodes.length + " [" + this.visible_nodes.length + "]", 5, 13 * 3), n.fillText("V: " + this.graph._version, 5, 13 * 4), n.fillText("FPS:" + this.fps.toFixed(2), 5, 13 * 5)) : n.fillText("No graph selected", 5, 13 * 1), n.restore();
+    t = t || 10, r = r || this.canvas.height - 80, n.save(), n.translate(t, r), n.font = "10px Arial", n.fillStyle = "#888", n.textAlign = "left", this.graph ? (n.fillText("T: " + this.graph.globaltime.toFixed(2) + "s", 5, 13), n.fillText("I: " + this.graph.iteration, 5, 26), n.fillText("N: " + this.graph._nodes.length + " [" + this.visible_nodes.length + "]", 5, 39), n.fillText("V: " + this.graph._version, 5, 52), n.fillText("FPS:" + this.fps.toFixed(2), 5, 65)) : n.fillText("No graph selected", 5, 13), n.restore();
   }
   /**
    * draws the back canvas (the one containing the background and the connections)
@@ -5331,11 +5323,7 @@ const _LGraphCanvas = class _LGraphCanvas {
     function a() {
       panel.content.innerHTML = "";
       const c = (E, m, T) => {
-        switch (E) {
-          default:
-            T && T.key && (E = T.key), T.values && (m = Object.values(T.values).indexOf(m)), r[E] = m;
-            break;
-        }
+        T && T.key && (E = T.key), T.values && (m = Object.values(T.values).indexOf(m)), r[E] = m;
       };
       var d = LiteGraph.availableCanvasOptions;
       d.sort();
@@ -6170,6 +6158,7 @@ gt = new WeakSet(), Pe = function() {
         case "ArrowLeft":
           break;
         case "ArrowRight":
+        // right do same as enter
         case "Enter":
           if (a.selectedOption !== !1)
             a.allOptions[a.selectedOption] ? ((N = LiteGraph.debug) == null || N.call(LiteGraph, "ContextElement simCLICK", a.allOptions[iO]), a.allOptions[a.selectedOption].do_click && a.allOptions[a.selectedOption].do_click(a.options.event, f)) : ((C = LiteGraph.debug) == null || C.call(LiteGraph, "ContextElement selection wrong", a.selectedOption), a.selectedOption = a.selectedOption !== !1 ? Math.min(Math.max(a.selectedOption, 0), a.allOptions.length - 1) : 0);
@@ -7473,6 +7462,7 @@ const ue = class ue {
         return this.graph ? this.graph.vars : {};
       case ue.GLOBALSCOPE:
         return global;
+      // @BUG: not sure what to do with this now
       default:
         return LiteGraph.Globals;
     }
@@ -9944,6 +9934,9 @@ class logicFor {
       case "break":
         this.stopped = !0;
         break;
+      /* case "reset":
+          this.stopped = false;
+      break;*/
       case "do":
         this.started = !0, this.stopped = !1, this.execute();
         break;
@@ -10411,7 +10404,7 @@ const Qt = class Qt {
 g(Qt, "title", "Webcam"), g(Qt, "desc", "Webcam image"), g(Qt, "is_webcam_open", !1);
 let ImageWebcam = Qt;
 LiteGraph.registerNodeType("graphics/webcam", ImageWebcam);
-const DDS = function() {
+const DDS = (function() {
   var n = 542327876, t = 131072, r = 512, s = 4;
   function a(A) {
     return A.charCodeAt(0) + (A.charCodeAt(1) << 8) + (A.charCodeAt(2) << 16) + (A.charCodeAt(3) << 24);
@@ -10445,6 +10438,12 @@ const DDS = function() {
       case u:
         $ = 8, U = R ? R.COMPRESSED_RGB_S3TC_DXT1_EXT : null;
         break;
+      /*
+               case FOURCC_DXT1:
+                   blockBytes = 8;
+                   internalFormat = ext ? ext.COMPRESSED_RGBA_S3TC_DXT1_EXT : null;
+                   break;
+      */
       case h:
         $ = 16, U = R ? R.COMPRESSED_RGBA_S3TC_DXT3_EXT : null;
         break;
@@ -10542,7 +10541,7 @@ const DDS = function() {
     loadDDSTextureFromMemoryEx: D,
     getDDSTextureFromMemoryEx: M
   };
-}();
+})();
 class Editor {
   constructor(t, r = {}) {
     const s = this.root = document.createElement("div");
@@ -11324,14 +11323,14 @@ var GL$1 = new class {
         var C = GL$1.Texture.fromImage(this, I);
         C.img = this, a.textures[this.url] = C, delete O[this.url], S && S(C);
       }, N.src = b, O[b] = !0, null;
-    }, a.drawTexture = function() {
+    }, a.drawTexture = (function() {
       var b = mat3.create(), I = vec2.create(), S = vec2.create(), N = vec4.create(), C = vec4.fromValues(1, 1, 1, 1), D = vec2.create(), M = { u_texture: 0, u_position: I, u_color: C, u_size: S, u_texture_area: N, u_viewport: D, u_transform: b };
-      return function(P, A, R, B, X, F, V, $, U, H, z) {
+      return (function(P, A, R, B, X, F, V, $, U, H, z) {
         I[0] = A, I[1] = R, B === void 0 && (B = P.width), X === void 0 && (X = P.height), S[0] = B, S[1] = X, F === void 0 && (F = 0), V === void 0 && (V = 0), $ === void 0 && ($ = P.width), U === void 0 && (U = P.height), N[0] = F / P.width, N[1] = V / P.height, N[2] = (F + $) / P.width, N[3] = (V + U) / P.height, D[0] = this.viewport_data[2], D[1] = this.viewport_data[3], H = H || Shader.getPartialQuadShader(this);
         var K = Mesh$1.getScreenQuad(this);
         P.bind(0), H.uniforms(M), z && H.uniforms(z), H.draw(K, a.TRIANGLES);
-      };
-    }(), a.canvas.addEventListener("webglcontextlost", function(b) {
+      });
+    })(), a.canvas.addEventListener("webglcontextlost", function(b) {
       b.preventDefault(), a.context_lost = !0, a.onlosecontext && a.onlosecontext(b);
     }, !1), a.reset = function() {
       a.viewport(0, 0, this.canvas.width, this.canvas.height), a.disable(a.BLEND), a.disable(a.CULL_FACE), a.disable(a.DEPTH_TEST), a.frontFace(a.CCW), a._current_texture_drawto = null, a._current_fbo_color = null, a._current_fbo_depth = null;
@@ -11602,7 +11601,7 @@ quat.fromAxisAngle = function(n, t) {
   var s = Math.sin(t);
   return r[0] = s * n[0], r[1] = s * n[1], r[2] = s * n[2], r[3] = Math.cos(t), r;
 };
-quat.lookRotation = function() {
+quat.lookRotation = (function() {
   var n = vec3.create(), t = vec3.create(), r = vec3.create();
   return function(s, a, o) {
     vec3.normalize(n, a), vec3.cross(t, o, n), vec3.normalize(t, t), vec3.cross(r, n, t);
@@ -11622,7 +11621,7 @@ quat.lookRotation = function() {
     var S = Math.sqrt(1 + m - u - d), N = 0.5 / S;
     return s[0] = (_ + l) * N, s[1] = (E + f) * N, s[2] = 0.5 * S, s[3] = (h - c) * N, s;
   };
-}();
+})();
 quat.toEuler = function(n, t) {
   var r = Math.atan2(2 * t[1] * t[3] - 2 * t[0] * t[2], 1 - 2 * t[1] * t[1] - 2 * t[2] * t[2]), s = Math.asin(2 * t[0] * t[1] + 2 * t[2] * t[3]), a = Math.atan2(2 * t[0] * t[3] - 2 * t[1] * t[2], 1 - 2 * t[0] * t[0] - 2 * t[2] * t[2]);
   return n || (n = vec3.create()), vec3.set(n, r, s, a), n;
@@ -11656,7 +11655,7 @@ vec3.getMat3Column = function(n, t, r) {
 mat3.setColumn = function(n, t, r) {
   return n[r * 3] = t[0], n[r * 3 + 1] = t[1], n[r * 3 + 2] = t[2], n;
 };
-quat.fromMat3AndQuat = function() {
+quat.fromMat3AndQuat = (function() {
   var n = mat3.create(), t = quat.create(), r = vec3.create(), s = vec3.create(), a = vec3.create(), o = vec3.create(), u = vec3.create(), h = vec3.create(), l = vec3.create(), c = vec3.create(), d = vec3.create(), f = vec3.create();
   return mat3.create(), function(_, E, m) {
     m = m || 25;
@@ -11672,16 +11671,16 @@ quat.fromMat3AndQuat = function() {
     }
     return _;
   };
-}();
-quat.rotateToFrom = function() {
+})();
+quat.rotateToFrom = (function() {
   var n = vec3.create();
   return function(t, r, s) {
     t = t || quat.create();
     var a = vec3.cross(n, r, s), o = vec3.dot(r, s);
     return o < -1 + 0.01 ? (t[0] = 0, t[1] = 1, t[2] = 0, t[3] = 0, t) : (t[0] = a[0] * 0.5, t[1] = a[1] * 0.5, t[2] = a[2] * 0.5, t[3] = (1 + o) * 0.5, quat.normalize(t, t), t);
   };
-}();
-quat.lookAt = function() {
+})();
+quat.lookAt = (function() {
   var n = vec3.create();
   return function(t, r, s) {
     var a = vec3.dot(vec3.FRONT, r);
@@ -11692,7 +11691,7 @@ quat.lookAt = function() {
     var o = Math.acos(a);
     return vec3.cross(n, vec3.FRONT, r), vec3.normalize(n, n), quat.setAxisAngle(t, n, o), t;
   };
-}();
+})();
 GL$1.Indexer = function n() {
   this.unique = [], this.indices = [], this.map = {};
 };
@@ -13747,15 +13746,14 @@ const et = class et {
       if (r[a] != s[a])
         return console.error("TGA header is not valid"), null;
     var o = t.subarray(12, 18), u = {};
-    if (u.width = o[1] * 256 + o[0], u.height = o[3] * 256 + o[2], u.bpp = o[4], u.bytesPerPixel = u.bpp / 8, u.imageSize = u.width * u.height * u.bytesPerPixel, u.pixels = t.subarray(18, 18 + u.imageSize), u.pixels = new Uint8Array(u.pixels), o[5] & 16)
-      u.format = u.bpp == 32 ? "RGBA" : "RGB";
-    else {
+    if (u.width = o[1] * 256 + o[0], u.height = o[3] * 256 + o[2], u.bpp = o[4], u.bytesPerPixel = u.bpp / 8, u.imageSize = u.width * u.height * u.bytesPerPixel, u.pixels = t.subarray(18, 18 + u.imageSize), u.pixels = new Uint8Array(u.pixels), (o[5] & 16) == 0) {
       for (var a = 0; a < u.imageSize; a += u.bytesPerPixel) {
         var h = u.pixels[a];
         u.pixels[a] = u.pixels[a + 2], u.pixels[a + 2] = h;
       }
       o[5] |= 16, u.format = u.bpp == 32 ? "RGBA" : "RGB";
-    }
+    } else
+      u.format = u.bpp == 32 ? "RGBA" : "RGB";
     return u.flipY = !0, u;
   }
   /**
@@ -14217,7 +14215,7 @@ g(et, "framebuffer", null), g(et, "renderbuffer", null), g(et, "loading_color", 
 */
 g(et, "binary_extension", "png");
 let Texture = et;
-Texture.prototype.blit = function() {
+Texture.prototype.blit = (function() {
   var n = new Float32Array(4);
   return function(t, r, s) {
     var a = this.gl;
@@ -14228,15 +14226,15 @@ Texture.prototype.blit = function() {
     var u = a.__copy_fbo;
     return u || (u = a.__copy_fbo = a.createFramebuffer()), a.bindFramebuffer(a.FRAMEBUFFER, u), a.viewport(0, 0, t.width, t.height), a.framebufferTexture2D(a.FRAMEBUFFER, a.COLOR_ATTACHMENT0, a.TEXTURE_2D, t.handler, 0), this.bind(0), r.draw(GL$1.Mesh.getScreenQuad(), a.TRIANGLES), a.setViewport(n), a.bindFramebuffer(a.FRAMEBUFFER, o), t.data = null, a.bindTexture(t.texture_type, null), this;
   };
-}();
-Texture.prototype.renderQuad = function() {
+})();
+Texture.prototype.renderQuad = (function() {
   var n = mat3.create(), t = vec2.create(), r = vec2.create(), s = vec4.fromValues(1, 1, 1, 1);
-  return function(a, o, u, h, l, c) {
+  return (function(a, o, u, h, l, c) {
     t[0] = a, t[1] = o, r[0] = u, r[1] = h, l = l || Shader.getQuadShader(this.gl);
     var d = Mesh$1.getScreenQuad(this.gl);
     this.bind(0), l.uniforms({ u_texture: 0, u_position: t, u_color: s, u_size: r, u_viewport: gl.viewport_data.subarray(2, 4), u_transform: n }), c && l.uniforms(c), l.draw(d, gl.TRIANGLES);
-  };
-}();
+  });
+})();
 const Ot = class Ot {
   constructor(t, r, s, a) {
     if (a = a || global$1.gl, this.gl = a, this._context_id = a.context_id, t && t.constructor !== Array)
@@ -14792,7 +14790,7 @@ const Y = class Y {
           A.data.set(C);
         if (l.bindBuffer(l.ARRAY_BUFFER, A.buffer), l.bufferData(l.ARRAY_BUFFER, A.data, l.STREAM_DRAW), M == 16)
           for (var B = 0; B < 4; ++B)
-            l.enableVertexAttribArray(D + B), l.vertexAttribPointer(D + B, 4, l.FLOAT, !1, 16 * 4, B * 4 * 4), b ? b.vertexAttribDivisorANGLE(D + B, 1) : l.vertexAttribDivisor(D + B, 1);
+            l.enableVertexAttribArray(D + B), l.vertexAttribPointer(D + B, 4, l.FLOAT, !1, 64, B * 4 * 4), b ? b.vertexAttribDivisorANGLE(D + B, 1) : l.vertexAttribDivisor(D + B, 1);
         else
           l.enableVertexAttribArray(D), l.vertexAttribPointer(D, M, l.FLOAT, !1, M * 4, 0), b ? b.vertexAttribDivisorANGLE(D, 1) : l.vertexAttribDivisor(D, 1);
         S += 1;
@@ -14857,6 +14855,7 @@ const Y = class Y {
     if (t == null)
       return !1;
     switch (r.type) {
+      //used to validate shaders
       case GL$1.INT:
       case GL$1.FLOAT:
       case GL$1.SAMPLER_2D:
@@ -15716,7 +15715,7 @@ global$1.geo = {
   * @param {vec3} result collision position
   * @return {boolean} returns if the segment collides the plane or it is parallel to the plane
   */
-  testSegmentPlane: function() {
+  testSegmentPlane: (function() {
     var n = vec3.create();
     return function(t, r, s, a, o) {
       var u = vec3.dot(s, a), h = u - vec3.dot(a, t), l = vec3.sub(n, r, t), c = vec3.dot(a, l);
@@ -15725,7 +15724,7 @@ global$1.geo = {
       var d = h / c;
       return d < 0 || d > 1 ? !1 : (o && vec3.add(o, t, vec3.scale(o, l, d)), !0);
     };
-  }(),
+  })(),
   /**
   * test a ray sphere collision and retrieves the collision point
   * @method testRaySphere
@@ -15737,7 +15736,7 @@ global$1.geo = {
   * @param {number} max_dist not fully tested
   * @return {boolean} returns if the ray collides the sphere
   */
-  testRaySphere: function() {
+  testRaySphere: (function() {
     var n = vec3.create();
     return function(t, r, s, a, o, u) {
       var h = vec3.subtract(n, t, s), l = r[0] * r[0] + r[1] * r[1] + r[2] * r[2], c = 2 * h[0] * r[0] + 2 * h[1] * r[1] + 2 * h[2] * r[2], d = h[0] * h[0] + h[1] * h[1] + h[2] * h[2] - a * a, f = c * c - 4 * l * d;
@@ -15751,7 +15750,7 @@ global$1.geo = {
       }
       return !0;
     };
-  }(),
+  })(),
   /**
   * test a ray cylinder collision (only vertical cylinders) and retrieves the collision point [not fully tested]
   * @method testRayCylinder
@@ -15782,7 +15781,7 @@ global$1.geo = {
   * @param {vec3} result collision position
   * @return {boolean} returns if the ray collides the box
   */
-  testRayBox: function() {
+  testRayBox: (function() {
     var n = new Float32Array(3), t = new Float32Array(3), r = new Float32Array(3);
     return function(s, a, o, u, h, l) {
       l = l || Number.MAX_VALUE;
@@ -15806,7 +15805,7 @@ global$1.geo = {
           h && (h[d] = t[d]);
       return !0;
     };
-  }(),
+  })(),
   /**
   * test a ray bounding-box collision, it uses the  BBox class and allows to use non-axis aligned bbox
   * @method testRayBBox
@@ -15817,7 +15816,7 @@ global$1.geo = {
   * @param {vec3} result collision position in world space unless in_local is true
   * @return {boolean} returns if the ray collides the box
   */
-  testRayBBox: function() {
+  testRayBBox: (function() {
     var n = mat4.create(), t = vec3.create(), r = vec3.create();
     return function(s, a, o, u, h, l, c) {
       if (!s || !a || !o)
@@ -15826,7 +15825,7 @@ global$1.geo = {
       var d = this.testRayBox(s, a, o.subarray(6, 9), o.subarray(9, 12), h, l);
       return !c && u && h && vec3.transformMat4(h, h, u), d;
     };
-  }(),
+  })(),
   /**
   * test if a 3d point is inside a BBox
   * @method testPointBBox
@@ -16057,8 +16056,8 @@ global$1.BBox = GL$1.BBox = {
   * @param {mat4} mat transformation
   * @return {BBox} returns out
   */
-  transformMat4: function() {
-    for (var n = 0, t = 0, r = 0, s = new Float32Array(8 * 3), a = [], o = 0; o < 24; o += 3)
+  transformMat4: (function() {
+    for (var n = 0, t = 0, r = 0, s = new Float32Array(24), a = [], o = 0; o < 24; o += 3)
       a.push(s.subarray(o, o + 3));
     return function(u, h, l) {
       var c = h[0], d = h[1], f = h[2];
@@ -16069,7 +16068,7 @@ global$1.BBox = GL$1.BBox = {
       }
       return this.setFromPoints(u, s);
     };
-  }(),
+  })(),
   /**
   * Computes the eight corners of the BBox and returns it
   * @method getCorners
@@ -16257,7 +16256,7 @@ Octree.testSphereInNode = function(n, t, r) {
   }
   return !1;
 };
-Octree.hitTestBox = function() {
+Octree.hitTestBox = (function() {
   var n = vec3.create(), t = vec3.create(), r = vec3.create(), s = vec3.create(), a = vec3.create(), o = vec3.create(), u = 1e-6, h = vec3.fromValues(u, u, u);
   return function(l, c, d, f) {
     if (vec3.subtract(n, d, l), vec3.subtract(t, f, l), vec3.maxValue(n) < 0 && vec3.minValue(t) > 0)
@@ -16274,8 +16273,8 @@ Octree.hitTestBox = function() {
     }
     return null;
   };
-}();
-Octree.hitTestTriangle = function() {
+})();
+Octree.hitTestTriangle = (function() {
   var n = vec3.create(), t = vec3.create(), r = vec3.create(), s = vec3.create();
   return function(a, o, u, h, l, c) {
     vec3.subtract(n, h, u), vec3.subtract(t, l, u);
@@ -16292,8 +16291,8 @@ Octree.hitTestTriangle = function() {
     }
     return null;
   };
-}();
-Octree.testSphereTriangle = function() {
+})();
+Octree.testSphereTriangle = (function() {
   var n = vec3.create(), t = vec3.create(), r = vec3.create(), s = vec3.create(), a = vec3.create(), o = vec3.create(), u = vec3.create(), h = vec3.create();
   return function(l, c, d, f, _) {
     vec3.sub(n, d, l), vec3.sub(t, f, l), vec3.sub(r, _, l), vec3.sub(s, t, n), vec3.sub(a, r, n), vec3.cross(h, s, a);
@@ -16314,13 +16313,13 @@ Octree.testSphereTriangle = function() {
     var K = vec3.dot(F, F) > c * R * R & vec3.dot(F, U) > 0, tt = vec3.dot(V, V) > c * B * B & vec3.dot(V, H) > 0, W = vec3.dot($, $) > c * X * X & vec3.dot($, z) > 0, Q = T | N | C | D | K | tt | W;
     return !Q;
   };
-}();
+})();
 Octree.testSphereBox = function(n, t, r, s) {
   for (var a, o = 0, u = 0; u < 3; ++u)
     n[u] < r[u] ? (a = n[u] - r[u], o += a * a) : n[u] > s[u] && (a = n[u] - s[u], o += a * a);
   return o <= t;
 };
-Octree.prototype.testRay = function() {
+Octree.prototype.testRay = (function() {
   var n = vec3.create(), t = vec3.create(), r = vec3.create(), s = vec3.create();
   return function(a, o, u, h, l) {
     if (!this.root)
@@ -16336,7 +16335,7 @@ Octree.prototype.testRay = function() {
     }
     return null;
   };
-}();
+})();
 GL$1.Octree = Octree;
 class HitTest {
   constructor(t, r, s) {
@@ -16431,12 +16430,12 @@ class Raytracer {
 }
 GL$1.Raytracer = Raytracer;
 var _hittest_inv = mat4.create();
-Raytracer.prototype.getRayForPixel = function() {
+Raytracer.prototype.getRayForPixel = (function() {
   var n = vec3.create(), t = vec3.create();
   return function(r, s, a) {
     return a = a || vec3.create(), r = (r - this.viewport[0]) / this.viewport[2], s = 1 - (s - this.viewport[1]) / this.viewport[3], vec3.lerp(n, this.ray00, this.ray10, r), vec3.lerp(t, this.ray01, this.ray11, r), vec3.lerp(a, n, t, s), vec3.normalize(a, a);
   };
-}();
+})();
 LiteGraph.LGraphCanvas.link_type_colors.Texture = "#987";
 const DEG2RAD = 0.0174532925, it = class it {
   constructor() {
@@ -19850,6 +19849,7 @@ var varToTypeGLSL = LiteGraph.varToTypeGLSL = function n(t, r, s) {
     throw new Error("error: no output type specified");
   if (s == "float")
     switch (r) {
+      // case "float":
       case "vec2":
       case "vec3":
       case "vec4":
@@ -19861,6 +19861,7 @@ var varToTypeGLSL = LiteGraph.varToTypeGLSL = function n(t, r, s) {
     switch (r) {
       case "float":
         return "vec2(" + t + ")";
+      // case "vec2":
       case "vec3":
       case "vec4":
         return t + ".xy";
@@ -19873,6 +19874,7 @@ var varToTypeGLSL = LiteGraph.varToTypeGLSL = function n(t, r, s) {
         return "vec3(" + t + ")";
       case "vec2":
         return "vec3(" + t + ",0.0)";
+      // case "vec3":
       case "vec4":
         return t + ".xyz";
       default:
@@ -21133,7 +21135,7 @@ const j = class j {
       return H;
     }
     if (a.constructor === GL.Mesh && (u = a.vertexBuffers.vertices.data, h = a.vertexBuffers.normals ? a.vertexBuffers.normals.data : null, l = a.indexBuffers.indices ? a.indexBuffers.indices.data : null, l || (l = a.indexBuffers.triangles ? a.indexBuffers.triangles.data : null)), !u) return null;
-    var f = l ? l.length / 3 : u.length / (3 * 3), _ = 0;
+    var f = l ? l.length / 3 : u.length / 9, _ = 0;
     if (o) {
       c = new Float32Array(f);
       for (let F = 0; F < f; ++F) {
