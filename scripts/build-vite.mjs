@@ -1,7 +1,7 @@
-import { cp, mkdir, rm, stat } from "node:fs/promises";
+import { cp, mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { build } from "vite";
+import { build, transformWithEsbuild } from "vite";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, "..");
@@ -70,6 +70,32 @@ async function copyBuildResources() {
     }
 }
 
+async function minifyBuiltJsFiles(directoryPath) {
+    const entries = await readdir(directoryPath, { withFileTypes: true });
+
+    for (const entry of entries) {
+        const entryPath = path.join(directoryPath, entry.name);
+        if (entry.isDirectory()) {
+            await minifyBuiltJsFiles(entryPath);
+            continue;
+        }
+
+        if (!entry.isFile() || !entry.name.endsWith(".js")) {
+            continue;
+        }
+
+        const source = await readFile(entryPath, "utf8");
+        const transformed = await transformWithEsbuild(source, entryPath, {
+            loader: "js",
+            target: "es2019",
+            minify: true,
+            legalComments: "none",
+        });
+        await writeFile(entryPath, transformed.code, "utf8");
+        console.log(`Minified ${path.relative(projectRoot, entryPath)}`);
+    }
+}
+
 await rm(outDir, { recursive: true, force: true });
 await mkdir(outDir, { recursive: true });
 
@@ -78,4 +104,5 @@ for (const bundle of bundles) {
     await buildBundle(bundle);
 }
 
+await minifyBuiltJsFiles(outDir);
 await copyBuildResources();

@@ -4,7 +4,7 @@
     "description": "A flow graph node editor on the web.",
     "main": "build/litegraph.js",
     "type": "module",
-    "types": "src/litegraph.d.ts",
+    "types": "src/index.d.ts",
     "private": false,
     "scripts": {
         "build": "node scripts/build-vite.mjs",
@@ -23,7 +23,8 @@
     "files": [
         "build",
         "src/css/litegraph.css",
-        "src/litegraph.d.ts"
+        "src/litegraph.d.ts",
+        "src/index.d.ts"
     ],
     "bugs": {
         "url": "https://github.com/daniel-lewis-ab/litegraph.js/issues"
