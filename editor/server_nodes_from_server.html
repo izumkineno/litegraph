@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>LiteGraph - Server Nodes Demo</title>
+    <link rel="icon" href="./favicon.svg"/>
+    <link rel="stylesheet" type="text/css" href="../css/litegraph.css">
+    <link rel="stylesheet" type="text/css" href="../css/litegraph-editor.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <style>
+        .server-demo-status {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 30;
+            min-width: 360px;
+            max-width: 520px;
+            padding: 10px 12px;
+            border: 1px solid #344e3f;
+            border-radius: 6px;
+            background: rgba(17, 29, 21, 0.92);
+            color: #d7e9dd;
+            font: 13px/1.4 "Segoe UI", Tahoma, sans-serif;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+        }
+
+        .server-demo-status-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .server-demo-status-header strong {
+            font-size: 13px;
+            letter-spacing: 0.03em;
+        }
+
+        #reload-server-nodes {
+            padding: 5px 10px;
+            border: 1px solid #4f8765;
+            border-radius: 4px;
+            background: #274733;
+            color: #f2fff6;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        #reload-server-nodes:hover {
+            background: #315d43;
+        }
+
+        .server-demo-status-list {
+            margin: 8px 0 0;
+            padding-left: 18px;
+        }
+
+        .server-demo-status-item {
+            margin: 3px 0;
+        }
+
+        .server-demo-status-item.success {
+            color: #93f3a9;
+        }
+
+        .server-demo-status-item.error {
+            color: #ff9a9a;
+        }
+    </style>
+</head>
+<body>
+    <div class="server-demo-status">
+        <div class="server-demo-status-header">
+            <strong>Server Nodes Loader</strong>
+            <button id="reload-server-nodes" type="button">Reload from Server</button>
+        </div>
+        <ul id="server-demo-status-list" class="server-demo-status-list"></ul>
+    </div>
+
+    <div id="main"></div>
+
+    <script type="module" src="../src/litegraph.js"></script>
+    <script type="module" src="../src/litegraph-editor.js"></script>
+    <script type="module" src="js/defaults.js"></script>
+    <script type="module" src="../src/nodes/base.js"></script>
+    <script type="module" src="js/server_nodes_from_server.js"></script>
+</body>
+</html>

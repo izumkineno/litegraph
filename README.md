@@ -55,6 +55,7 @@ Or downloading the `build/litegraph.js` and `build/resources/css/litegraph.css` 
 - Project roadmap: [`docs/project/ROADMAP.md`](docs/project/ROADMAP.md)
 - UI/UX design system (ui-ux-pro-max): [`design-system/litegraph/MASTER.md`](design-system/litegraph/MASTER.md)
 - Build/dev scripts: [`scripts/build-vite.mjs`](scripts/build-vite.mjs), [`server/js/server.js`](server/js/server.js)
+- Server dynamic nodes demo: [`editor/server_nodes_from_server.html`](editor/server_nodes_from_server.html)
 
 ## First project ##
 
