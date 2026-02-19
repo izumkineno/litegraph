@@ -73,7 +73,13 @@
             <strong id="server-demo-title">Server Nodes Loader</strong>
             <button id="reload-server-nodes" type="button">Reload from Server</button>
         </div>
-        <ul id="server-demo-status-list" class="server-demo-status-list"></ul>
+        <ul
+            id="server-demo-status-list"
+            class="server-demo-status-list"
+            role="status"
+            aria-live="polite"
+            aria-relevant="additions text"
+        ></ul>
     </div>
 
     <div id="main"></div>

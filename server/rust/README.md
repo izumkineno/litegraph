@@ -31,13 +31,54 @@ Open:
 - Editor home: `http://127.0.0.1:8000/editor/`
 - Server nodes demo: `http://127.0.0.1:8000/editor/server_nodes_from_server.html`
 
-## Server Nodes Example
+## Server Nodes API (v1)
 
 Provided endpoints:
 
-1. Manifest API: `GET /api/editor/server-nodes/manifest`
-2. Node modules static route: `/api/editor/server-nodes/modules/*`
-3. Graph JSON static route: `/api/editor/server-nodes/graphs/*`
+1. Manifest API: `GET /api/v1/editor/server-nodes/manifest`
+2. Node modules static route: `/api/v1/editor/server-nodes/modules/*`
+3. Graph JSON static route: `/api/v1/editor/server-nodes/graphs/*`
+
+### Manifest response envelope
+
+```json
+{
+  "data": {
+    "version": 1,
+    "backend": "rust",
+    "displayName": "Rust",
+    "expectedNodeTypes": ["server_demo_rs/counter", "server_demo_rs/scale"],
+    "modules": ["/api/v1/editor/server-nodes/modules/server-demo-nodes.js"],
+    "graphUrl": "/api/v1/editor/server-nodes/graphs/server-demo.json"
+  },
+  "meta": {
+    "apiVersion": "v1",
+    "schema": "server-nodes-manifest",
+    "backend": "rust"
+  }
+}
+```
+
+### API error envelope
+
+```json
+{
+  "error": {
+    "code": "METHOD_NOT_ALLOWED",
+    "message": "Only GET is supported for this API",
+    "recovery": "Use GET for API reads, or extend the backend for write operations.",
+    "details": {
+      "path": "/api/v1/editor/server-nodes/manifest"
+    }
+  },
+  "meta": {
+    "apiVersion": "v1",
+    "backend": "rust"
+  }
+}
+```
+
+Legacy path `/api/editor/server-nodes/*` has been removed.
 
 Files used by the demo:
 

@@ -1,9 +1,10 @@
 import { LiteGraph } from "../../../src/litegraph.js";
 import { Editor } from "../../../src/litegraph-editor.js";
 
-const MANIFEST_URL = "/api/editor/server-nodes/manifest";
-const MODULES_PREFIX = "/api/editor/server-nodes/modules/";
-const GRAPHS_PREFIX = "/api/editor/server-nodes/graphs/";
+const API_VERSION = "v1";
+const MANIFEST_URL = `/api/${API_VERSION}/editor/server-nodes/manifest`;
+const MODULES_PREFIX = `/api/${API_VERSION}/editor/server-nodes/modules/`;
+const GRAPHS_PREFIX = `/api/${API_VERSION}/editor/server-nodes/graphs/`;
 const GRAPH_LOAD_TIMEOUT_MS = 6000;
 
 const statusListElement = document.getElementById("server-demo-status-list");
@@ -18,6 +19,9 @@ function addStatus(message, kind = "info") {
     const item = document.createElement("li");
     item.className = `server-demo-status-item ${kind}`;
     item.textContent = message;
+    if (kind === "error") {
+        item.setAttribute("role", "alert");
+    }
     statusListElement.appendChild(item);
 }
 
@@ -47,40 +51,77 @@ function validatePathUrl(value, prefix, fieldName) {
     return value;
 }
 
-function validateManifest(manifest) {
-    if (!manifest || typeof manifest !== "object") {
-        throw new Error("Manifest must be a JSON object");
+function validateManifestEnvelope(payload) {
+    if (!payload || typeof payload !== "object") {
+        throw new Error("Manifest response must be a JSON object");
     }
-    if (!Array.isArray(manifest.modules) || manifest.modules.some((moduleUrl) => typeof moduleUrl !== "string")) {
+
+    const { data, meta } = payload;
+    if (!data || typeof data !== "object") {
+        throw new Error("Manifest response missing data object");
+    }
+    if (!meta || typeof meta !== "object") {
+        throw new Error("Manifest response missing meta object");
+    }
+    if (meta.apiVersion !== API_VERSION) {
+        throw new Error(`Unsupported API version: ${meta.apiVersion}`);
+    }
+
+    if (!Array.isArray(data.modules) || data.modules.some((moduleUrl) => typeof moduleUrl !== "string")) {
         throw new Error("Manifest modules must be a string array");
     }
 
-    const modules = manifest.modules.map((moduleUrl, index) => {
+    const modules = data.modules.map((moduleUrl, index) => {
         return validatePathUrl(moduleUrl, MODULES_PREFIX, `modules[${index}]`);
     });
-    const graphUrl = validatePathUrl(manifest.graphUrl, GRAPHS_PREFIX, "graphUrl");
-    const displayName = typeof manifest.displayName === "string" && manifest.displayName.length > 0
-        ? manifest.displayName
+    const graphUrl = validatePathUrl(data.graphUrl, GRAPHS_PREFIX, "graphUrl");
+    const displayName = typeof data.displayName === "string" && data.displayName.length > 0
+        ? data.displayName
         : "Unknown";
-    const backend = typeof manifest.backend === "string" && manifest.backend.length > 0
-        ? manifest.backend
+    const backend = typeof data.backend === "string" && data.backend.length > 0
+        ? data.backend
         : "unknown";
-    const expectedNodeTypes = manifest.expectedNodeTypes == null
+    const expectedNodeTypes = data.expectedNodeTypes == null
         ? []
-        : manifest.expectedNodeTypes;
+        : data.expectedNodeTypes;
 
     if (!Array.isArray(expectedNodeTypes) || expectedNodeTypes.some((type) => typeof type !== "string")) {
         throw new Error("Manifest expectedNodeTypes must be a string array when provided");
     }
 
     return {
-        version: manifest.version,
+        version: data.version,
         backend,
         displayName,
         expectedNodeTypes,
         modules,
         graphUrl,
+        schema: typeof meta.schema === "string" ? meta.schema : "unknown",
     };
+}
+
+async function parseApiError(response) {
+    const fallbackMessage = `Request failed (${response.status})`;
+    try {
+        const payload = await response.json();
+        const apiError = payload?.error;
+        if (!apiError || typeof apiError !== "object") {
+            return {
+                message: fallbackMessage,
+            };
+        }
+        const code = typeof apiError.code === "string" ? apiError.code : "ERROR";
+        const message = typeof apiError.message === "string" ? apiError.message : fallbackMessage;
+        const recovery = typeof apiError.recovery === "string" ? apiError.recovery : null;
+        return {
+            message: `[${code}] ${message}`,
+            recovery,
+        };
+    } catch {
+        return {
+            message: fallbackMessage,
+        };
+    }
 }
 
 async function fetchManifest() {
@@ -89,9 +130,16 @@ async function fetchManifest() {
             Accept: "application/json",
         },
     });
+
     if (!response.ok) {
-        throw new Error(`Failed to fetch manifest (${response.status})`);
+        const apiError = await parseApiError(response);
+        const error = new Error(apiError.message);
+        if (apiError.recovery) {
+            error.recovery = apiError.recovery;
+        }
+        throw error;
     }
+
     return response.json();
 }
 
@@ -146,9 +194,10 @@ async function reloadFromServer() {
     addStatus("Starting server-side node loading...");
 
     try {
-        const manifest = validateManifest(await fetchManifest());
+        const manifest = validateManifestEnvelope(await fetchManifest());
         setTitle(manifest.displayName);
         addStatus(`Backend detected: ${manifest.backend}`, "success");
+        addStatus(`Manifest schema: ${manifest.schema}`, "success");
         addStatus("Manifest fetched successfully", "success");
 
         await loadModules(manifest.modules);
@@ -163,6 +212,9 @@ async function reloadFromServer() {
         addStatus("Graph started; basic/watch output should now update", "success");
     } catch (error) {
         addStatus(`Load failed: ${error.message}`, "error");
+        if (error.recovery) {
+            addStatus(`Recovery: ${error.recovery}`, "error");
+        }
         LiteGraph.error?.(error);
     }
 }

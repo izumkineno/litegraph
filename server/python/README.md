@@ -31,13 +31,54 @@ Open:
 - Editor home: `http://127.0.0.1:8000/editor/`
 - Server nodes demo: `http://127.0.0.1:8000/editor/server_nodes_from_server.html`
 
-## Server Nodes Example
+## Server Nodes API (v1)
 
 Provided endpoints:
 
-1. Manifest API: `GET /api/editor/server-nodes/manifest`
-2. Node modules static route: `/api/editor/server-nodes/modules/*`
-3. Graph JSON static route: `/api/editor/server-nodes/graphs/*`
+1. Manifest API: `GET /api/v1/editor/server-nodes/manifest`
+2. Node modules static route: `/api/v1/editor/server-nodes/modules/*`
+3. Graph JSON static route: `/api/v1/editor/server-nodes/graphs/*`
+
+### Manifest response envelope
+
+```json
+{
+  "data": {
+    "version": 1,
+    "backend": "python",
+    "displayName": "Python",
+    "expectedNodeTypes": ["server_demo_py/counter", "server_demo_py/scale"],
+    "modules": ["/api/v1/editor/server-nodes/modules/server-demo-nodes.js"],
+    "graphUrl": "/api/v1/editor/server-nodes/graphs/server-demo.json"
+  },
+  "meta": {
+    "apiVersion": "v1",
+    "schema": "server-nodes-manifest",
+    "backend": "python"
+  }
+}
+```
+
+### API error envelope
+
+```json
+{
+  "error": {
+    "code": "INVALID_PATH",
+    "message": "Requested file path is invalid",
+    "recovery": "Use a relative file path within the allowed API resource directory.",
+    "details": {
+      "path": "/api/v1/editor/server-nodes/modules/../x"
+    }
+  },
+  "meta": {
+    "apiVersion": "v1",
+    "backend": "python"
+  }
+}
+```
+
+Legacy path `/api/editor/server-nodes/*` has been removed.
 
 Files used by the demo:
 
