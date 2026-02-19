@@ -54,7 +54,7 @@ Or downloading the ```build/litegraph.js``` and ```css/litegraph.css``` version 
 - Project changelog: [`docs/project/CHANGELOG.md`](docs/project/CHANGELOG.md)
 - Project roadmap: [`docs/project/ROADMAP.md`](docs/project/ROADMAP.md)
 - UI/UX design system (ui-ux-pro-max): [`design-system/litegraph/MASTER.md`](design-system/litegraph/MASTER.md)
-- Build/dev scripts: [`scripts/build.py`](scripts/build.py), [`scripts/server.js`](scripts/server.js)
+- Build/dev scripts: [`scripts/build-vite.mjs`](scripts/build-vite.mjs), [`scripts/server.js`](scripts/server.js)
 
 ## First project ##
 
