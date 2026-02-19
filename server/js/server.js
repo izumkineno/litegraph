@@ -7,9 +7,16 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "../..");
+const sharedDemoEditorDir = path.join(repoRoot, "server", "shared", "editor");
 
 const serverNodesManifest = Object.freeze({
     version: 1,
+    backend: "js",
+    displayName: "JavaScript",
+    expectedNodeTypes: [
+        "server_demo/counter",
+        "server_demo/scale",
+    ],
     modules: [
         "/api/editor/server-nodes/modules/server-demo-nodes.js",
     ],
@@ -26,6 +33,12 @@ app.use(
 );
 app.get("/api/editor/server-nodes/manifest", (_req, res) => {
     res.json(serverNodesManifest);
+});
+app.get("/editor/server_nodes_from_server.html", (_req, res) => {
+    res.sendFile(path.join(sharedDemoEditorDir, "server_nodes_from_server.html"));
+});
+app.get("/editor/js/server_nodes_from_server.js", (_req, res) => {
+    res.sendFile(path.join(sharedDemoEditorDir, "js", "server_nodes_from_server.js"));
 });
 
 app.use("/css", express.static(path.join(repoRoot, "css")));

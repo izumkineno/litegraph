@@ -15,3 +15,6 @@ coverage/*
 # Python cache
 __pycache__/
 *.py[cod]
+
+# Rust build cache
+target/

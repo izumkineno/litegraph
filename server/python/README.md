@@ -1,14 +1,29 @@
-# JS Server
+# Python Server
 
-- Entry: [`server.js`](server.js)
-- Package config: [`package.json`](package.json)
+- Entry: [`server.py`](server.py)
+- Runtime: Python 3.10+
 
 Run:
 
 ```bash
-cd server/js
-npm install
-npm start
+cd server/python
+python server.py
+```
+
+Custom port:
+
+PowerShell:
+
+```powershell
+$env:PORT=8001
+python server.py
+```
+
+POSIX:
+
+```bash
+cd server/python
+PORT=8001 python server.py
 ```
 
 Open:
@@ -18,7 +33,7 @@ Open:
 
 ## Server Nodes Example
 
-The server now includes a complete end-to-end example for loading custom nodes in the editor:
+Provided endpoints:
 
 1. Manifest API: `GET /api/editor/server-nodes/manifest`
 2. Node modules static route: `/api/editor/server-nodes/modules/*`
@@ -26,8 +41,8 @@ The server now includes a complete end-to-end example for loading custom nodes i
 
 Files used by the demo:
 
-- Manifest response is generated in [`server.js`](server.js)
+- Manifest response and static routes: [`server.py`](server.py)
 - Server node module: [`examples/nodes/server-demo-nodes.js`](examples/nodes/server-demo-nodes.js)
 - Preset graph JSON: [`examples/graphs/server-demo.json`](examples/graphs/server-demo.json)
-- Demo page: [`../shared/editor/server_nodes_from_server.html`](../shared/editor/server_nodes_from_server.html)
-- Frontend loader: [`../shared/editor/js/server_nodes_from_server.js`](../shared/editor/js/server_nodes_from_server.js)
+- Shared demo page: [`../shared/editor/server_nodes_from_server.html`](../shared/editor/server_nodes_from_server.html)
+- Shared frontend loader: [`../shared/editor/js/server_nodes_from_server.js`](../shared/editor/js/server_nodes_from_server.js)

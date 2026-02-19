@@ -1,5 +1,5 @@
-﻿import { LiteGraph } from "../../src/litegraph.js";
-import { Editor } from "../../src/litegraph-editor.js";
+import { LiteGraph } from "../../../src/litegraph.js";
+import { Editor } from "../../../src/litegraph-editor.js";
 
 const MANIFEST_URL = "/api/editor/server-nodes/manifest";
 const MODULES_PREFIX = "/api/editor/server-nodes/modules/";
@@ -7,6 +7,7 @@ const GRAPHS_PREFIX = "/api/editor/server-nodes/graphs/";
 const GRAPH_LOAD_TIMEOUT_MS = 6000;
 
 const statusListElement = document.getElementById("server-demo-status-list");
+const titleElement = document.getElementById("server-demo-title");
 const reloadButton = document.getElementById("reload-server-nodes");
 
 const editor = new Editor("main", { miniwindow: false });
@@ -22,6 +23,12 @@ function addStatus(message, kind = "info") {
 
 function clearStatus() {
     statusListElement.innerHTML = "";
+}
+
+function setTitle(name) {
+    if (titleElement) {
+        titleElement.textContent = `${name} Server Nodes Loader`;
+    }
 }
 
 function validatePathUrl(value, prefix, fieldName) {
@@ -52,9 +59,25 @@ function validateManifest(manifest) {
         return validatePathUrl(moduleUrl, MODULES_PREFIX, `modules[${index}]`);
     });
     const graphUrl = validatePathUrl(manifest.graphUrl, GRAPHS_PREFIX, "graphUrl");
+    const displayName = typeof manifest.displayName === "string" && manifest.displayName.length > 0
+        ? manifest.displayName
+        : "Unknown";
+    const backend = typeof manifest.backend === "string" && manifest.backend.length > 0
+        ? manifest.backend
+        : "unknown";
+    const expectedNodeTypes = manifest.expectedNodeTypes == null
+        ? []
+        : manifest.expectedNodeTypes;
+
+    if (!Array.isArray(expectedNodeTypes) || expectedNodeTypes.some((type) => typeof type !== "string")) {
+        throw new Error("Manifest expectedNodeTypes must be a string array when provided");
+    }
 
     return {
         version: manifest.version,
+        backend,
+        displayName,
+        expectedNodeTypes,
         modules,
         graphUrl,
     };
@@ -77,6 +100,17 @@ async function loadModules(modules) {
         await import(moduleUrl);
         addStatus(`Module loaded: ${moduleUrl}`, "success");
     }
+}
+
+function ensureExpectedNodeTypes(expectedNodeTypes) {
+    if (!expectedNodeTypes.length) {
+        return;
+    }
+    const missing = expectedNodeTypes.filter((type) => !LiteGraph.registered_node_types[type]);
+    if (missing.length) {
+        throw new Error(`Expected node types were not registered: ${missing.join(", ")}`);
+    }
+    addStatus(`Node registration verified: ${expectedNodeTypes.join(", ")}`, "success");
 }
 
 function loadGraph(graphUrl) {
@@ -113,9 +147,12 @@ async function reloadFromServer() {
 
     try {
         const manifest = validateManifest(await fetchManifest());
+        setTitle(manifest.displayName);
+        addStatus(`Backend detected: ${manifest.backend}`, "success");
         addStatus("Manifest fetched successfully", "success");
 
         await loadModules(manifest.modules);
+        ensureExpectedNodeTypes(manifest.expectedNodeTypes);
 
         editor.graph.stop();
         editor.graph.clear();

@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <title>LiteGraph - Server Nodes Demo</title>
-    <link rel="icon" href="./favicon.svg"/>
-    <link rel="stylesheet" type="text/css" href="../css/litegraph.css">
-    <link rel="stylesheet" type="text/css" href="../css/litegraph-editor.css">
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" href="/editor/favicon.svg"/>
+    <link rel="stylesheet" type="text/css" href="/css/litegraph.css">
+    <link rel="stylesheet" type="text/css" href="/css/litegraph-editor.css">
+    <link rel="stylesheet" type="text/css" href="/editor/style.css">
     <style>
         .server-demo-status {
             position: fixed;
@@ -70,7 +70,7 @@
 <body>
     <div class="server-demo-status">
         <div class="server-demo-status-header">
-            <strong>Server Nodes Loader</strong>
+            <strong id="server-demo-title">Server Nodes Loader</strong>
             <button id="reload-server-nodes" type="button">Reload from Server</button>
         </div>
         <ul id="server-demo-status-list" class="server-demo-status-list"></ul>
@@ -78,10 +78,10 @@
 
     <div id="main"></div>
 
-    <script type="module" src="../src/litegraph.js"></script>
-    <script type="module" src="../src/litegraph-editor.js"></script>
-    <script type="module" src="js/defaults.js"></script>
-    <script type="module" src="../src/nodes/base.js"></script>
-    <script type="module" src="js/server_nodes_from_server.js"></script>
+    <script type="module" src="/src/litegraph.js"></script>
+    <script type="module" src="/src/litegraph-editor.js"></script>
+    <script type="module" src="/editor/js/defaults.js"></script>
+    <script type="module" src="/src/nodes/base.js"></script>
+    <script type="module" src="/editor/js/server_nodes_from_server.js"></script>
 </body>
 </html>
