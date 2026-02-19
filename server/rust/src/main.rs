@@ -354,7 +354,6 @@ async fn main() {
             "/editor/js/server_nodes_from_server.js",
             get_service(ServeFile::new(shared_demo_editor_dir.join("js").join("server_nodes_from_server.js"))),
         )
-        .nest_service("/css", ServeDir::new(root.join("css")))
         .nest_service("/src", ServeDir::new(root.join("src")))
         .nest_service("/build", ServeDir::new(root.join("build")))
         .nest_service("/editor", ServeDir::new(root.join("editor")))

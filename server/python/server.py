@@ -44,7 +44,6 @@ MANIFEST = {
 }
 
 STATIC_MAPPINGS = (
-    ("/css/", REPO_ROOT / "css", False),
     ("/src/", REPO_ROOT / "src", False),
     ("/build/", REPO_ROOT / "build", False),
     ("/editor/", REPO_ROOT / "editor", True),

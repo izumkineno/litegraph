@@ -24,16 +24,12 @@ const bundles = [
 
 const resourcesToCopy = [
     {
-        from: "css",
+        from: "src/css",
         to: "resources/css",
     },
     {
         from: "editor/imgs",
         to: "resources/editor/imgs",
-    },
-    {
-        from: "nodes_data",
-        to: "resources/nodes_data",
     },
 ];
 

@@ -1,11 +1,11 @@
-var He = Object.defineProperty;
-var De = (n) => {
+var Ht = Object.defineProperty;
+var Dt = (n) => {
   throw TypeError(n);
 };
-var Ve = (n, t, r) => t in n ? He(n, t, { enumerable: !0, configurable: !0, writable: !0, value: r }) : n[t] = r;
-var g = (n, t, r) => Ve(n, typeof t != "symbol" ? t + "" : t, r), Xe = (n, t, r) => t.has(n) || De("Cannot " + r);
-var Se = (n, t, r) => t.has(n) ? De("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(n) : t.set(n, r);
-var oe = (n, t, r) => (Xe(n, t, "access private method"), r);
+var Vt = (n, t, r) => t in n ? Ht(n, t, { enumerable: !0, configurable: !0, writable: !0, value: r }) : n[t] = r;
+var g = (n, t, r) => Vt(n, typeof t != "symbol" ? t + "" : t, r), Xt = (n, t, r) => t.has(n) || Dt("Cannot " + r);
+var St = (n, t, r) => t.has(n) ? Dt("Cannot add the same private member more than once") : t instanceof WeakSet ? t.add(n) : t.set(n, r);
+var ot = (n, t, r) => (Xt(n, t, "access private method"), r);
 class LLink {
   /**
    * Create a link object.
@@ -41,7 +41,7 @@ class LLink {
     ];
   }
 }
-const wt = class wt {
+const we = class we {
   /**
    * @constructor
    * @param {Object} o data from previous serialization [optional]} o
@@ -56,7 +56,7 @@ const wt = class wt {
    */
   getSupportedTypes() {
     var t;
-    return (t = this.supported_types) != null ? t : wt.supported_types;
+    return (t = this.supported_types) != null ? t : we.supported_types;
   }
   /**
    * Removes all nodes from this graph
@@ -64,7 +64,7 @@ const wt = class wt {
    */
   clear() {
     var t;
-    this.stop(), this.status = wt.STATUS_STOPPED, this.last_node_id = 0, this.last_link_id = 0, this._version = -1, (t = this._nodes) == null || t.forEach((r) => {
+    this.stop(), this.status = we.STATUS_STOPPED, this.last_node_id = 0, this.last_link_id = 0, this._version = -1, (t = this._nodes) == null || t.forEach((r) => {
       var s;
       (s = r.onRemoved) == null || s.call(r);
     }), this._nodes = [], this._nodes_by_id = {}, this._nodes_in_order = [], this._nodes_executable = null, this._groups = [], this.links = {}, this.iteration = 0, this.config = {}, this.configApplyDefaults(), this.vars = {}, this.extra = {}, this.globaltime = 0, this.runningtime = 0, this.fixedtime = 0, this.fixedtime_lapse = 0.01, this.elapsed_time = 0.01, this.last_update_time = 0, this.starttime = 0, this.catch_errors = !0, this.history = {
@@ -119,9 +119,9 @@ const wt = class wt {
    */
   start(t = 0) {
     var s;
-    if (this.status === wt.STATUS_RUNNING)
+    if (this.status === we.STATUS_RUNNING)
       return;
-    this.status = wt.STATUS_RUNNING, (s = this.onPlayEvent) == null || s.call(this), this.sendEventToAllNodes("onStart"), this.starttime = LiteGraph.getTime(), this.last_update_time = this.starttime;
+    this.status = we.STATUS_RUNNING, (s = this.onPlayEvent) == null || s.call(this), this.sendEventToAllNodes("onStart"), this.starttime = LiteGraph.getTime(), this.last_update_time = this.starttime;
     const r = () => {
       var a, o;
       this.execution_timer_id === -1 && (window.requestAnimationFrame(r), (a = this.onBeforeStep) == null || a.call(this), this.runStep(1, !this.catch_errors), (o = this.onAfterStep) == null || o.call(this));
@@ -137,7 +137,7 @@ const wt = class wt {
    */
   stop() {
     var t;
-    this.status != wt.STATUS_STOPPED && (this.status = wt.STATUS_STOPPED, (t = this.onStopEvent) == null || t.call(this), this.execution_timer_id != null && (this.execution_timer_id != -1 && clearInterval(this.execution_timer_id), this.execution_timer_id = null), this.sendEventToAllNodes("onStop"));
+    this.status != we.STATUS_STOPPED && (this.status = we.STATUS_STOPPED, (t = this.onStopEvent) == null || t.call(this), this.execution_timer_id != null && (this.execution_timer_id != -1 && clearInterval(this.execution_timer_id), this.execution_timer_id = null), this.sendEventToAllNodes("onStop"));
   }
   /**
    * Run N steps (cycles) of the graph
@@ -941,8 +941,8 @@ const wt = class wt {
   }
 };
 // default supported types
-g(wt, "supported_types", ["number", "string", "boolean"]), g(wt, "STATUS_STOPPED", 1), g(wt, "STATUS_RUNNING", 2);
-let LGraph = wt;
+g(we, "supported_types", ["number", "string", "boolean"]), g(we, "STATUS_STOPPED", 1), g(we, "STATUS_RUNNING", 2);
+let LGraph = we;
 class LGraphNode {
   constructor(t = "Unnamed") {
     this.title = t, this.size = [LiteGraph.NODE_WIDTH, 60], this.graph = null, this._pos = new Float32Array(10, 10), LiteGraph.use_uuids ? this.id = LiteGraph.uuidv4() : this.id = -1, this.type = null, this.inputs = [], this.outputs = [], this.connections = [], this.properties = {}, this.properties_info = [], this.flags = {};
@@ -2564,7 +2564,7 @@ const _LGraphCanvas = class _LGraphCanvas {
     return n.button !== void 0 && (this.userInput_button = n.button, n.button), n.buttons !== void 0 && (this.userInput_button_s = n.buttons), this.userInput_touches = n.changedTouches !== void 0 && n.changedTouches.length !== void 0 ? n.changedTouches : !1, this.userInput_touches && this.userInput_touches.length && ((r = LiteGraph.debug) == null || r.call(LiteGraph, "check multiTouches", n.changedTouches)), this.processMouseDown(n);
   }
   processMouseDown(n) {
-    var X, F, V, $, U, H, z, K, tt;
+    var X, F, V, $, U, H, z, K, ee;
     if (this.set_canvas_dirty_on_mouse_event && (this.dirty_canvas = !0), !!this.graph) {
       this.adjustMouseEvent(n);
       var t = this.getCanvasWindow();
@@ -2714,7 +2714,7 @@ const _LGraphCanvas = class _LGraphCanvas {
               }
             } else !u && this.allow_dragcanvas && (this.dragging_canvas = !0);
           else (n.which == 3 || LiteGraph.two_fingers_opens_menu && this.userInput_isNotPrimary) && this.allow_interaction && !u && !this.read_only && (o && (Object.keys(this.selected_nodes).length && (this.selected_nodes[o.id] || n.shiftKey || n.ctrlKey || n.metaKey) ? this.selected_nodes[o.id] || this.selectNodes([o], !0) : this.selectNodes([o])), this.processContextMenu(o, n));
-          return this.last_mouse[0] = n.clientX, this.last_mouse[1] = n.clientY, this.last_mouseclick = LiteGraph.getTime(), this.last_mouse_dragging = !0, this.graph.change(), (!t.document.activeElement || t.document.activeElement.nodeName.toLowerCase() != "input" && t.document.activeElement.nodeName.toLowerCase() != "textarea") && n.preventDefault(), n.stopPropagation(), (tt = this.onMouseDown) == null || tt.call(this, n), !1;
+          return this.last_mouse[0] = n.clientX, this.last_mouse[1] = n.clientY, this.last_mouseclick = LiteGraph.getTime(), this.last_mouse_dragging = !0, this.graph.change(), (!t.document.activeElement || t.document.activeElement.nodeName.toLowerCase() != "input" && t.document.activeElement.nodeName.toLowerCase() != "textarea") && n.preventDefault(), n.stopPropagation(), (ee = this.onMouseDown) == null || ee.call(this, n), !1;
         }
       }
     }
@@ -5053,11 +5053,11 @@ const _LGraphCanvas = class _LGraphCanvas {
             V(M[$]);
       } else {
         let H = function(z, K = {}) {
-          var tt = {
+          var ee = {
             skipFilter: !1,
             inTypeOverride: !1,
             outTypeOverride: !1
-          }, W = Object.assign(tt, K), Q = LiteGraph.registered_node_types[z];
+          }, W = Object.assign(ee, K), Q = LiteGraph.registered_node_types[z];
           if (A && Q.filter != A || (!t.show_all_if_empty || D) && z.toLowerCase().indexOf(D) === -1)
             return !1;
           if (t.do_type_filter && !W.skipFilter) {
@@ -5969,8 +5969,8 @@ class DragAndScale {
     this.scale = 1, this.offset[0] = 0, this.offset[1] = 0;
   }
 }
-var gt, Pe, Be, ke, Ue, $e, ze;
-const Te = class Te {
+var ge, Pt, Bt, kt, Ut, $t, zt;
+const Tt = class Tt {
   /**
   * @constructor
   * @param {Array<Object>} values (allows object { title: "Nice text", callback: function ... })
@@ -5983,9 +5983,9 @@ const Te = class Te {
   *   Rendering notes: This is only relevant to rendered graphs, and is rendered using HTML+CSS+JS.
   */
   constructor(t, r = {}) {
-    Se(this, gt);
+    St(this, ge);
     var s;
-    this.options = r, (s = r.scroll_speed) != null || (r.scroll_speed = 0.1), this.menu_elements = [], oe(this, gt, ke).call(this), oe(this, gt, Ue).call(this), oe(this, gt, Pe).call(this), oe(this, gt, Be).call(this), this.setTitle(this.options.title), this.addItems(t), oe(this, gt, $e).call(this), oe(this, gt, ze).call(this);
+    this.options = r, (s = r.scroll_speed) != null || (r.scroll_speed = 0.1), this.menu_elements = [], ot(this, ge, kt).call(this), ot(this, ge, Ut).call(this), ot(this, ge, Pt).call(this), ot(this, ge, Bt).call(this), this.setTitle(this.options.title), this.addItems(t), ot(this, ge, $t).call(this), ot(this, ge, zt).call(this);
   }
   /**
    * Creates a title element if it doesn't have one.
@@ -6061,7 +6061,7 @@ const Te = class Te {
       let a = document;
       a.removeEventListener("keydown", this.root.f_textfilter, !0), a.removeEventListener("keydown", this.root.f_textfilter, !1), t && t.target && (a = t.target.ownerDocument), a || (a = document), a.removeEventListener("keydown", this.root.f_textfilter, !0), a.removeEventListener("keydown", this.root.f_textfilter, !1);
     }
-    this.parentMenu && !r && (this.parentMenu.lock = !1, this.parentMenu.current_submenu = null, t === void 0 ? this.parentMenu.close() : t && !Te.isCursorOverElement(t, this.parentMenu.root) && Te.trigger(this.parentMenu.root, "pointerleave", t)), (s = this.current_submenu) == null || s.close(t, !0), this.root.closing_timer && clearTimeout(this.root.closing_timer), this.root.parentNode && this.root.parentNode.removeChild(this.root);
+    this.parentMenu && !r && (this.parentMenu.lock = !1, this.parentMenu.current_submenu = null, t === void 0 ? this.parentMenu.close() : t && !Tt.isCursorOverElement(t, this.parentMenu.root) && Tt.trigger(this.parentMenu.root, "pointerleave", t)), (s = this.current_submenu) == null || s.close(t, !0), this.root.closing_timer && clearTimeout(this.root.closing_timer), this.root.parentNode && this.root.parentNode.removeChild(this.root);
   }
   /**
    * Triggers an event on the specified element with the given event name and parameters.
@@ -6093,10 +6093,10 @@ const Te = class Te {
     return LiteGraph.isInsideRectangle(t.clientX, t.clientY, r.left, r.top, r.width, r.height);
   }
 };
-gt = new WeakSet(), Pe = function() {
+ge = new WeakSet(), Pt = function() {
   const t = this.root = document.createElement("div");
   return this.options.className && (t.className = this.options.className), t.classList.add("litegraph", "litecontextmenu", "litemenubar-panel"), t.style.minWidth = "80px", t.style.minHeight = "10px", t;
-}, Be = function() {
+}, Bt = function() {
   const t = this.root;
   t.style.pointerEvents = "none", setTimeout(() => {
     t.style.pointerEvents = "auto";
@@ -6109,7 +6109,7 @@ gt = new WeakSet(), Pe = function() {
   }), t.addEventListener("pointerenter", (r) => {
     t.closing_timer && clearTimeout(t.closing_timer);
   });
-}, ke = function() {
+}, kt = function() {
   var r;
   const t = this.options.parentMenu;
   if (t) {
@@ -6119,13 +6119,13 @@ gt = new WeakSet(), Pe = function() {
     }
     this.parentMenu = t, this.parentMenu.lock = !0, this.parentMenu.current_submenu = this;
   }
-}, Ue = function() {
+}, Ut = function() {
   var r;
   if (!this.options.event)
     return;
   const t = this.options.event.constructor.name;
   t !== "MouseEvent" && t !== "CustomEvent" && t !== "PointerEvent" && ((r = LiteGraph.error) == null || r.call(LiteGraph, `Event passed to ContextMenu is not of type MouseEvent or CustomEvent. Ignoring it. (${t})`), this.options.event = null);
-}, $e = function() {
+}, $t = function() {
   var o, u, h, l;
   const t = (u = (o = this.options.event) == null ? void 0 : o.target.ownerDocument) != null ? u : document, r = (h = t.fullscreenElement) != null ? h : t.body, s = this.root, a = this;
   LiteGraph.context_menu_filter_enabled && (t ? (s.f_textfilter && (t.removeEventListener("keydown", s.f_textfilter, !1), t.removeEventListener("keydown", s.f_textfilter, !0), s.f_textfilter = !1), s.f_textfilter = function(c) {
@@ -6208,7 +6208,7 @@ gt = new WeakSet(), Pe = function() {
     s.f_textfilter,
     !0
   )) : (l = LiteGraph.warn) == null || l.call(LiteGraph, "NO root document to add context menu and event", t, options)), r.appendChild(this.root);
-}, ze = function() {
+}, zt = function() {
   var o;
   const t = this.options, r = this.root;
   let s = t.left || 0, a = t.top || 0;
@@ -6225,14 +6225,14 @@ gt = new WeakSet(), Pe = function() {
  * Closes all open ContextMenus in the specified window.
  * @param {Window} [ref_window=window] - The window object to search for open menus.
  */
-g(Te, "closeAll", (t = window) => {
+g(Tt, "closeAll", (t = window) => {
   const r = t.document.querySelectorAll(".litecontextmenu");
   r.length && r.forEach((s) => {
     var a;
     s.close ? s.close() : (a = s.parentNode) == null || a.removeChild(s);
   });
 });
-let ContextMenu = Te;
+let ContextMenu = Tt;
 var LiteGraph = new class {
   constructor() {
     g(this, "extendClass", (n, t) => {
@@ -6251,14 +6251,36 @@ var LiteGraph = new class {
     // used to create nodes from wrapping functions
     g(this, "getParameterNames", (n) => (n + "").replace(/[/][/].*$/gm, "").replace(/\s+/g, "").replace(/[/][*][^/*]*[*][/]/g, "").split("){", 1)[0].replace(/^[^(]*[(]/, "").replace(/=[^,]+/g, "").split(",").filter(Boolean));
     g(this, "clamp", (n, t, r) => t > n ? t : r < n ? r : n);
-    // @BUG: Re-add these
-    g(this, "pointerAddListener", () => {
-      var n;
-      (n = console.error) == null || n.call(console, "Removed and being re-integrated sorta");
+    g(this, "pointer_to_mouse_events", Object.freeze({
+      pointerdown: "mousedown",
+      pointermove: "mousemove",
+      pointerup: "mouseup",
+      pointercancel: "mouseup",
+      pointerover: "mouseover",
+      pointerout: "mouseout",
+      pointerenter: "mouseenter",
+      pointerleave: "mouseleave"
+    }));
+    g(this, "mouse_to_pointer_events", Object.freeze({
+      mousedown: "pointerdown",
+      mousemove: "pointermove",
+      mouseup: "pointerup",
+      mouseover: "pointerover",
+      mouseout: "pointerout",
+      mouseenter: "pointerenter",
+      mouseleave: "pointerleave"
+    }));
+    g(this, "pointerAddListener", (n, t, r, s) => {
+      if (!(n != null && n.addEventListener) || typeof r != "function")
+        return !1;
+      const a = this.resolvePointerEventName(t);
+      return n.addEventListener(a, r, s), !0;
     });
-    g(this, "pointerRemoveListener", () => {
-      var n;
-      (n = console.error) == null || n.call(console, "Removed and being re-integrated sorta");
+    g(this, "pointerRemoveListener", (n, t, r, s) => {
+      if (!(n != null && n.removeEventListener) || typeof r != "function")
+        return !1;
+      const a = this.resolvePointerEventName(t);
+      return n.removeEventListener(a, r, s), !0;
     });
     g(this, "closeAllContextMenus", () => {
       LiteGraph.warn("LiteGraph.closeAllContextMenus is deprecated in favor of ContextMenu.closeAll()"), ContextMenu.closeAll();
@@ -6729,13 +6751,22 @@ var LiteGraph = new class {
       s = n[o] / 16, a = n[o] % 16, r += t.charAt(s) + t.charAt(a);
     return r;
   }
+  resolvePointerEventName(n) {
+    if (typeof n != "string")
+      return n;
+    const t = n.toLowerCase(), r = this.pointerevents_method;
+    return r === "mouse" ? this.pointer_to_mouse_events[t] || t : r === "pointer" && this.mouse_to_pointer_events[t] || t;
+  }
   set pointerevents_method(n) {
-    var t;
-    (t = console.error) == null || t.call(console, "Removed and being re-integrated sorta");
+    const t = typeof n == "string" ? n.toLowerCase() : "";
+    if (t === "mouse" || t === "pointer") {
+      this._pointerevents_method = t;
+      return;
+    }
+    this._pointerevents_method = "pointer";
   }
   get pointerevents_method() {
-    var n;
-    (n = console.error) == null || n.call(console, "Removed and being re-integrated sorta");
+    return this._pointerevents_method || "pointer";
   }
 }();
 typeof performance != "undefined" ? LiteGraph.getTime = performance.now.bind(performance) : typeof Date != "undefined" && Date.now ? LiteGraph.getTime = Date.now.bind(Date) : typeof process != "undefined" ? LiteGraph.getTime = () => {
@@ -7444,9 +7475,9 @@ class MergeObjects {
 }
 g(MergeObjects, "title", "Merge Objects"), g(MergeObjects, "desc", "Creates an object copying properties from others");
 LiteGraph.registerNodeType("basic/merge_objects", MergeObjects);
-const ue = class ue {
+const ut = class ut {
   constructor() {
-    this.size = [60, 30], this.addInput("in"), this.addOutput("out"), this.properties = { varname: "myname", container: ue.LITEGRAPH }, this.value = null;
+    this.size = [60, 30], this.addInput("in"), this.addOutput("out"), this.properties = { varname: "myname", container: ut.LITEGRAPH }, this.value = null;
   }
   onExecute() {
     var t = this.getContainer();
@@ -7458,9 +7489,9 @@ const ue = class ue {
   }
   getContainer() {
     switch (this.properties.container) {
-      case ue.GRAPH:
+      case ut.GRAPH:
         return this.graph ? this.graph.vars : {};
-      case ue.GLOBALSCOPE:
+      case ut.GLOBALSCOPE:
         return global;
       // @BUG: not sure what to do with this now
       default:
@@ -7471,8 +7502,8 @@ const ue = class ue {
     return this.properties.varname;
   }
 };
-g(ue, "title", "Variable"), g(ue, "desc", "store/read variable value");
-let Variable = ue;
+g(ut, "title", "Variable"), g(ut, "desc", "store/read variable value");
+let Variable = ut;
 Variable.LITEGRAPH = 0;
 Variable.GRAPH = 1;
 Variable.GLOBALSCOPE = 2;
@@ -7530,7 +7561,7 @@ class DownloadData {
 }
 g(DownloadData, "title", "Download"), g(DownloadData, "desc", "Download some data");
 LiteGraph.registerNodeType("basic/download", DownloadData);
-const ge = class ge {
+const gt = class gt {
   constructor() {
     this.size = [60, 30], this.addInput("value", 0, { label: "" }), this.value = 0;
   }
@@ -7547,17 +7578,17 @@ const ge = class ge {
       return t.toFixed(3);
     if (t.constructor === Array) {
       for (var r = "[", s = 0; s < t.length; ++s)
-        r += ge.toString(t[s]) + (s + 1 != t.length ? "," : "");
+        r += gt.toString(t[s]) + (s + 1 != t.length ? "," : "");
       return r += "]", r;
     } else
       return String(t);
   }
   onDrawBackground() {
-    this.inputs[0].label = ge.toString(this.value);
+    this.inputs[0].label = gt.toString(this.value);
   }
 };
-g(ge, "title", "Watch"), g(ge, "desc", "Show value of input");
-let Watch = ge;
+g(gt, "title", "Watch"), g(gt, "desc", "Show value of input");
+let Watch = gt;
 LiteGraph.registerNodeType("basic/watch", Watch);
 class Cast {
   constructor() {
@@ -7662,11 +7693,11 @@ class NodeScript {
 }
 g(NodeScript, "title", "Script"), g(NodeScript, "desc", "executes a code (max 256 characters)"), g(NodeScript, "widgets_info", { onExecute: { type: "code" } });
 LiteGraph.registerNodeType("basic/script", NodeScript);
-const kt = class kt {
+const ke = class ke {
   constructor() {
-    this.addInput("A", 0), this.addInput("B", 0), this.addOutput("true", "boolean"), this.addOutput("false", "boolean"), this.addProperty("A", 1), this.addProperty("B", 1), this.addProperty("OP", "==", "enum", { values: kt.values }), this.addWidget("combo", "Op.", this.properties.OP, {
+    this.addInput("A", 0), this.addInput("B", 0), this.addOutput("true", "boolean"), this.addOutput("false", "boolean"), this.addProperty("A", 1), this.addProperty("B", 1), this.addProperty("OP", "==", "enum", { values: ke.values }), this.addWidget("combo", "Op.", this.properties.OP, {
       property: "OP",
-      values: kt.values
+      values: ke.values
     }), this.size = [80, 60];
   }
   getTitle() {
@@ -7706,13 +7737,13 @@ const kt = class kt {
     this.setOutputData(0, s), this.setOutputData(1, !s);
   }
 };
-g(kt, "title", "Compare *"), g(kt, "desc", "evaluates condition between A and B"), g(kt, "values", ["==", "!="]), // [">", "<", "==", "!=", "<=", ">=", "||", "&&" ];
-g(kt, "@OP", {
+g(ke, "title", "Compare *"), g(ke, "desc", "evaluates condition between A and B"), g(ke, "values", ["==", "!="]), // [">", "<", "==", "!=", "<=", ">=", "||", "&&" ];
+g(ke, "@OP", {
   type: "enum",
   title: "operation",
-  values: kt.values
+  values: ke.values
 });
-let GenericCompare = kt;
+let GenericCompare = ke;
 LiteGraph.registerNodeType("basic/CompareValues", GenericCompare);
 class LogEvent {
   constructor() {
@@ -7741,8 +7772,8 @@ class TriggerEvent {
 }
 g(TriggerEvent, "title", "TriggerEvent"), g(TriggerEvent, "desc", "Triggers event if input evaluates to true");
 LiteGraph.registerNodeType("events/trigger", TriggerEvent);
-var Ge;
-let Sequence$1 = (Ge = class {
+var Gt;
+let Sequence$1 = (Gt = class {
   // @ BUG: fails to construct Node
   constructor() {
     var t = this;
@@ -7760,7 +7791,7 @@ let Sequence$1 = (Ge = class {
         s.action_call ? s.action_call = s.action_call + "_seq_" + a : s.action_call = this.id + "_" + (t || "action") + "_seq_" + a + "_" + Math.floor(Math.random() * 9999), this.triggerSlot(a, r, null, s);
     }
   }
-}, g(Ge, "title", "Sequence"), g(Ge, "desc", "Triggers a sequence of events when an event arrives"), Ge);
+}, g(Gt, "title", "Sequence"), g(Gt, "desc", "Triggers a sequence of events when an event arrives"), Gt);
 LiteGraph.registerNodeType("events/sequence", Sequence$1);
 class WaitAll {
   constructor() {
@@ -7917,7 +7948,7 @@ class DelayEvent {
 }
 g(DelayEvent, "title", "Delay"), g(DelayEvent, "desc", "Delays one event");
 LiteGraph.registerNodeType("events/delay", DelayEvent);
-const _e = class _e {
+const _t = class _t {
   constructor() {
     this.addProperty("interval", 1e3), this.addProperty("event", "tick"), this.addOutput("on_tick", LiteGraph.EVENT), this.time = 0, this.last_interval = 1e3, this.triggered = !1;
   }
@@ -7928,7 +7959,7 @@ const _e = class _e {
     return "Timer: " + this.last_interval.toString() + "ms";
   }
   onDrawBackground() {
-    this.boxcolor = this.triggered ? _e.on_color : _e.off_color, this.triggered = !1;
+    this.boxcolor = this.triggered ? _t.on_color : _t.off_color, this.triggered = !1;
   }
   onExecute() {
     var t = this.graph.elapsed_time * 1e3, r = this.time == 0;
@@ -7945,8 +7976,8 @@ const _e = class _e {
     return [["tick", "boolean"]];
   }
 };
-g(_e, "title", "Timer"), g(_e, "desc", "Sends an event every N milliseconds");
-let TimerEvent = _e;
+g(_t, "title", "Timer"), g(_t, "desc", "Sends an event every N milliseconds");
+let TimerEvent = _t;
 TimerEvent.on_color = "#AAA";
 TimerEvent.off_color = "#222";
 LiteGraph.registerNodeType("events/timer", TimerEvent);
@@ -8001,7 +8032,7 @@ class DataStore {
 }
 g(DataStore, "title", "Data Store"), g(DataStore, "desc", "Stores data and only changes when event is received");
 LiteGraph.registerNodeType("basic/data_store", DataStore);
-const me = class me {
+const mt = class mt {
   constructor() {
     this.addOutput("", LiteGraph.EVENT), this.addOutput("", "boolean"), this.addProperty("text", "DO"), this.addProperty("font_size", 30), this.addProperty("message", ""), this.size = [84, 84], this.clicked = !1;
   }
@@ -8025,7 +8056,7 @@ const me = class me {
         this.size[1] - r * 2
       ), this.properties.text || this.properties.text === 0) {
         var s = this.properties.font_size || 30;
-        t.textAlign = "center", t.fillStyle = this.clicked ? "black" : "white", t.font = s + "px " + me.font, t.fillText(
+        t.textAlign = "center", t.fillStyle = this.clicked ? "black" : "white", t.font = s + "px " + mt.font, t.fillText(
           this.properties.text,
           this.size[0] * 0.5,
           this.size[1] * 0.5 + s * 0.3
@@ -8044,8 +8075,8 @@ const me = class me {
     this.clicked = !1;
   }
 };
-g(me, "title", "Button"), g(me, "desc", "Triggers an event"), g(me, "font", "Arial");
-let WidgetButton = me;
+g(mt, "title", "Button"), g(mt, "desc", "Triggers an event"), g(mt, "font", "Arial");
+let WidgetButton = mt;
 LiteGraph.registerNodeType("widget/button", WidgetButton);
 class WidgetToggle {
   constructor() {
@@ -8078,13 +8109,13 @@ class WidgetToggle {
 }
 g(WidgetToggle, "title", "Toggle"), g(WidgetToggle, "desc", "Toggles between true or false");
 LiteGraph.registerNodeType("widget/toggle", WidgetToggle);
-const Kt = class Kt {
+const Ke = class Ke {
   constructor() {
     this.addOutput("", "number"), this.size = [80, 60], this.properties = { min: -1e3, max: 1e3, value: 1, step: 1 }, this.old_y = -1, this._remainder = 0, this._precision = 0, this.mouse_captured = !1;
   }
   onDrawForeground(t) {
     var r = this.size[0] * 0.5, s = this.size[1];
-    s > 30 ? (t.fillStyle = Kt.markers_color, t.beginPath(), t.moveTo(r, s * 0.1), t.lineTo(r + s * 0.1, s * 0.2), t.lineTo(r + s * -0.1, s * 0.2), t.fill(), t.beginPath(), t.moveTo(r, s * 0.9), t.lineTo(r + s * 0.1, s * 0.8), t.lineTo(r + s * -0.1, s * 0.8), t.fill(), t.font = (s * 0.7).toFixed(1) + "px Arial") : t.font = (s * 0.8).toFixed(1) + "px Arial", t.textAlign = "center", t.font = (s * 0.7).toFixed(1) + "px Arial", t.fillStyle = "#EEE", t.fillText(this.properties.value.toFixed(this._precision), r, s * 0.75);
+    s > 30 ? (t.fillStyle = Ke.markers_color, t.beginPath(), t.moveTo(r, s * 0.1), t.lineTo(r + s * 0.1, s * 0.2), t.lineTo(r + s * -0.1, s * 0.2), t.fill(), t.beginPath(), t.moveTo(r, s * 0.9), t.lineTo(r + s * 0.1, s * 0.8), t.lineTo(r + s * -0.1, s * 0.8), t.fill(), t.font = (s * 0.7).toFixed(1) + "px Arial") : t.font = (s * 0.8).toFixed(1) + "px Arial", t.textAlign = "center", t.font = (s * 0.7).toFixed(1) + "px Arial", t.fillStyle = "#EEE", t.fillText(this.properties.value.toFixed(this._precision), r, s * 0.75);
   }
   onExecute() {
     this.setOutputData(0, this.properties.value);
@@ -8101,7 +8132,7 @@ const Kt = class Kt {
     if (this.mouse_captured) {
       var r = this.old_y - t.canvasY;
       t.shiftKey && (r *= 10), (t.metaKey || t.altKey) && (r *= 0.1), this.old_y = t.canvasY;
-      var s = this._remainder + r / Kt.pixels_threshold;
+      var s = this._remainder + r / Ke.pixels_threshold;
       this._remainder = s % 1, s = s | 0;
       var a = LiteGraph.clamp(
         this.properties.value + s * this.properties.step,
@@ -8123,8 +8154,8 @@ const Kt = class Kt {
     this.mouse_captured && (this.mouse_captured = !1, this.captureInput(!1));
   }
 };
-g(Kt, "title", "Number"), g(Kt, "desc", "Widget to select number value"), g(Kt, "pixels_threshold", 10), g(Kt, "markers_color", "#666");
-let WidgetNumber = Kt;
+g(Ke, "title", "Number"), g(Ke, "desc", "Widget to select number value"), g(Ke, "pixels_threshold", 10), g(Ke, "markers_color", "#666");
+let WidgetNumber = Ke;
 LiteGraph.registerNodeType("widget/number", WidgetNumber);
 class WidgetCombo {
   constructor() {
@@ -8363,7 +8394,7 @@ class WidgetPanel {
 }
 g(WidgetPanel, "title", "Panel"), g(WidgetPanel, "desc", "Non interactive panel");
 LiteGraph.registerNodeType("widget/panel", WidgetPanel);
-const at = class at {
+const ae = class ae {
   constructor() {
     this.addOutput("left_x_axis", "number"), this.addOutput("left_y_axis", "number"), this.addOutput("button_pressed", LiteGraph.EVENT), this.properties = { gamepad_index: 0, threshold: 0.1 }, this._left_axis = new Float32Array(2), this._right_axis = new Float32Array(2), this._triggers = new Float32Array(2), this._previous_buttons = new Uint8Array(17), this._current_buttons = new Uint8Array(17);
   }
@@ -8425,16 +8456,16 @@ const at = class at {
                 o = t.xbox.buttons.rs ? 1 : 0;
                 break;
               case "hat_left":
-                o = t.xbox.hatmap & at.LEFT;
+                o = t.xbox.hatmap & ae.LEFT;
                 break;
               case "hat_right":
-                o = t.xbox.hatmap & at.RIGHT;
+                o = t.xbox.hatmap & ae.RIGHT;
                 break;
               case "hat_up":
-                o = t.xbox.hatmap & at.UP;
+                o = t.xbox.hatmap & ae.UP;
                 break;
               case "hat_down":
-                o = t.xbox.hatmap & at.DOWN;
+                o = t.xbox.hatmap & ae.DOWN;
                 break;
               case "hat":
                 o = t.xbox.hatmap;
@@ -8447,7 +8478,7 @@ const at = class at {
                 break;
               case "button_pressed":
                 for (var u = 0; u < this._current_buttons.length; ++u)
-                  this._current_buttons[u] && !this._previous_buttons[u] && this.triggerSlot(s, at.buttons[u]);
+                  this._current_buttons[u] && !this._previous_buttons[u] && this.triggerSlot(s, ae.buttons[u]);
                 break;
             }
           else
@@ -8456,7 +8487,7 @@ const at = class at {
                 break;
               case "left_axis":
               case "right_axis":
-                o = at.zero;
+                o = ae.zero;
                 break;
               default:
                 o = 0;
@@ -8479,24 +8510,24 @@ const at = class at {
           axes: [],
           buttons: {},
           hat: "",
-          hatmap: at.CENTER
-        }), o.axes.lx = s.axes[0], o.axes.ly = s.axes[1], o.axes.rx = s.axes[2], o.axes.ry = s.axes[3], o.axes.ltrigger = s.buttons[6].value, o.axes.rtrigger = s.buttons[7].value, o.hat = "", o.hatmap = at.CENTER;
+          hatmap: ae.CENTER
+        }), o.axes.lx = s.axes[0], o.axes.ly = s.axes[1], o.axes.rx = s.axes[2], o.axes.ry = s.axes[3], o.axes.ltrigger = s.buttons[6].value, o.axes.rtrigger = s.buttons[7].value, o.hat = "", o.hatmap = ae.CENTER;
         for (var u = 0; u < s.buttons.length; u++)
           if (this._current_buttons[u] = s.buttons[u].pressed, u < 12)
-            o.buttons[at.mapping_array[u]] = s.buttons[u].pressed, s.buttons[u].was_pressed && this.trigger(at.mapping_array[u] + "_button_event");
+            o.buttons[ae.mapping_array[u]] = s.buttons[u].pressed, s.buttons[u].was_pressed && this.trigger(ae.mapping_array[u] + "_button_event");
           else
             switch (u) {
               case 12:
-                s.buttons[u].pressed && (o.hat += "up", o.hatmap |= at.UP);
+                s.buttons[u].pressed && (o.hat += "up", o.hatmap |= ae.UP);
                 break;
               case 13:
-                s.buttons[u].pressed && (o.hat += "down", o.hatmap |= at.DOWN);
+                s.buttons[u].pressed && (o.hat += "down", o.hatmap |= ae.DOWN);
                 break;
               case 14:
-                s.buttons[u].pressed && (o.hat += "left", o.hatmap |= at.LEFT);
+                s.buttons[u].pressed && (o.hat += "left", o.hatmap |= ae.LEFT);
                 break;
               case 15:
-                s.buttons[u].pressed && (o.hat += "right", o.hatmap |= at.RIGHT);
+                s.buttons[u].pressed && (o.hat += "right", o.hatmap |= ae.RIGHT);
                 break;
               case 16:
                 o.buttons.home = s.buttons[u].pressed;
@@ -8564,7 +8595,7 @@ const at = class at {
     ];
   }
 };
-g(at, "title", "Gamepad"), g(at, "desc", "gets the input of the gamepad"), g(at, "zero", new Float32Array(2)), g(at, "buttons", [
+g(ae, "title", "Gamepad"), g(ae, "desc", "gets the input of the gamepad"), g(ae, "zero", new Float32Array(2)), g(ae, "buttons", [
   "a",
   "b",
   "x",
@@ -8578,7 +8609,7 @@ g(at, "title", "Gamepad"), g(at, "desc", "gets the input of the gamepad"), g(at,
   "ls",
   "rs",
   "home"
-]), g(at, "mapping", {
+]), g(ae, "mapping", {
   a: 0,
   b: 1,
   x: 2,
@@ -8591,7 +8622,7 @@ g(at, "title", "Gamepad"), g(at, "desc", "gets the input of the gamepad"), g(at,
   start: 9,
   ls: 10,
   rs: 11
-}), g(at, "mapping_array", [
+}), g(ae, "mapping_array", [
   "a",
   "b",
   "x",
@@ -8605,7 +8636,7 @@ g(at, "title", "Gamepad"), g(at, "desc", "gets the input of the gamepad"), g(at,
   "ls",
   "rs"
 ]);
-let GamepadInput = at;
+let GamepadInput = ae;
 GamepadInput.CENTER = 0;
 GamepadInput.LEFT = 1;
 GamepadInput.RIGHT = 2;
@@ -8744,26 +8775,26 @@ class MathRand {
 }
 g(MathRand, "title", "Rand"), g(MathRand, "desc", "Random number");
 LiteGraph.registerNodeType("math/rand", MathRand);
-const Et = class Et {
+const Ee = class Ee {
   constructor() {
     this.addInput("in", "number"), this.addOutput("out", "number"), this.addProperty("min", 0), this.addProperty("max", 1), this.addProperty("smooth", !0), this.addProperty("seed", 0), this.addProperty("octaves", 1), this.addProperty("persistence", 0.8), this.addProperty("speed", 1), this.size = [90, 30];
   }
   static getValue(t, r) {
-    if (!Et.data) {
-      Et.data = new Float32Array(1024);
-      for (var s = 0; s < Et.data.length; ++s)
-        Et.data[s] = Math.random();
+    if (!Ee.data) {
+      Ee.data = new Float32Array(1024);
+      for (var s = 0; s < Ee.data.length; ++s)
+        Ee.data[s] = Math.random();
     }
     t = t % 1024, t < 0 && (t += 1024);
     var a = Math.floor(t);
     t -= a;
-    var o = Et.data[a], u = Et.data[a == 1023 ? 0 : a + 1];
+    var o = Ee.data[a], u = Ee.data[a == 1023 ? 0 : a + 1];
     return r && (t = t * t * t * (t * (t * 6 - 15) + 10)), o * (1 - t) + u * t;
   }
   onExecute() {
     var t = this.getInputData(0) || 0, r = this.properties.octaves || 1, s = 0, a = 1, o = this.properties.seed || 0;
     t += o;
-    for (var u = this.properties.speed || 1, h = 0, l = 0; l < r && (s += Et.getValue(t * (1 + l) * u, this.properties.smooth) * a, h += a, a *= this.properties.persistence, !(a < 1e-3)); ++l)
+    for (var u = this.properties.speed || 1, h = 0, l = 0; l < r && (s += Ee.getValue(t * (1 + l) * u, this.properties.smooth) * a, h += a, a *= this.properties.persistence, !(a < 1e-3)); ++l)
       ;
     s /= h;
     var c = this.properties.min, d = this.properties.max;
@@ -8773,8 +8804,8 @@ const Et = class Et {
     this.outputs[0].label = (this._last_v || 0).toFixed(3);
   }
 };
-g(Et, "title", "Noise"), g(Et, "desc", "Random number with temporal continuity"), g(Et, "data", null);
-let MathNoise = Et;
+g(Ee, "title", "Noise"), g(Ee, "desc", "Random number with temporal continuity"), g(Ee, "data", null);
+let MathNoise = Ee;
 LiteGraph.registerNodeType("math/noise", MathNoise);
 class MathSpikes {
   constructor() {
@@ -8932,9 +8963,9 @@ class MathTendTo {
 }
 g(MathTendTo, "title", "TendTo"), g(MathTendTo, "desc", "moves the output value always closer to the input");
 LiteGraph.registerNodeType("math/tendTo", MathTendTo);
-const _t = class _t {
+const _e = class _e {
   constructor() {
-    this.addInput("A", "number,array,object"), this.addInput("B", "number"), this.addOutput("=", "number"), this.addProperty("A", 1), this.addProperty("B", 1), this.addProperty("OP", "+", "enum", { values: _t.values }), this._func = _t.funcs[this.properties.OP], this._result = [];
+    this.addInput("A", "number,array,object"), this.addInput("B", "number"), this.addOutput("=", "number"), this.addProperty("A", 1), this.addProperty("B", 1), this.addProperty("OP", "+", "enum", { values: _e.values }), this._func = _e.funcs[this.properties.OP], this._result = [];
   }
   getTitle() {
     return this.properties.OP == "max" || this.properties.OP == "min" ? this.properties.OP + "(A,B)" : "A " + this.properties.OP + " B";
@@ -8944,14 +8975,14 @@ const _t = class _t {
   }
   onPropertyChanged(t, r) {
     var s;
-    t == "OP" && (this._func = _t.funcs[this.properties.OP], this._func || ((s = console.warn) == null || s.call(console, "Unknown operation: " + this.properties.OP), this._func = function(a) {
+    t == "OP" && (this._func = _e.funcs[this.properties.OP], this._func || ((s = console.warn) == null || s.call(console, "Unknown operation: " + this.properties.OP), this._func = function(a) {
       return a;
     }));
   }
   onExecute() {
     var t = this.getInputData(0), r = this.getInputData(1);
     t != null ? t.constructor === Number && (this.properties.A = t) : t = this.properties.A, r != null ? this.properties.B = r : r = this.properties.B;
-    var s = _t.funcs[this.properties.OP], a;
+    var s = _e.funcs[this.properties.OP], a;
     if (t.constructor === Number)
       a = 0, a = s(t, r);
     else if (t.constructor === Array) {
@@ -8973,7 +9004,7 @@ const _t = class _t {
     ), t.textAlign = "left");
   }
 };
-g(_t, "title", "Operation"), g(_t, "desc", "Easy math operators"), g(_t, "values", ["+", "-", "*", "/", "%", "^", "max", "min"]), g(_t, "funcs", {
+g(_e, "title", "Operation"), g(_e, "desc", "Easy math operators"), g(_e, "values", ["+", "-", "*", "/", "%", "^", "max", "min"]), g(_e, "funcs", {
   "+": function(t, r) {
     return t + r;
   },
@@ -9004,12 +9035,12 @@ g(_t, "title", "Operation"), g(_t, "desc", "Easy math operators"), g(_t, "values
   min: function(t, r) {
     return Math.min(t, r);
   }
-}), g(_t, "@OP", {
+}), g(_e, "@OP", {
   type: "enum",
   title: "operation",
-  values: _t.values
-}), g(_t, "size", [100, 60]);
-let MathOperation = _t;
+  values: _e.values
+}), g(_e, "size", [100, 60]);
+let MathOperation = _e;
 LiteGraph.registerNodeType("math/operation", MathOperation);
 LiteGraph.registerSearchboxExtra("math/operation", "MAX", {
   properties: { OP: "max" },
@@ -9091,11 +9122,11 @@ LiteGraph.registerSearchboxExtra("math/compare", "<=", {
   outputs: [["A<=B", "boolean"]],
   title: "A<=B"
 });
-const Ut = class Ut {
+const Ue = class Ue {
   constructor() {
-    this.addInput("A", "number"), this.addInput("B", "number"), this.addOutput("true", "boolean"), this.addOutput("false", "boolean"), this.addProperty("A", 1), this.addProperty("B", 1), this.addProperty("OP", ">", "enum", { values: Ut.values }), this.addWidget("combo", "Cond.", this.properties.OP, {
+    this.addInput("A", "number"), this.addInput("B", "number"), this.addOutput("true", "boolean"), this.addOutput("false", "boolean"), this.addProperty("A", 1), this.addProperty("B", 1), this.addProperty("OP", ">", "enum", { values: Ue.values }), this.addWidget("combo", "Cond.", this.properties.OP, {
       property: "OP",
-      values: Ut.values
+      values: Ue.values
     }), this.size = [80, 60];
   }
   getTitle() {
@@ -9136,12 +9167,12 @@ const Ut = class Ut {
     this.setOutputData(0, s), this.setOutputData(1, !s);
   }
 };
-g(Ut, "title", "Condition"), g(Ut, "desc", "evaluates condition between A and B"), g(Ut, "values", [">", "<", "==", "!=", "<=", ">=", "||", "&&"]), g(Ut, "@OP", {
+g(Ue, "title", "Condition"), g(Ue, "desc", "evaluates condition between A and B"), g(Ue, "values", [">", "<", "==", "!=", "<=", ">=", "||", "&&"]), g(Ue, "@OP", {
   type: "enum",
   title: "operation",
-  values: Ut.values
+  values: Ue.values
 });
-let MathCondition = Ut;
+let MathCondition = Ue;
 LiteGraph.registerNodeType("math/condition", MathCondition);
 class MathBranch {
   constructor() {
@@ -9372,7 +9403,7 @@ class Math3DXYZWToVec4 {
 }
 g(Math3DXYZWToVec4, "title", "XYZW->Vec4"), g(Math3DXYZWToVec4, "desc", "components to vector4");
 LiteGraph.registerNodeType("math3d/xyzw-to-vec4", Math3DXYZWToVec4);
-const DEG2RAD$1 = 0.0174532925, $t = class $t {
+const DEG2RAD$1 = 0.0174532925, $e = class $e {
   constructor() {
     this.addInput("T", "vec3"), this.addInput("R", "vec3"), this.addInput("S", "vec3"), this.addOutput("mat4", "mat4"), this.properties = {
       T: [0, 0, 0],
@@ -9385,16 +9416,16 @@ const DEG2RAD$1 = 0.0174532925, $t = class $t {
     this._must_update = !0;
   }
   onExecute() {
-    var t = this._result, r = $t.temp_quat, s = $t.temp_mat4, a = $t.temp_vec3, o = this.getInputData(0), u = this.getInputData(1), h = this.getInputData(2);
+    var t = this._result, r = $e.temp_quat, s = $e.temp_mat4, a = $e.temp_vec3, o = this.getInputData(0), u = this.getInputData(1), h = this.getInputData(2);
     (this._must_update || o || u || h) && (o = o || this.properties.T, u = u || this.properties.R, h = h || this.properties.S, mat4.identity(t), mat4.translate(t, t, o), this.properties.R_in_degrees ? (a.set(u), vec3.scale(a, a, DEG2RAD$1), quat.fromEuler(r, a)) : quat.fromEuler(r, u), mat4.fromQuat(s, r), mat4.multiply(t, t, s), mat4.scale(t, t, h)), this.setOutputData(0, t);
   }
 };
-g($t, "title", "mat4"), g($t, "temp_quat", new Float32Array([0, 0, 0, 1])), g($t, "temp_mat4", new Float32Array(16)), g($t, "temp_vec3", new Float32Array(3));
-let Math3DMat4 = $t;
+g($e, "title", "mat4"), g($e, "temp_quat", new Float32Array([0, 0, 0, 1])), g($e, "temp_mat4", new Float32Array(16)), g($e, "temp_vec3", new Float32Array(3));
+let Math3DMat4 = $e;
 LiteGraph.registerNodeType("math3d/mat4", Math3DMat4);
-const zt = class zt {
+const ze = class ze {
   constructor() {
-    this.addInput("A", "number,vec3"), this.addInput("B", "number,vec3"), this.addOutput("=", "number,vec3"), this.addProperty("OP", "+", "enum", { values: zt.values }), this._result = vec3.create();
+    this.addInput("A", "number,vec3"), this.addInput("B", "number,vec3"), this.addOutput("=", "number,vec3"), this.addProperty("OP", "+", "enum", { values: ze.values }), this._result = vec3.create();
   }
   getTitle() {
     return this.properties.OP == "max" || this.properties.OP == "min" ? this.properties.OP + "(A,B)" : "A " + this.properties.OP + " B";
@@ -9452,7 +9483,7 @@ const zt = class zt {
     ), t.textAlign = "left");
   }
 };
-g(zt, "title", "Operation"), g(zt, "desc", "Easy math 3D operators"), g(zt, "values", [
+g(ze, "title", "Operation"), g(ze, "desc", "Easy math 3D operators"), g(ze, "values", [
   "+",
   "-",
   "*",
@@ -9463,12 +9494,12 @@ g(zt, "title", "Operation"), g(zt, "desc", "Easy math 3D operators"), g(zt, "val
   "min",
   "dot",
   "cross"
-]), g(zt, "@OP", {
+]), g(ze, "@OP", {
   type: "enum",
   title: "operation",
-  values: zt.values
-}), g(zt, "size", [100, 60]);
-let Math3DOperation = zt;
+  values: ze.values
+}), g(ze, "size", [100, 60]);
+let Math3DOperation = ze;
 LiteGraph.registerSearchboxExtra("math3d/operation", "CROSS()", {
   properties: { OP: "cross" },
   title: "CROSS()"
@@ -9556,7 +9587,7 @@ class Math3DVec3Dot {
 }
 g(Math3DVec3Dot, "title", "vec3_dot"), g(Math3DVec3Dot, "desc", "returns the dot product");
 LiteGraph.registerNodeType("math3d/vec3-dot", Math3DVec3Dot);
-var Ce;
+var Ct;
 if (glMatrix) {
   class n {
     constructor() {
@@ -9702,7 +9733,7 @@ if (glMatrix) {
     }
   }
   g(h, "title", "Remap Range"), g(h, "desc", "remap a 3D range"), LiteGraph.registerNodeType("math3d/remap_range", h);
-} else LiteGraph.debug && ((Ce = console.warn) == null || Ce.call(console, "No glmatrix found, some Math3D nodes may not work"));
+} else LiteGraph.debug && ((Ct = console.warn) == null || Ct.call(console, "No glmatrix found, some Math3D nodes may not work"));
 function toString(n) {
   if (n && n.constructor === Object)
     try {
@@ -9975,7 +10006,7 @@ class logicWhile {
 }
 g(logicWhile, "title", "WHILE"), g(logicWhile, "desc", "Cycle WHILE");
 LiteGraph.registerNodeType("logic/CycleWHILE", logicWhile);
-const Ee = class Ee {
+const Et = class Et {
   constructor() {
     this.addInput("A", "Number"), this.addInput("B", "Number"), this.addInput("C", "Number"), this.addInput("D", "Number"), this.values = [[], [], [], []], this.properties = { scale: 2 };
   }
@@ -9991,7 +10022,7 @@ const Ee = class Ee {
   }
   onDrawBackground(t) {
     if (!this.flags.collapsed) {
-      var r = this.size, s = 0.5 * r[1] / this.properties.scale, a = Ee.colors, o = r[1] * 0.5;
+      var r = this.size, s = 0.5 * r[1] / this.properties.scale, a = Et.colors, o = r[1] * 0.5;
       if (t.fillStyle = "#000", t.fillRect(0, 0, r[0], r[1]), t.strokeStyle = "#555", t.beginPath(), t.moveTo(0, o), t.lineTo(r[0], o), t.stroke(), this.inputs)
         for (let u = 0; u < 4; ++u) {
           let h = this.values[u];
@@ -10007,8 +10038,8 @@ const Ee = class Ee {
     }
   }
 };
-g(Ee, "title", "Plot"), g(Ee, "desc", "Plots data over time"), g(Ee, "colors", ["#FFF", "#F99", "#9F9", "#99F"]);
-let GraphicsPlot = Ee;
+g(Et, "title", "Plot"), g(Et, "desc", "Plots data over time"), g(Et, "colors", ["#FFF", "#F99", "#9F9", "#99F"]);
+let GraphicsPlot = Et;
 LiteGraph.registerNodeType("graphics/plot", GraphicsPlot);
 class GraphicsImage {
   constructor() {
@@ -10317,7 +10348,7 @@ g(ImageVideo, "title", "Video"), g(ImageVideo, "desc", "Video playback"), g(Imag
   { name: "mute", text: "Mute video", type: "button" }
 ]);
 LiteGraph.registerNodeType("graphics/video", ImageVideo);
-const Qt = class Qt {
+const Qe = class Qe {
   constructor() {
     this.addOutput("Webcam", "image"), this.properties = { filterFacingMode: !1, facingMode: "user" }, this.boxcolor = "black", this.frame = 0;
   }
@@ -10336,7 +10367,7 @@ const Qt = class Qt {
     var r = this;
     function s(o) {
       var u;
-      (u = console.log) == null || u.call(console, "Webcam rejected", o), r._webcam_stream = !1, Qt.is_webcam_open = !1, r.boxcolor = "red", r.trigger("stream_error");
+      (u = console.log) == null || u.call(console, "Webcam rejected", o), r._webcam_stream = !1, Qe.is_webcam_open = !1, r.boxcolor = "red", r.trigger("stream_error");
     }
   }
   closeStream() {
@@ -10345,7 +10376,7 @@ const Qt = class Qt {
       if (t.length)
         for (var r = 0; r < t.length; ++r)
           t[r].stop();
-      Qt.is_webcam_open = !1, this._webcam_stream = null, this._video = null, this.boxcolor = "black", this.trigger("stream_closed");
+      Qe.is_webcam_open = !1, this._webcam_stream = null, this._video = null, this.boxcolor = "black", this.trigger("stream_closed");
     }
   }
   onPropertyChanged(t, r) {
@@ -10359,7 +10390,7 @@ const Qt = class Qt {
     var r = this._video;
     r || (r = document.createElement("video"), r.autoplay = !0, r.srcObject = t, this._video = r, r.onloadedmetadata = function(s) {
       var a;
-      (a = console.log) == null || a.call(console, s), Qt.is_webcam_open = !0;
+      (a = console.log) == null || a.call(console, s), Qe.is_webcam_open = !0;
     }), this.trigger("stream_ready", r);
   }
   onExecute() {
@@ -10401,8 +10432,8 @@ const Qt = class Qt {
     ];
   }
 };
-g(Qt, "title", "Webcam"), g(Qt, "desc", "Webcam image"), g(Qt, "is_webcam_open", !1);
-let ImageWebcam = Qt;
+g(Qe, "title", "Webcam"), g(Qe, "desc", "Webcam image"), g(Qe, "is_webcam_open", !1);
+let ImageWebcam = Qe;
 LiteGraph.registerNodeType("graphics/webcam", ImageWebcam);
 const DDS = (function() {
   var n = 542327876, t = 131072, r = 512, s = 4;
@@ -10419,9 +10450,9 @@ const DDS = (function() {
   }
   var u = a("DXT1"), h = a("DXT3"), l = a("DXT5"), c = 31, d = 0, f = 1, _ = 2, E = 3, m = 4, T = 7, L = 20, G = 21, O = 27;
   function b(A, R, B, X) {
-    for (var F = new Uint16Array(4), V = new Uint16Array(B * X), $ = 0, U = 0, H = 0, z = 0, K = 0, tt = 0, W = 0, Q = 0, J = 0, q = B / 4, Z = X / 4, pt = 0; pt < Z; pt++)
-      for (var Bt = 0; Bt < q; Bt++)
-        H = R + 4 * (pt * q + Bt), F[0] = A[H], F[1] = A[H + 1], z = F[0] & 31, K = F[0] & 2016, tt = F[0] & 63488, W = F[1] & 31, Q = F[1] & 2016, J = F[1] & 63488, F[2] = 5 * z + 3 * W >> 3 | 5 * K + 3 * Q >> 3 & 2016 | 5 * tt + 3 * J >> 3 & 63488, F[3] = 5 * W + 3 * z >> 3 | 5 * Q + 3 * K >> 3 & 2016 | 5 * J + 3 * tt >> 3 & 63488, $ = A[H + 2], U = pt * 4 * B + Bt * 4, V[U] = F[$ & 3], V[U + 1] = F[$ >> 2 & 3], V[U + 2] = F[$ >> 4 & 3], V[U + 3] = F[$ >> 6 & 3], U += B, V[U] = F[$ >> 8 & 3], V[U + 1] = F[$ >> 10 & 3], V[U + 2] = F[$ >> 12 & 3], V[U + 3] = F[$ >> 14], $ = A[H + 3], U += B, V[U] = F[$ & 3], V[U + 1] = F[$ >> 2 & 3], V[U + 2] = F[$ >> 4 & 3], V[U + 3] = F[$ >> 6 & 3], U += B, V[U] = F[$ >> 8 & 3], V[U + 1] = F[$ >> 10 & 3], V[U + 2] = F[$ >> 12 & 3], V[U + 3] = F[$ >> 14];
+    for (var F = new Uint16Array(4), V = new Uint16Array(B * X), $ = 0, U = 0, H = 0, z = 0, K = 0, ee = 0, W = 0, Q = 0, J = 0, q = B / 4, Z = X / 4, pe = 0; pe < Z; pe++)
+      for (var Be = 0; Be < q; Be++)
+        H = R + 4 * (pe * q + Be), F[0] = A[H], F[1] = A[H + 1], z = F[0] & 31, K = F[0] & 2016, ee = F[0] & 63488, W = F[1] & 31, Q = F[1] & 2016, J = F[1] & 63488, F[2] = 5 * z + 3 * W >> 3 | 5 * K + 3 * Q >> 3 & 2016 | 5 * ee + 3 * J >> 3 & 63488, F[3] = 5 * W + 3 * z >> 3 | 5 * Q + 3 * K >> 3 & 2016 | 5 * J + 3 * ee >> 3 & 63488, $ = A[H + 2], U = pe * 4 * B + Be * 4, V[U] = F[$ & 3], V[U + 1] = F[$ >> 2 & 3], V[U + 2] = F[$ >> 4 & 3], V[U + 3] = F[$ >> 6 & 3], U += B, V[U] = F[$ >> 8 & 3], V[U + 1] = F[$ >> 10 & 3], V[U + 2] = F[$ >> 12 & 3], V[U + 3] = F[$ >> 14], $ = A[H + 3], U += B, V[U] = F[$ & 3], V[U + 1] = F[$ >> 2 & 3], V[U + 2] = F[$ >> 4 & 3], V[U + 3] = F[$ >> 6 & 3], U += B, V[U] = F[$ >> 8 & 3], V[U + 1] = F[$ >> 10 & 3], V[U + 2] = F[$ >> 12 & 3], V[U + 3] = F[$ >> 14];
     return V;
   }
   function I(A) {
@@ -10429,7 +10460,7 @@ const DDS = (function() {
       X = A[R], A[R] = A[R + 2], A[R + 2] = X;
   }
   function S(A, R, B, X) {
-    var F = new Int32Array(B, 0, c), V, $, U, H, z, K, tt, W, Q, J, q, Z, pt;
+    var F = new Int32Array(B, 0, c), V, $, U, H, z, K, ee, W, Q, J, q, Z, pe;
     if (F[d] != n)
       return console.error("Invalid magic number in DDS header"), 0;
     if (!F[L] & s)
@@ -10453,24 +10484,24 @@ const DDS = (function() {
       default:
         $ = 4, V = null, U = A.RGBA;
     }
-    if (q = 1, F[_] & t && X !== !1 && (q = Math.max(1, F[T])), H = F[m], z = F[E], tt = F[f] + 4, W = !!(F[O + 1] & r), W)
-      for (pt = 0; pt < 6; ++pt) {
+    if (q = 1, F[_] & t && X !== !1 && (q = Math.max(1, F[T])), H = F[m], z = F[E], ee = F[f] + 4, W = !!(F[O + 1] & r), W)
+      for (pe = 0; pe < 6; ++pe) {
         H = F[m], z = F[E];
         for (var Z = 0; Z < q; ++Z)
-          V ? (K = Math.max(4, H) / 4 * Math.max(4, z) / 4 * $, J = new Uint8Array(B, tt, K), A.compressedTexImage2D(A.TEXTURE_CUBE_MAP_POSITIVE_X + pt, Z, U, H, z, 0, J)) : (A.pixelStorei(A.UNPACK_FLIP_Y_WEBGL, !1), K = H * z * $, J = new Uint8Array(B, tt, K), I(J), A.texImage2D(A.TEXTURE_CUBE_MAP_POSITIVE_X + pt, Z, U, H, z, 0, A.RGBA, A.UNSIGNED_BYTE, J)), tt += K, H *= 0.5, z *= 0.5;
+          V ? (K = Math.max(4, H) / 4 * Math.max(4, z) / 4 * $, J = new Uint8Array(B, ee, K), A.compressedTexImage2D(A.TEXTURE_CUBE_MAP_POSITIVE_X + pe, Z, U, H, z, 0, J)) : (A.pixelStorei(A.UNPACK_FLIP_Y_WEBGL, !1), K = H * z * $, J = new Uint8Array(B, ee, K), I(J), A.texImage2D(A.TEXTURE_CUBE_MAP_POSITIVE_X + pe, Z, U, H, z, 0, A.RGBA, A.UNSIGNED_BYTE, J)), ee += K, H *= 0.5, z *= 0.5;
       }
     else if (R) {
       A.pixelStorei(A.UNPACK_FLIP_Y_WEBGL, !0);
       for (var Z = 0; Z < q; ++Z)
-        V ? (K = Math.max(4, H) / 4 * Math.max(4, z) / 4 * $, J = new Uint8Array(B, tt, K), A.compressedTexImage2D(A.TEXTURE_2D, Z, U, H, z, 0, J)) : (K = H * z * $, J = new Uint8Array(B, tt, K), I(J), A.texImage2D(A.TEXTURE_2D, Z, U, H, z, 0, U, A.UNSIGNED_BYTE, J)), tt += K, H *= 0.5, z *= 0.5;
+        V ? (K = Math.max(4, H) / 4 * Math.max(4, z) / 4 * $, J = new Uint8Array(B, ee, K), A.compressedTexImage2D(A.TEXTURE_2D, Z, U, H, z, 0, J)) : (K = H * z * $, J = new Uint8Array(B, ee, K), I(J), A.texImage2D(A.TEXTURE_2D, Z, U, H, z, 0, U, A.UNSIGNED_BYTE, J)), ee += K, H *= 0.5, z *= 0.5;
     } else if (V == u)
-      K = Math.max(4, H) / 4 * Math.max(4, z) / 4 * $, J = new Uint16Array(B), Q = b(J, tt / 2, H, z), A.texImage2D(A.TEXTURE_2D, 0, A.RGB, H, z, 0, A.RGB, A.UNSIGNED_SHORT_5_6_5, Q), X && A.generateMipmap(A.TEXTURE_2D);
+      K = Math.max(4, H) / 4 * Math.max(4, z) / 4 * $, J = new Uint16Array(B), Q = b(J, ee / 2, H, z), A.texImage2D(A.TEXTURE_2D, 0, A.RGB, H, z, 0, A.RGB, A.UNSIGNED_SHORT_5_6_5, Q), X && A.generateMipmap(A.TEXTURE_2D);
     else
       return console.error("No manual decoder for", o(V), "and no native support"), 0;
     return q;
   }
   function N(A, R) {
-    var B = new Int32Array(A, 0, c), X, F, V, $, U, H, z, K, tt, W, Q, J;
+    var B = new Int32Array(A, 0, c), X, F, V, $, U, H, z, K, ee, W, Q, J;
     if (B[d] != n)
       return console.error("Invalid magic number in DDS header"), 0;
     if (!B[L] & s)
@@ -10494,11 +10525,11 @@ const DDS = (function() {
       for (var J = 0; J < 6; ++J) {
         $ = B[m], U = B[E];
         for (var Q = 0; Q < W; ++Q)
-          X ? (H = Math.max(4, $) / 4 * Math.max(4, U) / 4 * F, tt = new Uint8Array(A, z, H), q.push({ tex: "TEXTURE_CUBE_MAP", face: J, mipmap: Q, internalFormat: V, width: $, height: U, offset: 0, dataOffset: z, dataLength: H })) : (H = $ * U * F, tt = new Uint8Array(A, z, H), I(tt), q.push({ tex: "TEXTURE_CUBE_MAP", face: J, mipmap: Q, internalFormat: V, width: $, height: U, offset: 0, type: "UNSIGNED_BYTE", dataOffset: z, dataLength: H })), z += H, $ *= 0.5, U *= 0.5;
+          X ? (H = Math.max(4, $) / 4 * Math.max(4, U) / 4 * F, ee = new Uint8Array(A, z, H), q.push({ tex: "TEXTURE_CUBE_MAP", face: J, mipmap: Q, internalFormat: V, width: $, height: U, offset: 0, dataOffset: z, dataLength: H })) : (H = $ * U * F, ee = new Uint8Array(A, z, H), I(ee), q.push({ tex: "TEXTURE_CUBE_MAP", face: J, mipmap: Q, internalFormat: V, width: $, height: U, offset: 0, type: "UNSIGNED_BYTE", dataOffset: z, dataLength: H })), z += H, $ *= 0.5, U *= 0.5;
       }
     else
       for (var Q = 0; Q < W; ++Q)
-        H = Math.max(4, $) / 4 * Math.max(4, U) / 4 * F, tt = new Uint8Array(A, z, H), q.push({ tex: "TEXTURE_2D", mipmap: Q, internalFormat: V, width: $, height: U, offset: 0, type: "UNSIGNED_BYTE", dataOffset: z, dataLength: H }), z += H, $ *= 0.5, U *= 0.5;
+        H = Math.max(4, $) / 4 * Math.max(4, U) / 4 * F, ee = new Uint8Array(A, z, H), q.push({ tex: "TEXTURE_2D", mipmap: Q, internalFormat: V, width: $, height: U, offset: 0, type: "UNSIGNED_BYTE", dataOffset: z, dataLength: H }), z += H, $ *= 0.5, U *= 0.5;
     return q;
   }
   function C(A, R, B, X, F, V) {
@@ -10717,8 +10748,8 @@ class Editor {
 var gl$1 = null;
 typeof global == "object" && (global.LiteGraph = LiteGraph);
 typeof window == "object" && (window.LiteGraph = LiteGraph);
-var Ne;
-(Ne = LiteGraph.info) == null || Ne.call(LiteGraph, "LiteGraph included");
+var Nt;
+(Nt = LiteGraph.info) == null || Nt.call(LiteGraph, "LiteGraph included");
 var webgl_canvas = null;
 LiteGraph.node_images_path = "../nodes_data/";
 var editor = new Editor("main", { miniwindow: !1 });
@@ -10835,8 +10866,8 @@ function enableWebGL() {
   };
 }
 const global$1 = { gl: gl$1 };
-var Re, Me, Fe;
-(Fe = window.requestAnimationFrame) != null || (window.requestAnimationFrame = (Me = (Re = window.mozRequestAnimationFrame) != null ? Re : window.webkitRequestAnimationFrame) != null ? Me : function(n) {
+var Rt, Mt, Ft;
+(Ft = window.requestAnimationFrame) != null || (window.requestAnimationFrame = (Mt = (Rt = window.mozRequestAnimationFrame) != null ? Rt : window.webkitRequestAnimationFrame) != null ? Mt : function(n) {
   setTimeout(n, 1e3 / 60);
 });
 if (typeof glMatrix == "undefined")
@@ -11831,8 +11862,8 @@ GL$1.Buffer.prototype.delete = function() {
   var n = this.gl;
   n.deleteBuffer(this.buffer), this.buffer = null;
 };
-var st;
-let Mesh$1 = (st = class {
+var se;
+let Mesh$1 = (se = class {
   constructor(t, r, s, a) {
     if (GL$1.debug && console.log("GL.Mesh created"), a !== null && (a = a || global$1.gl, this.gl = a), this._context_id = a.context_id, this.vertexBuffers = {}, this.indexBuffers = {}, this.info = {
       groups: []
@@ -12332,8 +12363,8 @@ let Mesh$1 = (st = class {
     if (!(!o || !u || !h)) {
       var c = o.length / 3, d = new Float32Array(c * 4), f = new Float32Array(c * 3 * 2), _ = f.subarray(c * 3), E, m, T = vec3.create(), L = vec3.create(), G = vec3.create(), O = vec3.create();
       for (E = 0, m = l.length; E < m; E += 3) {
-        var b = l[E], I = l[E + 1], S = l[E + 2], N = o.subarray(b * 3, b * 3 + 3), C = o.subarray(I * 3, I * 3 + 3), D = o.subarray(S * 3, S * 3 + 3), M = h.subarray(b * 2, b * 2 + 2), P = h.subarray(I * 2, I * 2 + 2), A = h.subarray(S * 2, S * 2 + 2), R = C[0] - N[0], B = D[0] - N[0], X = C[1] - N[1], F = D[1] - N[1], V = C[2] - N[2], $ = D[2] - N[2], U = P[0] - M[0], H = A[0] - M[0], z = P[1] - M[1], K = A[1] - M[1], tt, W = U * K - H * z;
-        Math.abs(W) < 1e-9 ? tt = 0 : tt = 1 / W, vec3.copy(T, [(K * R - z * B) * tt, (K * X - z * F) * tt, (K * V - z * $) * tt]), vec3.copy(L, [(U * B - H * R) * tt, (U * F - H * X) * tt, (U * $ - H * V) * tt]), vec3.add(f.subarray(b * 3, b * 3 + 3), f.subarray(b * 3, b * 3 + 3), T), vec3.add(f.subarray(I * 3, I * 3 + 3), f.subarray(I * 3, I * 3 + 3), T), vec3.add(f.subarray(S * 3, S * 3 + 3), f.subarray(S * 3, S * 3 + 3), T), vec3.add(_.subarray(b * 3, b * 3 + 3), _.subarray(b * 3, b * 3 + 3), L), vec3.add(_.subarray(I * 3, I * 3 + 3), _.subarray(I * 3, I * 3 + 3), L), vec3.add(_.subarray(S * 3, S * 3 + 3), _.subarray(S * 3, S * 3 + 3), L);
+        var b = l[E], I = l[E + 1], S = l[E + 2], N = o.subarray(b * 3, b * 3 + 3), C = o.subarray(I * 3, I * 3 + 3), D = o.subarray(S * 3, S * 3 + 3), M = h.subarray(b * 2, b * 2 + 2), P = h.subarray(I * 2, I * 2 + 2), A = h.subarray(S * 2, S * 2 + 2), R = C[0] - N[0], B = D[0] - N[0], X = C[1] - N[1], F = D[1] - N[1], V = C[2] - N[2], $ = D[2] - N[2], U = P[0] - M[0], H = A[0] - M[0], z = P[1] - M[1], K = A[1] - M[1], ee, W = U * K - H * z;
+        Math.abs(W) < 1e-9 ? ee = 0 : ee = 1 / W, vec3.copy(T, [(K * R - z * B) * ee, (K * X - z * F) * ee, (K * V - z * $) * ee]), vec3.copy(L, [(U * B - H * R) * ee, (U * F - H * X) * ee, (U * $ - H * V) * ee]), vec3.add(f.subarray(b * 3, b * 3 + 3), f.subarray(b * 3, b * 3 + 3), T), vec3.add(f.subarray(I * 3, I * 3 + 3), f.subarray(I * 3, I * 3 + 3), T), vec3.add(f.subarray(S * 3, S * 3 + 3), f.subarray(S * 3, S * 3 + 3), T), vec3.add(_.subarray(b * 3, b * 3 + 3), _.subarray(b * 3, b * 3 + 3), L), vec3.add(_.subarray(I * 3, I * 3 + 3), _.subarray(I * 3, I * 3 + 3), L), vec3.add(_.subarray(S * 3, S * 3 + 3), _.subarray(S * 3, S * 3 + 3), L);
       }
       for (E = 0, m = o.length; E < m; E += 3) {
         var Q = u.subarray(E, E + 3), J = f.subarray(E, E + 3);
@@ -12341,7 +12372,7 @@ let Mesh$1 = (st = class {
         var q = vec3.dot(vec3.cross(O, Q, J), _.subarray(E, E + 3)) < 0 ? -1 : 1;
         d.set([G[0], G[1], G[2], q], E / 3 * 4);
       }
-      this.createVertexBuffer("tangents", st.common_buffers.tangents.attribute, 4, d);
+      this.createVertexBuffer("tangents", se.common_buffers.tangents.attribute, 4, d);
     }
   }
   /**
@@ -12364,7 +12395,7 @@ let Mesh$1 = (st = class {
         var I = s.subarray(L * 3, L * 3 + 3), S = s.subarray((L + 1) * 3, (L + 1) * 3 + 3), N = s.subarray((L + 2) * 3, (L + 2) * 3 + 3), C = u.subarray(L * 2, L * 2 + 2), D = u.subarray((L + 1) * 2, (L + 1) * 2 + 2), M = u.subarray((L + 2) * 2, (L + 2) * 2 + 2);
       vec3.sub(d, I, S), vec3.sub(f, I, N), vec3.cross(c, d, f), c[0] = Math.abs(c[0]), c[1] = Math.abs(c[1]), c[2] = Math.abs(c[2]), c[0] > c[1] && c[0] > c[2] ? (C[0] = (I[2] - E[2]) / m[2], C[1] = (I[1] - E[1]) / m[1], D[0] = (S[2] - E[2]) / m[2], D[1] = (S[1] - E[1]) / m[1], M[0] = (N[2] - E[2]) / m[2], M[1] = (N[1] - E[1]) / m[1]) : c[1] > c[2] ? (C[0] = (I[0] - E[0]) / m[0], C[1] = (I[2] - E[2]) / m[2], D[0] = (S[0] - E[0]) / m[0], D[1] = (S[2] - E[2]) / m[2], M[0] = (N[0] - E[0]) / m[0], M[1] = (N[2] - E[2]) / m[2]) : (C[0] = (I[0] - E[0]) / m[0], C[1] = (I[1] - E[1]) / m[1], D[0] = (S[0] - E[0]) / m[0], D[1] = (S[1] - E[1]) / m[1], M[0] = (N[0] - E[0]) / m[0], M[1] = (N[1] - E[1]) / m[1]);
     }
-    o ? (o.data = u, o.upload(t)) : this.createVertexBuffer("coords", st.common_buffers.coords.attribute, 2, u);
+    o ? (o.data = u, o.upload(t)) : this.createVertexBuffer("coords", se.common_buffers.coords.attribute, 2, u);
   }
   /**
   * Computes the number of vertices
@@ -12643,7 +12674,7 @@ let Mesh$1 = (st = class {
   */
   encode(t, r) {
     t = t.toLowerCase();
-    var s = st.encoders[t];
+    var s = se.encoders[t];
     if (s)
       return s.call(null, this, r);
     throw "Mesh.encode: no encoder found for format " + t;
@@ -12660,7 +12691,7 @@ let Mesh$1 = (st = class {
     if (r)
       return r;
     var s = new Float32Array([0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0]), a = new Float32Array([0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1]);
-    return r = new st({ vertices: s, coords: a }, void 0, void 0, t), t.meshes[":screen_quad"] = r;
+    return r = new se({ vertices: s, coords: a }, void 0, void 0, t), t.meshes[":screen_quad"] = r;
   }
   /**
   * Returns a planar mesh (you can choose how many subdivisions)
@@ -12682,7 +12713,7 @@ let Mesh$1 = (st = class {
         }
       }
     var O = BBox.fromCenterHalfsize([0, 0, 0], h ? [o, 0, u] : [o, u, 0]), b = { vertices: c, normals: f, coords: d, triangles: l };
-    return st.load(b, { bounding: O }, r);
+    return se.load(b, { bounding: O }, r);
   }
   /**
   * Returns a 2D Mesh (be careful, stream is vertices2D, used for 2D engines )
@@ -12693,7 +12724,7 @@ let Mesh$1 = (st = class {
     if (t && t.size)
       for (var o = t.size * 0.5, u = 0; u < s.length; ++u)
         s[u] *= o;
-    return new st({ vertices2D: s, coords: a }, null, r);
+    return new se({ vertices2D: s, coords: a }, null, r);
   }
   /**
   * Returns a point mesh 
@@ -12701,7 +12732,7 @@ let Mesh$1 = (st = class {
   * @param {Object} options no options
   */
   point(t) {
-    return new st({ vertices: [0, 0, 0] });
+    return new se({ vertices: [0, 0, 0] });
   }
   /**
   * Returns a cube mesh 
@@ -12784,7 +12815,7 @@ let Mesh$1 = (st = class {
       normals: h,
       coords: l
     };
-    return t.bounding = BBox.fromCenterHalfsize([0, 0, 0], [s, a * 0.5, s]), t.info = { groups: [] }, t.caps !== !1 && (t.info.groups.push({ name: "side", start: 0, length: T / 3 }), t.info.groups.push({ name: "caps", start: T / 3, length: (u.length - T) / 3 })), st.load(N, t, r);
+    return t.bounding = BBox.fromCenterHalfsize([0, 0, 0], [s, a * 0.5, s]), t.info = { groups: [] }, t.caps !== !1 && (t.info.groups.push({ name: "side", start: 0, length: T / 3 }), t.info.groups.push({ name: "caps", start: T / 3, length: (u.length - T) / 3 })), se.load(N, t, r);
   }
   /**
   * Returns a cone mesh 
@@ -12805,7 +12836,7 @@ let Mesh$1 = (st = class {
       normals: h,
       coords: l
     };
-    return t.bounding = BBox.fromCenterHalfsize([0, a * 0.5, 0], [s, a * 0.5, s]), st.load(I, t, r);
+    return t.bounding = BBox.fromCenterHalfsize([0, a * 0.5, 0], [s, a * 0.5, s]), se.load(I, t, r);
   }
   /**
   * Returns a sphere mesh 
@@ -12937,7 +12968,7 @@ let Mesh$1 = (st = class {
   */
   static parseOBJ(t, r = {}) {
     for (var s = [], a = [], o = [], u = [], h = [], l = [], c = [], d = {}, f = 0, _ = null, E = null, m = 0, T = 0, L = 0, G = 0, O = 0, b = 0, I = null, S = !1, N = !1, C = !1, D = 0, M = r.noindex ? r.noindex : t.length > 1e7, P = r.flipAxis, A = P || r.flipNormals, R = null, B = [], X = 1, F = 2, V = 3, $ = 4, U = 5, H = 6, z = { v: X, vt: F, vn: V, f: $, g: U, o: H }, K = t.split(`
-`), tt = K.length, W = 0; W < tt; ++W)
+`), ee = K.length, W = 0; W < ee; ++W)
       if (_ = K[W].replace(/[ \t]+/g, " ").replace(/\s\s*$/, ""), _[0] != "#" && _ != "") {
         I = _.split(" ");
         var Q = z[I[0]];
@@ -12966,13 +12997,13 @@ let Mesh$1 = (st = class {
               G = 0, O = 0, b = 0, m * 3 + 2 < h.length && (S = !0, G = h[m * 3 + 0], O = h[m * 3 + 1], b = h[m * 3 + 2]), s.push(G, O, b), G = 0, O = 0, T * 2 + 1 < l.length && (N = !0, G = l[T * 2 + 0], O = l[T * 2 + 1]), a.push(G, O), G = 0, O = 0, b = 1, L != -1 && (L * 3 + 2 < c.length && (C = !0, G = c[L * 3 + 0], O = c[L * 3 + 1], b = c[L * 3 + 2]), o.push(G, O, b)), M || (d[I[q]] = f++);
             }
             if (!M) {
-              var pt = d[I[q]];
-              J.push(pt), D < pt && (D = pt);
+              var pe = d[I[q]];
+              J.push(pe), D < pe && (D = pe);
             }
           }
           if (!M)
-            for (var Bt = 2; Bt < J.length; Bt++)
-              u.push(J[0], J[Bt - 1], J[Bt]);
+            for (var Be = 2; Be < J.length; Be++)
+              u.push(J[0], J[Be - 1], J[Be]);
         } else Q == U ? I.length > 1 && (R != null && (R.length = u.length - R.start, R.length > 0 && B.push(R)), R = {
           name: I[1],
           start: u.length,
@@ -12984,19 +13015,19 @@ let Mesh$1 = (st = class {
       return console.error("OBJ doesnt have vertices, maybe the file is not a OBJ"), null;
     if (R && u.length - R.start > 1 && (R.length = u.length - R.start, B.push(R)), (D > 256 * 256 || M) && u.length > 0) {
       console.log("Deindexing mesh...");
-      for (var Ie = new Float32Array(u.length * 3), xe = o && o.length ? new Float32Array(u.length * 3) : null, we = a && a.length ? new Float32Array(u.length * 2) : null, q = 0; q < u.length; q += 1)
-        Ie.set(s.slice(u[q] * 3, u[q] * 3 + 3), q * 3), xe && xe.set(o.slice(u[q] * 3, u[q] * 3 + 3), q * 3), we && we.set(a.slice(u[q] * 2, u[q] * 2 + 2), q * 2);
-      s = Ie, xe && (o = xe), we && (a = we), u = null;
+      for (var It = new Float32Array(u.length * 3), xt = o && o.length ? new Float32Array(u.length * 3) : null, wt = a && a.length ? new Float32Array(u.length * 2) : null, q = 0; q < u.length; q += 1)
+        It.set(s.slice(u[q] * 3, u[q] * 3 + 3), q * 3), xt && xt.set(o.slice(u[q] * 3, u[q] * 3 + 3), q * 3), wt && wt.set(a.slice(u[q] * 2, u[q] * 2 + 2), q * 2);
+      s = It, xt && (o = xt), wt && (a = wt), u = null;
     }
-    var ne = {};
-    S && (ne.vertices = new Float32Array(s)), C && o.length > 0 && (ne.normals = new Float32Array(o)), N && a.length > 0 && (ne.coords = new Float32Array(a)), u && u.length > 0 && (ne.triangles = new Uint16Array(u));
-    var Oe = {};
-    if (B.length > 1 && (Oe.groups = B), ne.info = Oe, r.only_data)
-      return ne;
-    var Ae = null;
-    return Ae = st.load(ne, null, r.mesh), Ae.updateBoundingBox(), Ae;
+    var nt = {};
+    S && (nt.vertices = new Float32Array(s)), C && o.length > 0 && (nt.normals = new Float32Array(o)), N && a.length > 0 && (nt.coords = new Float32Array(a)), u && u.length > 0 && (nt.triangles = new Uint16Array(u));
+    var Ot = {};
+    if (B.length > 1 && (Ot.groups = B), nt.info = Ot, r.only_data)
+      return nt;
+    var At = null;
+    return At = se.load(nt, null, r.mesh), At.updateBoundingBox(), At;
   }
-}, g(st, "common_buffers", {
+}, g(se, "common_buffers", {
   vertices: { spacing: 3, attribute: "a_vertex" },
   vertices2D: { spacing: 2, attribute: "a_vertex2D" },
   normals: { spacing: 3, attribute: "a_normal" },
@@ -13011,26 +13042,26 @@ let Mesh$1 = (st = class {
   extra2: { spacing: 2, attribute: "a_extra2" },
   extra3: { spacing: 3, attribute: "a_extra3" },
   extra4: { spacing: 4, attribute: "a_extra4" }
-}), g(st, "default_datatype", Float32Array), //Here we store all basic mesh parsers (OBJ, STL) and encoders
-g(st, "parsers", {}), g(st, "encoders", {}), g(st, "binary_file_formats", {}), //extensions that must be downloaded in binary
-g(st, "compressors", {}), //used to compress binary meshes
-g(st, "decompressors", {}), //used to decompress binary meshes
+}), g(se, "default_datatype", Float32Array), //Here we store all basic mesh parsers (OBJ, STL) and encoders
+g(se, "parsers", {}), g(se, "encoders", {}), g(se, "binary_file_formats", {}), //extensions that must be downloaded in binary
+g(se, "compressors", {}), //used to compress binary meshes
+g(se, "decompressors", {}), //used to decompress binary meshes
 /**
 * Returns am empty mesh and loads a mesh and parses it using the Mesh.parsers, by default only OBJ is supported
 * @method Mesh.fromOBJ
 * @param {Array} meshes array containing all the meshes
 */
-g(st, "fromURL", function(t, r, s, a = {}) {
+g(se, "fromURL", function(t, r, s, a = {}) {
   s = s || global$1.gl;
   var o = new GL$1.Mesh(void 0, void 0, void 0, s);
   o.ready = !1;
   var u = t.lastIndexOf("."), h = t.substr(u + 1).toLowerCase();
-  return a.binary = st.binary_file_formats[h], HttpRequest(t, null, function(l) {
+  return a.binary = se.binary_file_formats[h], HttpRequest(t, null, function(l) {
     o.parse(l, h), delete o.ready, r && r.call(o, o, t);
   }, function(l) {
     r && r(null);
   }, a), o;
-}), st);
+}), se);
 GL$1.Mesh = Mesh$1;
 GL$1.Mesh.EXTENSION = "wbin";
 GL$1.Mesh.enable_wbin_compression = !0;
@@ -13272,7 +13303,7 @@ Mesh$1.decompressors.bounding_compressed = function(n) {
     n.weights = I;
   }
 };
-const Jt = class Jt {
+const Je = class Je {
   constructor(t, r, s, a, o) {
     t = t || 1024, GL$1.debug && console.log("GL.Mesh created"), o !== null && (o = o || global$1.gl, this.gl = o), this._context_id = o.context_id, this.vertexBuffers = {}, this.indexBuffers = {}, this.info = {
       groups: []
@@ -13289,18 +13320,18 @@ const Jt = class Jt {
     if (o >= this.max_size)
       return console.warn("DynamicMesh: not enough space, reserve more"), !1;
     var o = this.current_pos++;
-    return this._vertex_data.set(t, o * 3), this._normal_data && this._normal_data.set(r || Jt.DEFAULT_NORMAL, o * 3), this._coord_data && this._coord_data.set(s || Jt.DEFAULT_COORD, o * 2), this._color_data && this._color_data.set(a || Jt.DEFAULT_COLOR, o * 4), this._must_update = !0, !0;
+    return this._vertex_data.set(t, o * 3), this._normal_data && this._normal_data.set(r || Je.DEFAULT_NORMAL, o * 3), this._coord_data && this._coord_data.set(s || Je.DEFAULT_COORD, o * 2), this._color_data && this._color_data.set(a || Je.DEFAULT_COLOR, o * 4), this._must_update = !0, !0;
   }
   update(t) {
     return !this._must_update && !t ? this.current_pos : (this._must_update = !1, this.getBuffer("vertices").upload(gl.STREAM_DRAW), this._normal_data && this.getBuffer("normal").upload(gl.STREAM_DRAW), this._coord_data && this.getBuffer("coord").upload(gl.STREAM_DRAW), this._color_data && this.getBuffer("color").upload(gl.STREAM_DRAW), this.current_pos);
   }
 };
-g(Jt, "DEFAULT_NORMAL", vec3.fromValues(0, 1, 0)), g(Jt, "DEFAULT_COORD", vec2.fromValues(0.5, 0.5)), g(Jt, "DEFAULT_COLOR", vec4.fromValues(1, 1, 1, 1));
-let DynamicMesh = Jt;
+g(Je, "DEFAULT_NORMAL", vec3.fromValues(0, 1, 0)), g(Je, "DEFAULT_COORD", vec2.fromValues(0.5, 0.5)), g(Je, "DEFAULT_COLOR", vec4.fromValues(1, 1, 1, 1));
+let DynamicMesh = Je;
 GL$1.extendClass(DynamicMesh, Mesh$1);
-const et = class et {
+const te = class te {
   constructor(t, r, s = {}, a) {
-    if (a = a || global$1.gl, this.gl = a, this._context_id = a.context_id, t = parseInt(t), r = parseInt(r), GL$1.debug && console.log("GL.Texture created: ", t, r), this.handler = a.createTexture(), this.width = t, this.height = r, s.depth && (this.depth = s.depth), this.texture_type = s.texture_type || a.TEXTURE_2D, this.format = s.format || et.DEFAULT_FORMAT, this.internalFormat = s.internalFormat, this.type = s.type || et.DEFAULT_TYPE, this.magFilter = s.magFilter || s.filter || et.DEFAULT_MAG_FILTER, this.minFilter = s.minFilter || s.filter || et.DEFAULT_MIN_FILTER, this.wrapS = s.wrap || s.wrapS || et.DEFAULT_WRAP_S, this.wrapT = s.wrap || s.wrapT || et.DEFAULT_WRAP_T, this.data = null, et.MAX_TEXTURE_IMAGE_UNITS || (et.MAX_TEXTURE_IMAGE_UNITS = a.getParameter(a.MAX_TEXTURE_IMAGE_UNITS)), this.has_mipmaps = !1, this.format == a.DEPTH_COMPONENT && a.webgl_version == 1 && !a.extensions.WEBGL_depth_texture)
+    if (a = a || global$1.gl, this.gl = a, this._context_id = a.context_id, t = parseInt(t), r = parseInt(r), GL$1.debug && console.log("GL.Texture created: ", t, r), this.handler = a.createTexture(), this.width = t, this.height = r, s.depth && (this.depth = s.depth), this.texture_type = s.texture_type || a.TEXTURE_2D, this.format = s.format || te.DEFAULT_FORMAT, this.internalFormat = s.internalFormat, this.type = s.type || te.DEFAULT_TYPE, this.magFilter = s.magFilter || s.filter || te.DEFAULT_MAG_FILTER, this.minFilter = s.minFilter || s.filter || te.DEFAULT_MIN_FILTER, this.wrapS = s.wrap || s.wrapS || te.DEFAULT_WRAP_S, this.wrapT = s.wrap || s.wrapT || te.DEFAULT_WRAP_T, this.data = null, te.MAX_TEXTURE_IMAGE_UNITS || (te.MAX_TEXTURE_IMAGE_UNITS = a.getParameter(a.MAX_TEXTURE_IMAGE_UNITS)), this.has_mipmaps = !1, this.format == a.DEPTH_COMPONENT && a.webgl_version == 1 && !a.extensions.WEBGL_depth_texture)
       throw "Depth Texture not supported";
     if (this.type == a.FLOAT && !a.extensions.OES_texture_float && a.webgl_version == 1)
       throw "Float Texture not supported";
@@ -13318,7 +13349,7 @@ const et = class et {
         throw "Cannot use texture-wrap or mipmaps in Non-Power-of-Two textures";
     if (!t || !r)
       return;
-    this.internalFormat || this.computeInternalFormat(), a.activeTexture(a.TEXTURE0 + et.MAX_TEXTURE_IMAGE_UNITS - 1), a.bindTexture(this.texture_type, this.handler), a.texParameteri(this.texture_type, a.TEXTURE_MAG_FILTER, this.magFilter), a.texParameteri(this.texture_type, a.TEXTURE_MIN_FILTER, this.minFilter), a.texParameteri(this.texture_type, a.TEXTURE_WRAP_S, this.wrapS), a.texParameteri(this.texture_type, a.TEXTURE_WRAP_T, this.wrapT), s.anisotropic && a.extensions.EXT_texture_filter_anisotropic && a.texParameterf(GL$1.TEXTURE_2D, a.extensions.EXT_texture_filter_anisotropic.TEXTURE_MAX_ANISOTROPY_EXT, s.anisotropic);
+    this.internalFormat || this.computeInternalFormat(), a.activeTexture(a.TEXTURE0 + te.MAX_TEXTURE_IMAGE_UNITS - 1), a.bindTexture(this.texture_type, this.handler), a.texParameteri(this.texture_type, a.TEXTURE_MAG_FILTER, this.magFilter), a.texParameteri(this.texture_type, a.TEXTURE_MIN_FILTER, this.minFilter), a.texParameteri(this.texture_type, a.TEXTURE_WRAP_S, this.wrapS), a.texParameteri(this.texture_type, a.TEXTURE_WRAP_T, this.wrapT), s.anisotropic && a.extensions.EXT_texture_filter_anisotropic && a.texParameterf(GL$1.TEXTURE_2D, a.extensions.EXT_texture_filter_anisotropic.TEXTURE_MAX_ANISOTROPY_EXT, s.anisotropic);
     var o = this.type, u = s.pixel_data;
     if (u && !u.buffer) {
       if (this.texture_type == GL$1.TEXTURE_CUBE_MAP)
@@ -13466,7 +13497,7 @@ const et = class et {
     var s = this.gl;
     if (!t)
       throw "uploadImage parameter must be Image";
-    et.setUploadOptions(r, s);
+    te.setUploadOptions(r, s);
     try {
       s.texImage2D(s.TEXTURE_2D, 0, this.format, this.format, this.type, t), this.width = t.videoWidth || t.width, this.height = t.videoHeight || t.height, this.data = t;
     } catch {
@@ -13484,7 +13515,7 @@ const et = class et {
     if (!t)
       throw "no data passed";
     var a = this.gl;
-    this.bind(), et.setUploadOptions(r, a);
+    this.bind(), te.setUploadOptions(r, a);
     var o = r.mipmap_level || 0, u = this.width, h = this.height;
     u = u >> o, h = h >> o;
     var l = this.internalFormat || this.format;
@@ -13709,7 +13740,7 @@ const et = class et {
     a = a || global$1.gl, r = Object.create(r);
     var o = r.texture || new GL$1.Texture(1, 1, r, a);
     t.length < 64 && (o.url = t), o.bind();
-    var u = r.temp_color || et.loading_color;
+    var u = r.temp_color || te.loading_color;
     a.pixelStorei(a.UNPACK_ALIGNMENT, 4);
     var h = r.type == a.FLOAT ? new Float32Array(u) : new Uint8Array(u);
     a.texImage2D(a.TEXTURE_2D, 0, o.format, o.width, o.height, 0, o.format, o.type, h), a.bindTexture(o.texture_type, null), o.ready = !1;
@@ -13794,7 +13825,7 @@ const et = class et {
     if (t)
       for (var s in t)
         r[s] = t[s];
-    return et.fromTexture(this, r);
+    return te.fromTexture(this, r);
   }
   /**
   * Create a texture from an ArrayBuffer containing the pixels
@@ -13807,7 +13838,7 @@ const et = class et {
   */
   static fromMemory(t, r, s, a = {}) {
     var o = a.texture || new GL$1.Texture(t, r, a);
-    return et.setUploadOptions(a), o.bind(), s.constructor === Array && (a.type == gl.FLOAT ? s = new Float32Array(s) : a.type == GL$1.HALF_FLOAT || a.type == GL$1.HALF_FLOAT_OES ? s = new Uint16Array(s) : s = new Uint8Array(s)), gl.texImage2D(gl.TEXTURE_2D, 0, o.format, t, r, 0, o.format, o.type, s), o.width = t, o.height = r, o.data = s, a.minFilter && a.minFilter != gl.NEAREST && a.minFilter != gl.LINEAR && (gl.generateMipmap(gl.TEXTURE_2D), o.has_mipmaps = !0), gl.bindTexture(o.texture_type, null), o;
+    return te.setUploadOptions(a), o.bind(), s.constructor === Array && (a.type == gl.FLOAT ? s = new Float32Array(s) : a.type == GL$1.HALF_FLOAT || a.type == GL$1.HALF_FLOAT_OES ? s = new Uint16Array(s) : s = new Uint8Array(s)), gl.texImage2D(gl.TEXTURE_2D, 0, o.format, t, r, 0, o.format, o.type, s), o.width = t, o.height = r, o.data = s, a.minFilter && a.minFilter != gl.NEAREST && a.minFilter != gl.LINEAR && (gl.generateMipmap(gl.TEXTURE_2D), o.has_mipmaps = !0), gl.bindTexture(o.texture_type, null), o;
   }
   /**
   * Create a texture from an ArrayBuffer containing the pixels
@@ -13852,7 +13883,7 @@ const et = class et {
     var s = t[0].width, a = t[0].height;
     r.texture_type = gl.TEXTURE_CUBE_MAP;
     var o = null;
-    r.texture ? (o = r.texture, o.width = s, o.height = a) : o = new GL$1.Texture(s, a, r), et.setUploadOptions(r), o.bind();
+    r.texture ? (o = r.texture, o.width = s, o.height = a) : o = new GL$1.Texture(s, a, r), te.setUploadOptions(r), o.bind();
     try {
       for (var u = 0; u < 6; u++)
         gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + u, 0, o.format, o.format, o.type, t[u]);
@@ -13890,7 +13921,7 @@ const et = class et {
         var I = GL$1.Texture.cubemap_camera_parameters[b];
         mat3.identity(c), c.set(I.right, 0), c.set(I.up, 3), c.set(I.dir, 6), o.toViewport(f, d);
       }), r.keep_image && (u.img = t), u;
-    } else r.is_cross !== void 0 ? (r.faces = et.generateCubemapCrossFacesInfo(t.width, r.is_cross), s = a = t.width / 4) : r.faces ? (s = r.width || r.faces[0].width, a = r.height || r.faces[0].height) : a /= 6;
+    } else r.is_cross !== void 0 ? (r.faces = te.generateCubemapCrossFacesInfo(t.width, r.is_cross), s = a = t.width / 4) : r.faces ? (s = r.width || r.faces[0].width, a = r.height || r.faces[0].height) : a /= 6;
     if (s != a)
       return console.log("Texture not valid, width and height for every face must be square"), null;
     var _ = s;
@@ -13899,7 +13930,7 @@ const et = class et {
       var m = GL$1.createCanvas(_, _), T = m.getContext("2d");
       r.faces ? T.drawImage(t, r.faces[l].x, r.faces[l].y, r.faces[l].width || _, r.faces[l].height || _, 0, 0, _, _) : T.drawImage(t, 0, a * l, s, a, 0, 0, _, _), E.push(m);
     }
-    var L = et.cubemapFromImages(E, r);
+    var L = te.cubemapFromImages(E, r);
     return r.keep_image && (L.img = t), L;
   }
   /**
@@ -13940,7 +13971,7 @@ const et = class et {
   static cubemapFromURL(t, r = {}, s) {
     r = Object.create(r), r.texture_type = gl.TEXTURE_CUBE_MAP;
     var a = r.texture || new GL$1.Texture(1, 1, r);
-    a.bind(), et.setUploadOptions(r);
+    a.bind(), te.setUploadOptions(r);
     for (var o = r.temp_color || [0, 0, 0, 255], u = r.type == gl.FLOAT ? new Float32Array(o) : new Uint8Array(o), h = 0; h < 6; h++)
       gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + h, 0, a.format, 1, 1, 0, a.format, a.type, u);
     gl.bindTexture(a.texture_type, null), a.ready = !1;
@@ -14166,7 +14197,7 @@ const et = class et {
   */
   static getTemporary(t, r, s, a) {
     a = a || global$1.gl, a._texture_pool || (a._texture_pool = []);
-    var o = GL$1.TEXTURE_2D, u = et.DEFAULT_TYPE, h = et.DEFAULT_FORMAT;
+    var o = GL$1.TEXTURE_2D, u = te.DEFAULT_TYPE, h = te.DEFAULT_FORMAT;
     s && (s.texture_type && (o = s.texture_type), s.type && (u = s.type), s.format && (h = s.format));
     for (var l = o + ":" + u + ":" + t + "x" + r + ":" + h, c = a._texture_pool, d = 0; d < c.length; ++d) {
       var f = c[d];
@@ -14198,9 +14229,9 @@ const et = class et {
     return Math.pow(2, Math.ceil(Math.log(t) / Math.log(2)));
   }
 };
-g(et, "DEFAULT_TYPE", GL$1.UNSIGNED_BYTE), g(et, "DEFAULT_FORMAT", GL$1.RGBA), g(et, "DEFAULT_MAG_FILTER", GL$1.LINEAR), g(et, "DEFAULT_MIN_FILTER", GL$1.LINEAR), g(et, "DEFAULT_WRAP_S", GL$1.CLAMP_TO_EDGE), g(et, "DEFAULT_WRAP_T", GL$1.CLAMP_TO_EDGE), g(et, "EXTENSION", "png"), //used when saving it to file
+g(te, "DEFAULT_TYPE", GL$1.UNSIGNED_BYTE), g(te, "DEFAULT_FORMAT", GL$1.RGBA), g(te, "DEFAULT_MAG_FILTER", GL$1.LINEAR), g(te, "DEFAULT_MIN_FILTER", GL$1.LINEAR), g(te, "DEFAULT_WRAP_S", GL$1.CLAMP_TO_EDGE), g(te, "DEFAULT_WRAP_T", GL$1.CLAMP_TO_EDGE), g(te, "EXTENSION", "png"), //used when saving it to file
 //used for render to FBOs
-g(et, "framebuffer", null), g(et, "renderbuffer", null), g(et, "loading_color", new Uint8Array([0, 0, 0, 0])), g(et, "use_renderbuffer_pool", !0), g(et, "cubemap_camera_parameters", [
+g(te, "framebuffer", null), g(te, "renderbuffer", null), g(te, "loading_color", new Uint8Array([0, 0, 0, 0])), g(te, "use_renderbuffer_pool", !0), g(te, "cubemap_camera_parameters", [
   { type: "posX", dir: vec3.fromValues(1, 0, 0), up: vec3.fromValues(0, 1, 0), right: vec3.fromValues(0, 0, -1) },
   { type: "negX", dir: vec3.fromValues(-1, 0, 0), up: vec3.fromValues(0, 1, 0), right: vec3.fromValues(0, 0, 1) },
   { type: "posY", dir: vec3.fromValues(0, 1, 0), up: vec3.fromValues(0, 0, -1), right: vec3.fromValues(1, 0, 0) },
@@ -14213,8 +14244,8 @@ g(et, "framebuffer", null), g(et, "renderbuffer", null), g(et, "loading_color", 
 * @param {Boolean} flip_y
 * @return {ArrayBuffer} the arraybuffer of the file containing the image
 */
-g(et, "binary_extension", "png");
-let Texture = et;
+g(te, "binary_extension", "png");
+let Texture = te;
 Texture.prototype.blit = (function() {
   var n = new Float32Array(4);
   return function(t, r, s) {
@@ -14235,7 +14266,7 @@ Texture.prototype.renderQuad = (function() {
     this.bind(0), l.uniforms({ u_texture: 0, u_position: t, u_color: s, u_size: r, u_viewport: gl.viewport_data.subarray(2, 4), u_transform: n }), c && l.uniforms(c), l.draw(d, gl.TRIANGLES);
   });
 })();
-const Ot = class Ot {
+const Oe = class Oe {
   constructor(t, r, s, a) {
     if (a = a || global$1.gl, this.gl = a, this._context_id = a.context_id, t && t.constructor !== Array)
       throw "FBO textures must be an Array";
@@ -14348,7 +14379,7 @@ const Ot = class Ot {
     this._old_viewport.set(gl.viewport_data), t ? this._old_fbo_handler = gl.getParameter(gl.FRAMEBUFFER_BINDING) : this._old_fbo_handler = null, this._old_fbo_handler != this.handler && gl.bindFramebuffer(gl.FRAMEBUFFER, this.handler);
     for (var r = 0; r < this.color_textures.length; ++r)
       this.color_textures[r]._in_current_fbo = !0;
-    this.depth_texture && (this.depth_texture._in_current_fbo = !0), gl.viewport(0, 0, this.width, this.height), Ot.current = this;
+    this.depth_texture && (this.depth_texture._in_current_fbo = !0), gl.viewport(0, 0, this.width, this.height), Oe.current = this;
   }
   /**
   * Disables this FBO, if it was binded with keep_old then the old FBO is enabled, otherwise it will render to the screen
@@ -14359,7 +14390,7 @@ const Ot = class Ot {
     gl.bindFramebuffer(gl.FRAMEBUFFER, this._old_fbo_handler), this._old_fbo_handler = null, gl.setViewport(this._old_viewport);
     for (var t = 0; t < this.color_textures.length; ++t)
       this.color_textures[t]._in_current_fbo = !1;
-    this.depth_texture && (this.depth_texture._in_current_fbo = !1), Ot.current = null;
+    this.depth_texture && (this.depth_texture._in_current_fbo = !1), Oe.current = null;
   }
   //binds another FBO without switch back to previous (faster)
   switchTo(t) {
@@ -14369,7 +14400,7 @@ const Ot = class Ot {
     this.depth_texture && (this.depth_texture._in_current_fbo = !1);
     for (var r = 0; r < t.color_textures.length; ++r)
       t.color_textures[r]._in_current_fbo = !0;
-    t.depth_texture && (t.depth_texture._in_current_fbo = !0), Ot.current = t;
+    t.depth_texture && (t.depth_texture._in_current_fbo = !0), Oe.current = t;
   }
   delete() {
     gl.deleteFramebuffer(this.handler), this.handler = null;
@@ -14377,15 +14408,15 @@ const Ot = class Ot {
   //type: gl.FLOAT, format: gl.RGBA
   static testSupport(t, r) {
     var s = t + ":" + r;
-    if (Ot.supported[s] != null)
-      return Ot.supported[s];
+    if (Oe.supported[s] != null)
+      return Oe.supported[s];
     var a = new GL$1.Texture(1, 1, { format: r, type: t });
     try {
       var o = new GL$1.FBO([a]);
     } catch {
-      return console.warn("This browser WEBGL implementation doesn't support this FBO format: " + GL$1.reverse[t] + " " + GL$1.reverse[r]), Ot.supported[s] = !1;
+      return console.warn("This browser WEBGL implementation doesn't support this FBO format: " + GL$1.reverse[t] + " " + GL$1.reverse[r]), Oe.supported[s] = !1;
     }
-    return Ot.supported[s] = !0, !0;
+    return Oe.supported[s] = !0, !0;
   }
   toSingle() {
     if (!(this.color_textures.length < 2)) {
@@ -14409,8 +14440,8 @@ const Ot = class Ot {
   }
 };
 //WebGL 1.0 support for certaing FBOs is not very clear and can crash sometimes
-g(Ot, "supported", {});
-let FBO = Ot;
+g(Oe, "supported", {});
+let FBO = Oe;
 GL$1.FBO = FBO;
 const Y = class Y {
   constructor(t, r, s) {
@@ -16124,7 +16155,7 @@ global$1.planeBoxOverlap = GL$1.planeBoxOverlap = function n(t, r) {
   var s = t, a = t[3], o = r, u = r, h = Math.abs(u[3] * s[0]) + Math.abs(u[4] * s[1]) + Math.abs(u[5] * s[2]), l = vec3.dot(s, o) + a;
   return l <= -h ? CLIP_OUTSIDE : l <= h ? CLIP_OVERLAP : CLIP_INSIDE;
 };
-const nt = class nt {
+const ne = class ne {
   constructor(t) {
     this.root = null, this.total_depth = 0, this.total_nodes = 0, t && (this.buildFromMesh(t), this.total_nodes = this.trim()), this.octree_pos_ref = [[0, 0, 0], [0, 0, 1], [0, 1, 0], [0, 1, 1], [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]];
   }
@@ -16133,9 +16164,9 @@ const nt = class nt {
     var r = t.getBuffer("vertices").data, s = t.getIndexBuffer("triangles");
     s && (s = s.data);
     var a = this.computeAABB(r);
-    this.root = a, this.total_nodes = 1, this.total_triangles = s ? s.length / 3 : r.length / 9, this.max_node_triangles = this.total_triangles * nt.MAX_NODE_TRIANGLES_RATIO;
+    this.root = a, this.total_nodes = 1, this.total_triangles = s ? s.length / 3 : r.length / 9, this.max_node_triangles = this.total_triangles * ne.MAX_NODE_TRIANGLES_RATIO;
     var o = vec3.create();
-    if (vec3.scale(o, a.size, nt.OCTREE_MARGIN_RATIO), o[0] < nt.OCTREE_MIN_MARGIN && (o[0] = nt.OCTREE_MIN_MARGIN), o[1] < nt.OCTREE_MIN_MARGIN && (o[1] = nt.OCTREE_MIN_MARGIN), o[2] < nt.OCTREE_MIN_MARGIN && (o[2] = nt.OCTREE_MIN_MARGIN), vec3.sub(a.min, a.min, o), vec3.add(a.max, a.max, o), a.faces = [], a.inside = 0, s)
+    if (vec3.scale(o, a.size, ne.OCTREE_MARGIN_RATIO), o[0] < ne.OCTREE_MIN_MARGIN && (o[0] = ne.OCTREE_MIN_MARGIN), o[1] < ne.OCTREE_MIN_MARGIN && (o[1] = ne.OCTREE_MIN_MARGIN), o[2] < ne.OCTREE_MIN_MARGIN && (o[2] = ne.OCTREE_MIN_MARGIN), vec3.sub(a.min, a.min, o), vec3.add(a.max, a.max, o), a.faces = [], a.inside = 0, s)
       for (var u = 0; u < s.length; u += 3) {
         var h = new Float32Array([
           r[s[u] * 3],
@@ -16163,13 +16194,13 @@ const nt = class nt {
       var a = this.computeAABB(t), o = !1;
       for (var u in r.c) {
         var h = r.c[u];
-        if (nt.isInsideAABB(a, h)) {
+        if (ne.isInsideAABB(a, h)) {
           this.addToNode(t, h, s + 1), o = !0;
           break;
         }
       }
       o || (r.faces == null && (r.faces = []), r.faces.push(t));
-    } else if (r.faces == null && (r.faces = []), r.faces.push(t), r.faces.length > this.max_node_triangles && s < nt.MAX_OCTREE_DEPTH) {
+    } else if (r.faces == null && (r.faces = []), r.faces.push(t), r.faces.length > this.max_node_triangles && s < ne.MAX_OCTREE_DEPTH) {
       this.splitNode(r), this.total_depth < s + 1 && (this.total_depth = s + 1);
       var l = r.faces.concat();
       r.faces = null;
@@ -16177,7 +16208,7 @@ const nt = class nt {
         var t = l[u], a = this.computeAABB(t), o = !1;
         for (var c in r.c) {
           var h = r.c[c];
-          if (nt.isInsideAABB(a, h)) {
+          if (ne.isInsideAABB(a, h)) {
             this.addToNode(t, h, s + 1), o = !0;
             break;
           }
@@ -16219,15 +16250,15 @@ const nt = class nt {
     if (t = vec3.clone(t), !this.root)
       throw "Error: octree not build";
     var s = r * r;
-    return nt.testSphereBox(t, s, vec3.clone(this.root.min), vec3.clone(this.root.max)) ? nt.testSphereInNode(this.root, t, s) : !1;
+    return ne.testSphereBox(t, s, vec3.clone(this.root.min), vec3.clone(this.root.max)) ? ne.testSphereInNode(this.root, t, s) : !1;
   }
   //test if one bounding is inside or overlapping another bounding
   static isInsideAABB(t, r) {
     return !(t.min[0] < r.min[0] || t.min[1] < r.min[1] || t.min[2] < r.min[2] || t.max[0] > r.max[0] || t.max[1] > r.max[1] || t.max[2] > r.max[2]);
   }
 };
-g(nt, "MAX_NODE_TRIANGLES_RATIO", 0.1), g(nt, "MAX_OCTREE_DEPTH", 8), g(nt, "OCTREE_MARGIN_RATIO", 0.01), g(nt, "OCTREE_MIN_MARGIN", 0.1);
-let Octree = nt;
+g(ne, "MAX_NODE_TRIANGLES_RATIO", 0.1), g(ne, "MAX_OCTREE_DEPTH", 8), g(ne, "OCTREE_MARGIN_RATIO", 0.01), g(ne, "OCTREE_MIN_MARGIN", 0.1);
+let Octree = ne;
 Octree.testRayInNode = function(n, t, r, s) {
   var a = null, o = null;
   if (n.faces)
@@ -16310,7 +16341,7 @@ Octree.testSphereTriangle = (function() {
     H = vec3.sub(H, H, V);
     var z = vec3.scale(vec3.create(), t, X);
     z = vec3.sub(z, z, $);
-    var K = vec3.dot(F, F) > c * R * R & vec3.dot(F, U) > 0, tt = vec3.dot(V, V) > c * B * B & vec3.dot(V, H) > 0, W = vec3.dot($, $) > c * X * X & vec3.dot($, z) > 0, Q = T | N | C | D | K | tt | W;
+    var K = vec3.dot(F, F) > c * R * R & vec3.dot(F, U) > 0, ee = vec3.dot(V, V) > c * B * B & vec3.dot(V, H) > 0, W = vec3.dot($, $) > c * X * X & vec3.dot($, z) > 0, Q = T | N | C | D | K | ee | W;
     return !Q;
   };
 })();
@@ -16437,14 +16468,14 @@ Raytracer.prototype.getRayForPixel = (function() {
   };
 })();
 LiteGraph.LGraphCanvas.link_type_colors.Texture = "#987";
-const DEG2RAD = 0.0174532925, it = class it {
+const DEG2RAD = 0.0174532925, ie = class ie {
   constructor() {
     this.addOutput("tex", "Texture"), this.addOutput("name", "string"), this.properties = {
       name: "",
       filter: !0
     }, this.size = [
-      it.image_preview_size,
-      it.image_preview_size
+      ie.image_preview_size,
+      ie.image_preview_size
     ];
   }
   // returns the container where all the loaded textures are stored (overwrite if you have a Resources Manager)
@@ -16456,7 +16487,7 @@ const DEG2RAD = 0.0174532925, it = class it {
     r = r || {};
     var s = t;
     s.substr(0, 7) == "http://" && LiteGraph.proxy && (s = LiteGraph.proxy + s.substr(7));
-    var a = it.getTexturesContainer(), o = a[t] = GL$1.Texture.fromURL(s, r);
+    var a = ie.getTexturesContainer(), o = a[t] = GL$1.Texture.fromURL(s, r);
     return o;
   }
   static getTexture(t) {
@@ -16472,13 +16503,13 @@ const DEG2RAD = 0.0174532925, it = class it {
       throw new Error("LGraphTexture.getTargetTexture expects a reference texture");
     var a = null;
     switch (s) {
-      case it.LOW:
+      case ie.LOW:
         a = gl$1.UNSIGNED_BYTE;
         break;
-      case it.HIGH:
+      case ie.HIGH:
         a = gl$1.HIGH_PRECISION_FORMAT;
         break;
-      case it.REUSE:
+      case ie.REUSE:
         return t;
       default:
         a = t ? t.type : gl$1.UNSIGNED_BYTE;
@@ -16493,10 +16524,10 @@ const DEG2RAD = 0.0174532925, it = class it {
   static getTextureType(t, r) {
     var s = r ? r.type : gl$1.UNSIGNED_BYTE;
     switch (t) {
-      case it.HIGH:
+      case ie.HIGH:
         s = gl$1.HIGH_PRECISION_FORMAT;
         break;
-      case it.LOW:
+      case ie.LOW:
         s = gl$1.UNSIGNED_BYTE;
         break;
     }
@@ -16555,7 +16586,7 @@ const DEG2RAD = 0.0174532925, it = class it {
   }
   onExecute() {
     var t = null;
-    if (this.isOutputConnected(1) && (t = this.getInputData(0)), !t && this._drop_texture && (t = this._drop_texture), !t && this.properties.name && (t = it.getTexture(this.properties.name)), !t) {
+    if (this.isOutputConnected(1) && (t = this.getInputData(0)), !t && this._drop_texture && (t = this._drop_texture), !t && this.properties.name && (t = ie.getTexture(this.properties.name)), !t) {
       this.setOutputData(0, null), this.setOutputData(1, "");
       return;
     }
@@ -16581,7 +16612,7 @@ const DEG2RAD = 0.0174532925, it = class it {
         if (t.webgl)
           this._canvas = this._last_tex;
         else {
-          var r = it.generateLowResTexturePreview(this._last_tex);
+          var r = ie.generateLowResTexturePreview(this._last_tex);
           if (!r)
             return;
           this._last_preview_tex = this._last_tex, this._canvas = GL$1.cloneCanvas(r);
@@ -16593,7 +16624,7 @@ const DEG2RAD = 0.0174532925, it = class it {
   static generateLowResTexturePreview(t) {
     if (!t)
       return null;
-    var r = it.image_preview_size, s = t;
+    var r = ie.image_preview_size, s = t;
     if (t.format == gl$1.DEPTH_COMPONENT)
       return null;
     (t.width > r || t.height > r) && (s = this._preview_temp_tex, this._preview_temp_tex || (s = new GL$1.Texture(r, r, { minFilter: gl$1.NEAREST }), this._preview_temp_tex = s), t.copyTo(s), t = s);
@@ -16620,31 +16651,31 @@ const DEG2RAD = 0.0174532925, it = class it {
     });
   }
 };
-g(it, "title", "Texture"), g(it, "desc", "Texture"), g(it, "widgets_info", {
+g(ie, "title", "Texture"), g(ie, "desc", "Texture"), g(ie, "widgets_info", {
   name: { widget: "texture" },
   filter: { widget: "checkbox" }
 }), // REPLACE THIS TO INTEGRATE WITH YOUR FRAMEWORK
-g(it, "loadTextureCallback", null), // function in charge of loading textures when not present in the container
-g(it, "image_preview_size", 256), // flags to choose output texture type
-g(it, "UNDEFINED", 0), // not specified
-g(it, "PASS_THROUGH", 1), // do not apply FX (like disable but passing the in to the out)
-g(it, "COPY", 2), // create new texture with the same properties as the origin texture
-g(it, "LOW", 3), // create new texture with low precision (byte)
-g(it, "HIGH", 4), // create new texture with high precision (half-float)
-g(it, "REUSE", 5), // reuse input texture
-g(it, "DEFAULT", 2), // use the default
-g(it, "MODE_VALUES", {
-  undefined: it.UNDEFINED,
-  "pass through": it.PASS_THROUGH,
-  copy: it.COPY,
-  low: it.LOW,
-  high: it.HIGH,
-  reuse: it.REUSE,
-  default: it.DEFAULT
+g(ie, "loadTextureCallback", null), // function in charge of loading textures when not present in the container
+g(ie, "image_preview_size", 256), // flags to choose output texture type
+g(ie, "UNDEFINED", 0), // not specified
+g(ie, "PASS_THROUGH", 1), // do not apply FX (like disable but passing the in to the out)
+g(ie, "COPY", 2), // create new texture with the same properties as the origin texture
+g(ie, "LOW", 3), // create new texture with low precision (byte)
+g(ie, "HIGH", 4), // create new texture with high precision (half-float)
+g(ie, "REUSE", 5), // reuse input texture
+g(ie, "DEFAULT", 2), // use the default
+g(ie, "MODE_VALUES", {
+  undefined: ie.UNDEFINED,
+  "pass through": ie.PASS_THROUGH,
+  copy: ie.COPY,
+  low: ie.LOW,
+  high: ie.HIGH,
+  reuse: ie.REUSE,
+  default: ie.DEFAULT
 });
-let LGraphTexture = it;
+let LGraphTexture = ie;
 LiteGraph.registerNodeType("texture/texture", LGraphTexture);
-const ye = class ye {
+const yt = class yt {
   constructor() {
     this.addInput("Texture", "Texture"), this.properties = { flipY: !1 }, this.size = [
       LGraphTexture.image_preview_size,
@@ -16652,7 +16683,7 @@ const ye = class ye {
     ];
   }
   onDrawBackground(t) {
-    if (!this.flags.collapsed && !(!t.webgl && !ye.allow_preview)) {
+    if (!this.flags.collapsed && !(!t.webgl && !yt.allow_preview)) {
       var r = this.getInputData(0);
       if (r) {
         var s = null;
@@ -16661,8 +16692,8 @@ const ye = class ye {
     }
   }
 };
-g(ye, "title", "Preview"), g(ye, "desc", "Show a texture in the graph canvas"), g(ye, "allow_preview", !1);
-let LGraphTexturePreview = ye;
+g(yt, "title", "Preview"), g(yt, "desc", "Show a texture in the graph canvas"), g(yt, "allow_preview", !1);
+let LGraphTexturePreview = yt;
 LiteGraph.registerNodeType("texture/preview", LGraphTexturePreview);
 class LGraphTextureSave {
   constructor() {
@@ -16687,7 +16718,7 @@ class LGraphTextureSave {
 }
 g(LGraphTextureSave, "title", "Save"), g(LGraphTextureSave, "desc", "Save a texture in the repository");
 LiteGraph.registerNodeType("texture/save", LGraphTextureSave);
-const Gt = class Gt {
+const Ge = class Ge {
   constructor() {
     this.addInput("Texture", "Texture"), this.addInput("TextureB", "Texture"), this.addInput("value", "number"), this.addOutput("Texture", "Texture"), this.help = "<p>pixelcode must be vec3, uvcode must be vec2, is optional</p>        <p><strong>uv:</strong> tex. coords</p><p><strong>color:</strong> texture <strong>colorB:</strong> textureB</p><p><strong>time:</strong> scene time <strong>value:</strong> input value</p><p>For multiline you must type: result = ...</p>", this.properties = {
       value: 1,
@@ -16741,7 +16772,7 @@ const Gt = class Gt {
         var l = this._shader;
         if (!this.has_error && (!l || this._shader_code != u + "|" + h)) {
           var c = LGraphTexture.replaceCode(
-            Gt.pixel_shader,
+            Ge.pixel_shader,
             { UV_CODE: u, PIXEL_CODE: h }
           );
           try {
@@ -16779,25 +16810,25 @@ const Gt = class Gt {
     }
   }
   static registerPreset(t, r) {
-    Gt.presets[t] = r;
+    Ge.presets[t] = r;
   }
   // webglstudio stuff...
   onInspect(t) {
     var r = this;
     t.addCombo("Presets", "", {
-      values: Object.keys(Gt.presets),
+      values: Object.keys(Ge.presets),
       callback: function(s) {
-        var a = Gt.presets[s];
+        var a = Ge.presets[s];
         a && (r.setProperty("pixelcode", a), r.title = s, t.refresh());
       }
     });
   }
 };
-g(Gt, "widgets_info", {
+g(Ge, "widgets_info", {
   uvcode: { widget: "code" },
   pixelcode: { widget: "code" },
   precision: { widget: "combo", values: LGraphTexture.MODE_VALUES }
-}), g(Gt, "title", "Operation"), g(Gt, "desc", "Texture shader operation"), g(Gt, "presets", {}), g(Gt, "pixel_shader", `
+}), g(Ge, "title", "Operation"), g(Ge, "desc", "Texture shader operation"), g(Ge, "presets", {}), g(Ge, "pixel_shader", `
         precision highp float;
     
         uniform sampler2D u_texture;
@@ -16820,7 +16851,7 @@ g(Gt, "widgets_info", {
             gl_FragColor = vec4(result, alpha);
         }
     `);
-let LGraphTextureOperation = Gt;
+let LGraphTextureOperation = Ge;
 LGraphTextureOperation.registerPreset("", "");
 LGraphTextureOperation.registerPreset("bypass", "color");
 LGraphTextureOperation.registerPreset("add", "color + colorB * value");
@@ -16875,7 +16906,7 @@ LGraphTextureOperation.registerPreset(
   "vec3(color.x > colorB.x * value ? 1.0 : 0.0,color.y > colorB.y * value ? 1.0 : 0.0,color.z > colorB.z * value ? 1.0 : 0.0)"
 );
 LiteGraph.registerNodeType("texture/operation", LGraphTextureOperation);
-const he = class he {
+const ht = class ht {
   constructor() {
     this.addOutput("out", "Texture"), this.properties = {
       code: "",
@@ -16884,7 +16915,7 @@ const he = class he {
       width: 512,
       height: 512,
       precision: LGraphTexture.DEFAULT
-    }, this.properties.code = he.pixel_shader, this._uniforms = {
+    }, this.properties.code = ht.pixel_shader, this._uniforms = {
       u_value: 1,
       u_color: vec4.create(),
       in_texture: 0,
@@ -16996,10 +17027,10 @@ const he = class he {
     }
   }
 };
-g(he, "title", "Shader"), g(he, "desc", "Texture shader"), g(he, "widgets_info", {
+g(ht, "title", "Shader"), g(ht, "desc", "Texture shader"), g(ht, "widgets_info", {
   code: { type: "code", lang: "glsl" },
   precision: { widget: "combo", values: LGraphTexture.MODE_VALUES }
-}), g(he, "pixel_shader", `
+}), g(ht, "pixel_shader", `
         precision highp float;
     
         varying vec2 v_coord;
@@ -17017,9 +17048,9 @@ g(he, "title", "Shader"), g(he, "desc", "Texture shader"), g(he, "widgets_info",
             gl_FragColor = vec4(color, 1.0);
         }
     `);
-let LGraphTextureShader = he;
+let LGraphTextureShader = ht;
 LiteGraph.registerNodeType("texture/shader", LGraphTextureShader);
-const le = class le {
+const lt = class lt {
   constructor() {
     this.addInput("in", "Texture"), this.addInput("scale", "vec2"), this.addInput("offset", "vec2"), this.addOutput("out", "Texture"), this.properties = {
       offset: vec2.fromValues(0, 0),
@@ -17043,7 +17074,7 @@ const le = class le {
       var o = this._shader;
       o || (o = new GL$1.Shader(
         GL$1.Shader.SCREEN_VERTEX_SHADER,
-        le.pixel_shader
+        lt.pixel_shader
       ));
       var u = this.getInputData(1);
       u ? (this.properties.scale[0] = u[0], this.properties.scale[1] = u[1]) : u = this.properties.scale;
@@ -17060,12 +17091,12 @@ const le = class le {
     }
   }
 };
-g(le, "widgets_info", {
+g(lt, "widgets_info", {
   precision: {
     widget: "combo",
     values: LGraphTexture.MODE_VALUES
   }
-}), g(le, "title", "Scale/Offset"), g(le, "desc", "Applies an scaling and offseting"), g(le, "pixel_shader", `
+}), g(lt, "title", "Scale/Offset"), g(lt, "desc", "Applies an scaling and offseting"), g(lt, "pixel_shader", `
         precision highp float;
     
         uniform sampler2D u_texture;
@@ -17080,9 +17111,9 @@ g(le, "widgets_info", {
             gl_FragColor = texture2D(u_texture, uv);
         }
     `);
-let LGraphTextureScaleOffset = le;
+let LGraphTextureScaleOffset = lt;
 LiteGraph.registerNodeType("texture/scaleOffset", LGraphTextureScaleOffset);
-const be = class be {
+const bt = class bt {
   constructor() {
     g(this, "pixel_shader", `
         precision highp float;
@@ -17133,7 +17164,7 @@ const be = class be {
       var o = this._shader;
       o || (o = new GL$1.Shader(
         GL$1.Shader.SCREEN_VERTEX_SHADER,
-        be.pixel_shader
+        bt.pixel_shader
       ));
       var u = this.getInputData(2);
       u != null ? this.properties.factor = u : u = parseFloat(this.properties.factor);
@@ -17146,15 +17177,15 @@ const be = class be {
     }
   }
 };
-g(be, "widgets_info", {
+g(bt, "widgets_info", {
   precision: {
     widget: "combo",
     values: LGraphTexture.MODE_VALUES
   }
-}), g(be, "title", "Warp"), g(be, "desc", "Texture warp operation");
-let LGraphTextureWarp = be;
+}), g(bt, "title", "Warp"), g(bt, "desc", "Texture warp operation");
+let LGraphTextureWarp = bt;
 LiteGraph.registerNodeType("texture/warp", LGraphTextureWarp);
-const ut = class ut {
+const ue = class ue {
   constructor() {
     this.addInput("Texture", "Texture"), this.properties = {
       additive: !1,
@@ -17186,7 +17217,7 @@ const ut = class ut {
         gl$1.TEXTURE_MAG_FILTER,
         this.properties.filter ? gl$1.LINEAR : gl$1.NEAREST
       );
-      var s = ut._prev_viewport;
+      var s = ue._prev_viewport;
       s.set(gl$1.viewport_data);
       var a = this.properties.viewport;
       if (gl$1.viewport(
@@ -17195,22 +17226,22 @@ const ut = class ut {
         s[2] * a[2],
         s[3] * a[3]
       ), this.properties.antialiasing) {
-        ut._shader || (ut._shader = new GL$1.Shader(
+        ue._shader || (ue._shader = new GL$1.Shader(
           GL$1.Shader.SCREEN_VERTEX_SHADER,
-          ut.aa_pixel_shader
+          ue.aa_pixel_shader
         ));
         var o = Mesh.getScreenQuad();
-        t.bind(0), ut._shader.uniforms({
+        t.bind(0), ue._shader.uniforms({
           u_texture: 0,
           uViewportSize: [t.width, t.height],
           u_igamma: 1 / r,
           inverseVP: [1 / t.width, 1 / t.height]
         }).draw(o);
       } else
-        r != 1 ? (ut._gamma_shader || (ut._gamma_shader = new GL$1.Shader(
+        r != 1 ? (ue._gamma_shader || (ue._gamma_shader = new GL$1.Shader(
           Shader.SCREEN_VERTEX_SHADER,
-          ut.gamma_pixel_shader
-        )), t.toViewport(ut._gamma_shader, {
+          ue.gamma_pixel_shader
+        )), t.toViewport(ue._gamma_shader, {
           u_texture: 0,
           u_igamma: 1 / r
         })) : t.toViewport();
@@ -17226,7 +17257,7 @@ const ut = class ut {
     return [["gamma", "number"]];
   }
 };
-g(ut, "title", "to Viewport"), g(ut, "desc", "Texture to viewport"), g(ut, "_prev_viewport", new Float32Array(4)), g(ut, "aa_pixel_shader", `
+g(ue, "title", "to Viewport"), g(ue, "desc", "Texture to viewport"), g(ue, "_prev_viewport", new Float32Array(4)), g(ue, "aa_pixel_shader", `
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
@@ -17254,7 +17285,7 @@ g(ut, "title", "to Viewport"), g(ut, "desc", "Texture to viewport"), g(ut, "_pre
         void main() {
             gl_FragColor = applyFXAA(u_texture, v_coord * uViewportSize);
         }
-    `), g(ut, "gamma_pixel_shader", `
+    `), g(ue, "gamma_pixel_shader", `
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
@@ -17266,7 +17297,7 @@ g(ut, "title", "to Viewport"), g(ut, "desc", "Texture to viewport"), g(ut, "_pre
             gl_FragColor = color;
         }
     `);
-let LGraphTextureToViewport = ut;
+let LGraphTextureToViewport = ue;
 LiteGraph.registerNodeType("texture/toviewport", LGraphTextureToViewport);
 class LGraphTextureCopy {
   constructor() {
@@ -17306,7 +17337,7 @@ g(LGraphTextureCopy, "title", "Copy"), g(LGraphTextureCopy, "desc", "Copy Textur
   precision: { widget: "combo", values: LGraphTexture.MODE_VALUES }
 });
 LiteGraph.registerNodeType("texture/copy", LGraphTextureCopy);
-const Ht = class Ht {
+const He = class He {
   constructor() {
     this.addInput("Texture", "Texture"), this.addOutput("", "Texture"), this.properties = {
       iterations: 1,
@@ -17321,10 +17352,10 @@ const Ht = class Ht {
         this.setOutputData(0, t);
         return;
       }
-      var r = Ht._shader;
-      r || (Ht._shader = r = new GL$1.Shader(
+      var r = He._shader;
+      r || (He._shader = r = new GL$1.Shader(
         GL$1.Shader.SCREEN_VERTEX_SHADER,
-        Ht.pixel_shader
+        He.pixel_shader
       ));
       var s = t.width | 0, a = t.height | 0, o = t.type;
       this.properties.precision === LGraphTexture.LOW ? o = gl$1.UNSIGNED_BYTE : this.properties.precision === LGraphTexture.HIGH && (o = gl$1.HIGH_PRECISION_FORMAT);
@@ -17342,10 +17373,10 @@ const Ht = class Ht {
     }
   }
 };
-g(Ht, "title", "Downsample"), g(Ht, "desc", "Downsample Texture"), g(Ht, "widgets_info", {
+g(He, "title", "Downsample"), g(He, "desc", "Downsample Texture"), g(He, "widgets_info", {
   iterations: { type: "number", step: 1, precision: 0, min: 0 },
   precision: { widget: "combo", values: LGraphTexture.MODE_VALUES }
-}), g(Ht, "pixel_shader", `
+}), g(He, "pixel_shader", `
         precision highp float;
         uniform sampler2D u_texture;
         uniform vec2 u_offset;
@@ -17359,7 +17390,7 @@ g(Ht, "title", "Downsample"), g(Ht, "desc", "Downsample Texture"), g(Ht, "widget
             gl_FragColor = color * 0.25;
         }
     `);
-let LGraphTextureDownsample = Ht;
+let LGraphTextureDownsample = He;
 LiteGraph.registerNodeType("texture/downsample", LGraphTextureDownsample);
 class LGraphTextureResize {
   constructor() {
@@ -17384,7 +17415,7 @@ g(LGraphTextureResize, "title", "Resize"), g(LGraphTextureResize, "desc", "Resiz
   precision: { widget: "combo", values: LGraphTexture.MODE_VALUES }
 });
 LiteGraph.registerNodeType("texture/resize", LGraphTextureResize);
-const Dt = class Dt {
+const De = class De {
   constructor() {
     this.addInput("Texture", "Texture"), this.addOutput("tex", "Texture"), this.addOutput("avg", "vec4"), this.addOutput("lum", "number"), this.properties = {
       use_previous_frame: !0,
@@ -17408,14 +17439,14 @@ const Dt = class Dt {
   updateAverage() {
     var t = this.getInputData(0);
     if (t && !(!this.isOutputConnected(0) && !this.isOutputConnected(1) && !this.isOutputConnected(2))) {
-      if (!Dt._shader) {
-        Dt._shader = new GL$1.Shader(
+      if (!De._shader) {
+        De._shader = new GL$1.Shader(
           GL$1.Shader.SCREEN_VERTEX_SHADER,
-          Dt.pixel_shader
+          De.pixel_shader
         );
         for (var r = new Float32Array(16), s = 0; s < r.length; ++s)
           r[s] = Math.random();
-        Dt._shader.uniforms({
+        De._shader.uniforms({
           u_samples_a: r.subarray(0, 16),
           u_samples_b: r.subarray(16, 32)
         });
@@ -17431,7 +17462,7 @@ const Dt = class Dt {
         minFilter: gl$1.LINEAR_MIPMAP_LINEAR,
         magFilter: gl$1.LINEAR
       })), t.copyTo(this._temp_pot2_texture), t = this._temp_pot2_texture, t.bind(0), gl$1.generateMipmap(GL$1.TEXTURE_2D), this._uniforms.u_mipmap_offset = 9);
-      var u = Dt._shader, h = this._uniforms;
+      var u = De._shader, h = this._uniforms;
       if (h.u_mipmap_offset = this.properties.mipmap_offset, gl$1.disable(gl$1.DEPTH_TEST), gl$1.disable(gl$1.BLEND), this._temp_texture.drawTo(function() {
         t.toViewport(u, h);
       }), this.isOutputConnected(1) || this.isOutputConnected(2)) {
@@ -17444,8 +17475,8 @@ const Dt = class Dt {
     }
   }
 };
-g(Dt, "title", "Average"), g(Dt, "desc", `Compute a partial average (32 random samples) of a texture and stores it as a 1x1 pixel texture.
- If high_quality is true, then it generates the mipmaps first and reads from the lower one.`), g(Dt, "pixel_shader", `
+g(De, "title", "Average"), g(De, "desc", `Compute a partial average (32 random samples) of a texture and stores it as a 1x1 pixel texture.
+ If high_quality is true, then it generates the mipmaps first and reads from the lower one.`), g(De, "pixel_shader", `
         precision highp float;
         uniform mat4 u_samples_a;
         uniform mat4 u_samples_b;
@@ -17467,9 +17498,9 @@ g(Dt, "title", "Average"), g(Dt, "desc", `Compute a partial average (32 random s
             gl_FragColor = color * 0.03125;
         }
     `);
-let LGraphTextureAverage = Dt;
+let LGraphTextureAverage = De;
 LiteGraph.registerNodeType("texture/average", LGraphTextureAverage);
-const Vt = class Vt {
+const Ve = class Ve {
   constructor() {
     this.addInput("in", "Texture"), this.addInput("factor", "Number"), this.addOutput("out", "Texture"), this.properties = { factor: 0.5 }, this._uniforms = {
       u_texture: 0,
@@ -17480,9 +17511,9 @@ const Vt = class Vt {
   onExecute() {
     var t = this.getInputData(0);
     if (!(!t || !this.isOutputConnected(0))) {
-      Vt._shader || (Vt._shader = new GL$1.Shader(
+      Ve._shader || (Ve._shader = new GL$1.Shader(
         GL$1.Shader.SCREEN_VERTEX_SHADER,
-        Vt.pixel_shader
+        Ve.pixel_shader
       ));
       var r = this._temp_texture;
       if (!r || r.type != t.type || r.width != t.width || r.height != t.height) {
@@ -17497,14 +17528,14 @@ const Vt = class Vt {
           s
         ), t.copyTo(this._temp_texture2);
       }
-      var a = this._temp_texture, o = this._temp_texture2, u = Vt._shader, h = this._uniforms;
+      var a = this._temp_texture, o = this._temp_texture2, u = Ve._shader, h = this._uniforms;
       h.u_factor = 1 - this.getInputOrProperty("factor"), gl$1.disable(gl$1.BLEND), gl$1.disable(gl$1.DEPTH_TEST), a.drawTo(function() {
         o.bind(1), t.toViewport(u, h);
       }), this.setOutputData(0, a), this._temp_texture = o, this._temp_texture2 = a;
     }
   }
 };
-g(Vt, "title", "Smooth"), g(Vt, "desc", "Smooth texture over time"), g(Vt, "pixel_shader", `precision highp float;
+g(Ve, "title", "Smooth"), g(Ve, "desc", "Smooth texture over time"), g(Ve, "pixel_shader", `precision highp float;
     precision highp float;
     uniform sampler2D u_texture;
     uniform sampler2D u_textureB;
@@ -17515,9 +17546,9 @@ g(Vt, "title", "Smooth"), g(Vt, "desc", "Smooth texture over time"), g(Vt, "pixe
         gl_FragColor = mix( texture2D( u_texture, v_coord ), texture2D( u_textureB, v_coord ), u_factor );
     }
     `);
-let LGraphTextureTemporalSmooth = Vt;
+let LGraphTextureTemporalSmooth = Ve;
 LiteGraph.registerNodeType("texture/temporal_smooth", LGraphTextureTemporalSmooth);
-const dt = class dt {
+const de = class de {
   constructor() {
     this.addInput("in", "Texture"), this.addOutput("avg", "Texture"), this.addOutput("array", "Texture"), this.properties = { samples: 64, frames_interval: 1 }, this._uniforms = {
       u_texture: 0,
@@ -17532,12 +17563,12 @@ const dt = class dt {
   onExecute() {
     var t = this.getInputData(0);
     if (!(!t || !this.isOutputConnected(0))) {
-      dt._shader || (dt._shader_copy = new GL$1.Shader(
+      de._shader || (de._shader_copy = new GL$1.Shader(
         GL$1.Shader.SCREEN_VERTEX_SHADER,
-        dt.pixel_shader_copy
-      ), dt._shader_avg = new GL$1.Shader(
+        de.pixel_shader_copy
+      ), de._shader_avg = new GL$1.Shader(
         GL$1.Shader.SCREEN_VERTEX_SHADER,
-        dt.pixel_shader_avg
+        de.pixel_shader_avg
       ));
       var r = clamp(this.properties.samples, 0, 64), s = this.frame, a = this.properties.frames_interval;
       if (a == 0 || s % a == 0) {
@@ -17550,7 +17581,7 @@ const dt = class dt {
           };
           this._temp_texture = new GL$1.Texture(r, 1, u), this._temp_texture2 = new GL$1.Texture(r, 1, u), this._temp_texture_out = new GL$1.Texture(1, 1, u);
         }
-        var h = this._temp_texture, l = this._temp_texture2, c = dt._shader_copy, d = dt._shader_avg, f = this._uniforms;
+        var h = this._temp_texture, l = this._temp_texture2, c = de._shader_copy, d = de._shader_avg, f = this._uniforms;
         f.u_samples = r, f.u_isamples = 1 / r, gl$1.disable(gl$1.BLEND), gl$1.disable(gl$1.DEPTH_TEST), h.drawTo(function() {
           l.bind(1), t.toViewport(c, f);
         }), this._temp_texture_out.drawTo(function() {
@@ -17561,13 +17592,13 @@ const dt = class dt {
     }
   }
 };
-g(dt, "title", "Lineal Avg Smooth"), g(dt, "desc", "Smooth texture linearly over time"), g(dt, "@samples", {
+g(de, "title", "Lineal Avg Smooth"), g(de, "desc", "Smooth texture linearly over time"), g(de, "@samples", {
   type: "number",
   min: 1,
   max: 64,
   step: 1,
   precision: 1
-}), g(dt, "pixel_shader_copy", `precision highp float;
+}), g(de, "pixel_shader_copy", `precision highp float;
     precision highp float;
     uniform sampler2D u_texture;
     uniform sampler2D u_textureB;
@@ -17580,7 +17611,7 @@ g(dt, "title", "Lineal Avg Smooth"), g(dt, "desc", "Smooth texture linearly over
         else
             gl_FragColor = texture2D( u_textureB, v_coord - vec2(u_isamples,0.0) );
     }
-    `), g(dt, "pixel_shader_avg", `precision highp float;
+    `), g(de, "pixel_shader_avg", `precision highp float;
     precision highp float;
     uniform sampler2D u_texture;
     uniform int u_samples;
@@ -17598,7 +17629,7 @@ g(dt, "title", "Lineal Avg Smooth"), g(dt, "desc", "Smooth texture linearly over
         gl_FragColor = color * u_isamples;
     }
     `);
-let LGraphTextureLinearAvgSmooth = dt;
+let LGraphTextureLinearAvgSmooth = de;
 LiteGraph.registerNodeType("texture/linear_avg_smooth", LGraphTextureLinearAvgSmooth);
 class LGraphImageToTexture {
   constructor() {
@@ -17631,16 +17662,16 @@ class LGraphImageToTexture {
 }
 g(LGraphImageToTexture, "title", "Image to Texture"), g(LGraphImageToTexture, "desc", "Uploads an image to the GPU");
 LiteGraph.registerNodeType("texture/imageToTexture", LGraphImageToTexture);
-const St = class St {
+const Se = class Se {
   constructor() {
     this.addInput("Texture", "Texture"), this.addInput("LUT", "Texture"), this.addInput("Intensity", "number"), this.addOutput("", "Texture"), this.properties = {
       enabled: !0,
       intensity: 1,
       precision: LGraphTexture.DEFAULT,
       texture: null
-    }, St._shader || (St._shader = new GL$1.Shader(
+    }, Se._shader || (Se._shader = new GL$1.Shader(
       Shader.SCREEN_VERTEX_SHADER,
-      St.pixel_shader
+      Se.pixel_shader
     ));
   }
   onExecute() {
@@ -17663,7 +17694,7 @@ const St = class St {
           this._tex,
           this.properties.precision
         ), this._tex.drawTo(function() {
-          r.bind(1), t.toViewport(St._shader, {
+          r.bind(1), t.toViewport(Se._shader, {
             u_texture: 0,
             u_textureB: 1,
             u_amount: s
@@ -17673,10 +17704,10 @@ const St = class St {
     }
   }
 };
-g(St, "widgets_info", {
+g(Se, "widgets_info", {
   texture: { widget: "texture" },
   precision: { widget: "combo", values: LGraphTexture.MODE_VALUES }
-}), g(St, "title", "LUT"), g(St, "desc", "Apply LUT to Texture"), g(St, "pixel_shader", `precision highp float;
+}), g(Se, "title", "LUT"), g(Se, "desc", "Apply LUT to Texture"), g(Se, "pixel_shader", `precision highp float;
     precision highp float;
     varying vec2 v_coord;
     uniform sampler2D u_texture;
@@ -17704,9 +17735,9 @@ g(St, "widgets_info", {
             gl_FragColor = vec4( mix( textureColor.rgb, newColor.rgb, u_amount), textureColor.w);
     }
     `);
-let LGraphTextureLUT = St;
+let LGraphTextureLUT = Se;
 LiteGraph.registerNodeType("texture/LUT", LGraphTextureLUT);
-const Ct = class Ct {
+const Ce = class Ce {
   constructor() {
     this.addInput("Texture", "Texture"), this.addInput("Atlas", "Texture"), this.addOutput("", "Texture"), this.properties = {
       enabled: !0,
@@ -17719,9 +17750,9 @@ const Ct = class Ct {
       precision: LGraphTexture.DEFAULT,
       generate_mipmaps: !1,
       texture: null
-    }, Ct._shader || (Ct._shader = new GL$1.Shader(
+    }, Ce._shader || (Ce._shader = new GL$1.Shader(
       Shader.SCREEN_VERTEX_SHADER,
-      Ct.pixel_shader
+      Ce.pixel_shader
     )), this._uniforms = {
       u_texture: 0,
       u_textureB: 1,
@@ -17758,16 +17789,16 @@ const Ct = class Ct {
           this._tex,
           this.properties.precision
         ), s.u_res[0] = this._tex.width, s.u_res[1] = this._tex.height, this._tex.bind(0), gl$1.texParameteri(gl$1.TEXTURE_2D, gl$1.TEXTURE_MAG_FILTER, gl$1.NEAREST), gl$1.texParameteri(gl$1.TEXTURE_2D, gl$1.TEXTURE_MIN_FILTER, gl$1.NEAREST), this._tex.drawTo(function() {
-          r.bind(1), t.toViewport(Ct._shader, s);
+          r.bind(1), t.toViewport(Ce._shader, s);
         }), this.properties.generate_mipmaps && (this._tex.bind(0), gl$1.generateMipmap(this._tex.texture_type), this._tex.unbind(0)), this.setOutputData(0, this._tex);
       }
     }
   }
 };
-g(Ct, "widgets_info", {
+g(Ce, "widgets_info", {
   texture: { widget: "texture" },
   precision: { widget: "combo", values: LGraphTexture.MODE_VALUES }
-}), g(Ct, "title", "Encode"), g(Ct, "desc", "Apply a texture atlas to encode a texture"), g(Ct, "pixel_shader", `precision highp float;
+}), g(Ce, "title", "Encode"), g(Ce, "desc", "Apply a texture atlas to encode a texture"), g(Ce, "pixel_shader", `precision highp float;
     precision highp float;
     varying vec2 v_coord;
     uniform sampler2D u_texture;
@@ -17796,13 +17827,13 @@ g(Ct, "widgets_info", {
         gl_FragColor = color;
     }
     `);
-let LGraphTextureEncode = Ct;
+let LGraphTextureEncode = Ce;
 LiteGraph.registerNodeType("texture/encode", LGraphTextureEncode);
-const Xt = class Xt {
+const Xe = class Xe {
   constructor() {
-    this.addInput("Texture", "Texture"), this.addOutput("R", "Texture"), this.addOutput("G", "Texture"), this.addOutput("B", "Texture"), this.addOutput("A", "Texture"), Xt._shader || (Xt._shader = new GL$1.Shader(
+    this.addInput("Texture", "Texture"), this.addOutput("R", "Texture"), this.addOutput("G", "Texture"), this.addOutput("B", "Texture"), this.addOutput("A", "Texture"), Xe._shader || (Xe._shader = new GL$1.Shader(
       Shader.SCREEN_VERTEX_SHADER,
-      Xt.pixel_shader
+      Xe.pixel_shader
     ));
   }
   onExecute() {
@@ -17822,7 +17853,7 @@ const Xt = class Xt {
         )), s++) : this._channels[h] = null;
       if (s) {
         gl$1.disable(gl$1.BLEND), gl$1.disable(gl$1.DEPTH_TEST);
-        var a = Mesh.getScreenQuad(), o = Xt._shader, u = [
+        var a = Mesh.getScreenQuad(), o = Xe._shader, u = [
           [1, 0, 0, 0],
           [0, 1, 0, 0],
           [0, 0, 1, 0],
@@ -17836,7 +17867,7 @@ const Xt = class Xt {
     }
   }
 };
-g(Xt, "title", "Texture to Channels"), g(Xt, "desc", "Split texture channels"), g(Xt, "pixel_shader", `precision highp float;
+g(Xe, "title", "Texture to Channels"), g(Xe, "desc", "Split texture channels"), g(Xe, "pixel_shader", `precision highp float;
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
@@ -17846,9 +17877,9 @@ g(Xt, "title", "Texture to Channels"), g(Xt, "desc", "Split texture channels"), 
             gl_FragColor = vec4( vec3( length( texture2D(u_texture, v_coord) * u_mask )), 1.0 );
         }
         `);
-let LGraphTextureChannels = Xt;
+let LGraphTextureChannels = Xe;
 LiteGraph.registerNodeType("texture/textureChannels", LGraphTextureChannels);
-const Nt = class Nt {
+const Ne = class Ne {
   constructor() {
     this.addInput("R", "Texture"), this.addInput("G", "Texture"), this.addInput("B", "Texture"), this.addInput("A", "Texture"), this.addOutput("Texture", "Texture"), this.properties = {
       precision: LGraphTexture.DEFAULT,
@@ -17868,11 +17899,11 @@ const Nt = class Nt {
     var t = LGraphTexture.getWhiteTexture(), r = this.getInputData(0) || t, s = this.getInputData(1) || t, a = this.getInputData(2) || t, o = this.getInputData(3) || t;
     gl$1.disable(gl$1.BLEND), gl$1.disable(gl$1.DEPTH_TEST);
     var u = Mesh.getScreenQuad();
-    Nt._shader || (Nt._shader = new GL$1.Shader(
+    Ne._shader || (Ne._shader = new GL$1.Shader(
       Shader.SCREEN_VERTEX_SHADER,
-      Nt.pixel_shader
+      Ne.pixel_shader
     ));
-    var h = Nt._shader, l = Math.max(r.width, s.width, a.width, o.width), c = Math.max(r.height, s.height, a.height, o.height), d = this.properties.precision == LGraphTexture.HIGH ? LGraphTexture.HIGH_PRECISION_FORMAT : gl$1.UNSIGNED_BYTE;
+    var h = Ne._shader, l = Math.max(r.width, s.width, a.width, o.width), c = Math.max(r.height, s.height, a.height, o.height), d = this.properties.precision == LGraphTexture.HIGH ? LGraphTexture.HIGH_PRECISION_FORMAT : gl$1.UNSIGNED_BYTE;
     (!this._texture || this._texture.width != l || this._texture.height != c || this._texture.type != d) && (this._texture = new GL$1.Texture(l, c, {
       type: d,
       format: gl$1.RGBA,
@@ -17886,12 +17917,12 @@ const Nt = class Nt {
     }), this.setOutputData(0, this._texture);
   }
 };
-g(Nt, "title", "Channels to Texture"), g(Nt, "desc", "Split texture channels"), g(Nt, "widgets_info", {
+g(Ne, "title", "Channels to Texture"), g(Ne, "desc", "Split texture channels"), g(Ne, "widgets_info", {
   precision: {
     widget: "combo",
     values: LGraphTexture.MODE_VALUES
   }
-}), g(Nt, "pixel_shader", `precision highp float;
+}), g(Ne, "pixel_shader", `precision highp float;
     precision highp float;
     varying vec2 v_coord;
     uniform sampler2D u_textureR;
@@ -17904,7 +17935,7 @@ g(Nt, "title", "Channels to Texture"), g(Nt, "desc", "Split texture channels"), 
         gl_FragColor = u_color * vec4(                 texture2D(u_textureR, v_coord).r,                texture2D(u_textureG, v_coord).r,                texture2D(u_textureB, v_coord).r,                texture2D(u_textureA, v_coord).r);
     }
     `);
-let LGraphChannelsTexture = Nt;
+let LGraphChannelsTexture = Ne;
 LiteGraph.registerNodeType("texture/channelsTexture", LGraphChannelsTexture);
 class LGraphTextureColor {
   constructor() {
@@ -17968,7 +17999,7 @@ g(LGraphTextureColor, "title", "Color"), g(LGraphTextureColor, "desc", "Generate
   }
 });
 LiteGraph.registerNodeType("texture/color", LGraphTextureColor);
-const yt = class yt {
+const ye = class ye {
   constructor() {
     this.addInput("A", "color"), this.addInput("B", "color"), this.addOutput("Texture", "Texture"), this.properties = {
       angle: 0,
@@ -17976,9 +18007,9 @@ const yt = class yt {
       A: [0, 0, 0],
       B: [1, 1, 1],
       texture_size: 32
-    }, yt._shader || (yt._shader = new GL$1.Shader(
+    }, ye._shader || (ye._shader = new GL$1.Shader(
       Shader.SCREEN_VERTEX_SHADER,
-      yt.pixel_shader
+      ye.pixel_shader
     )), this._uniforms = {
       u_angle: 0,
       u_colorA: vec3.create(),
@@ -17987,7 +18018,7 @@ const yt = class yt {
   }
   onExecute() {
     gl$1.disable(gl$1.BLEND), gl$1.disable(gl$1.DEPTH_TEST);
-    var t = GL$1.Mesh.getScreenQuad(), r = yt._shader, s = this.getInputData(0);
+    var t = GL$1.Mesh.getScreenQuad(), r = ye._shader, s = this.getInputData(0);
     s || (s = this.properties.A);
     var a = this.getInputData(1);
     a || (a = this.properties.B);
@@ -18012,10 +18043,10 @@ const yt = class yt {
     ];
   }
 };
-g(yt, "title", "Gradient"), g(yt, "desc", "Generates a gradient"), g(yt, "@A", { type: "color" }), g(yt, "@B", { type: "color" }), g(yt, "@texture_size", {
+g(ye, "title", "Gradient"), g(ye, "desc", "Generates a gradient"), g(ye, "@A", { type: "color" }), g(ye, "@B", { type: "color" }), g(ye, "@texture_size", {
   type: "enum",
   values: [32, 64, 128, 256, 512]
-}), g(yt, "pixel_shader", `precision highp float;
+}), g(ye, "pixel_shader", `precision highp float;
         precision highp float;
         varying vec2 v_coord;
         uniform float u_angle;
@@ -18038,9 +18069,9 @@ g(yt, "title", "Gradient"), g(yt, "desc", "Generates a gradient"), g(yt, "@A", {
             gl_FragColor = vec4(color,1.0);
         }
         `);
-let LGraphTextureGradient = yt;
+let LGraphTextureGradient = ye;
 LiteGraph.registerNodeType("texture/gradient", LGraphTextureGradient);
-const bt = class bt {
+const be = class be {
   constructor() {
     this.addInput("A", "Texture"), this.addInput("B", "Texture"), this.addInput("Mixer", "Texture"), this.addOutput("Texture", "Texture"), this.properties = {
       factor: 0.5,
@@ -18071,15 +18102,15 @@ const bt = class bt {
         ), gl$1.disable(gl$1.BLEND), gl$1.disable(gl$1.DEPTH_TEST);
         var o = Mesh.getScreenQuad(), u = null, h = this._uniforms;
         if (s)
-          u = bt._shader_tex, u || (u = bt._shader_tex = new GL$1.Shader(
+          u = be._shader_tex, u || (u = be._shader_tex = new GL$1.Shader(
             Shader.SCREEN_VERTEX_SHADER,
-            bt.pixel_shader,
+            be.pixel_shader,
             { MIX_TEX: "" }
           ));
         else {
-          u = bt._shader_factor, u || (u = bt._shader_factor = new GL$1.Shader(
+          u = be._shader_factor, u || (u = be._shader_factor = new GL$1.Shader(
             Shader.SCREEN_VERTEX_SHADER,
-            bt.pixel_shader
+            be.pixel_shader
           ));
           var l = a == null ? this.properties.factor : a;
           h.u_mix.set([l, l, l, l]);
@@ -18095,12 +18126,12 @@ const bt = class bt {
     return [["factor", "number"]];
   }
 };
-g(bt, "title", "Mix"), g(bt, "desc", "Generates a texture mixing two textures"), g(bt, "widgets_info", {
+g(be, "title", "Mix"), g(be, "desc", "Generates a texture mixing two textures"), g(be, "widgets_info", {
   precision: {
     widget: "combo",
     values: LGraphTexture.MODE_VALUES
   }
-}), g(bt, "pixel_shader", `precision highp float;
+}), g(be, "pixel_shader", `precision highp float;
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_textureA;
@@ -18120,18 +18151,18 @@ g(bt, "title", "Mix"), g(bt, "desc", "Generates a texture mixing two textures"),
             gl_FragColor = mix( texture2D(u_textureA, v_coord), texture2D(u_textureB, v_coord), f );
         }
         `);
-let LGraphTextureMix = bt;
+let LGraphTextureMix = be;
 LiteGraph.registerNodeType("texture/mix", LGraphTextureMix);
-const Rt = class Rt {
+const Re = class Re {
   constructor() {
     this.addInput("Tex.", "Texture"), this.addOutput("Edges", "Texture"), this.properties = {
       invert: !0,
       threshold: !1,
       factor: 1,
       precision: LGraphTexture.DEFAULT
-    }, Rt._shader || (Rt._shader = new GL$1.Shader(
+    }, Re._shader || (Re._shader = new GL$1.Shader(
       Shader.SCREEN_VERTEX_SHADER,
-      Rt.pixel_shader
+      Re.pixel_shader
     ));
   }
   onExecute() {
@@ -18147,7 +18178,7 @@ const Rt = class Rt {
           this._tex,
           this.properties.precision
         ), gl$1.disable(gl$1.BLEND), gl$1.disable(gl$1.DEPTH_TEST);
-        var r = Mesh.getScreenQuad(), s = Rt._shader, a = this.properties.invert, o = this.properties.factor, u = this.properties.threshold ? 1 : 0;
+        var r = Mesh.getScreenQuad(), s = Re._shader, a = this.properties.invert, o = this.properties.factor, u = this.properties.threshold ? 1 : 0;
         this._tex.drawTo(function() {
           t.bind(0), s.uniforms({
             u_texture: 0,
@@ -18161,12 +18192,12 @@ const Rt = class Rt {
     }
   }
 };
-g(Rt, "title", "Edges"), g(Rt, "desc", "Detects edges"), g(Rt, "widgets_info", {
+g(Re, "title", "Edges"), g(Re, "desc", "Detects edges"), g(Re, "widgets_info", {
   precision: {
     widget: "combo",
     values: LGraphTexture.MODE_VALUES
   }
-}), g(Rt, "pixel_shader", `precision highp float;
+}), g(Re, "pixel_shader", `precision highp float;
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
@@ -18191,9 +18222,9 @@ g(Rt, "title", "Edges"), g(Rt, "desc", "Detects edges"), g(Rt, "widgets_info", {
                 gl_FragColor = vec4( diff.x > 0.5 ? 1.0 : 0.0, diff.y > 0.5 ? 1.0 : 0.0, diff.z > 0.5 ? 1.0 : 0.0, center.a );
         }
         `);
-let LGraphTextureEdges = Rt;
+let LGraphTextureEdges = Re;
 LiteGraph.registerNodeType("texture/edges", LGraphTextureEdges);
-const Tt = class Tt {
+const Te = class Te {
   constructor() {
     this.addInput("Texture", "Texture"), this.addInput("Distance", "number"), this.addInput("Range", "number"), this.addOutput("Texture", "Texture"), this.properties = {
       distance: 100,
@@ -18222,15 +18253,15 @@ const Tt = class Tt {
         var o = this.properties.range;
         this.isInputConnected(2) && (o = this.getInputData(2), this.properties.range = o), s.u_distance = a, s.u_range = o, gl$1.disable(gl$1.BLEND), gl$1.disable(gl$1.DEPTH_TEST);
         var u = Mesh.getScreenQuad();
-        Tt._shader || (Tt._shader = new GL$1.Shader(
+        Te._shader || (Te._shader = new GL$1.Shader(
           Shader.SCREEN_VERTEX_SHADER,
-          Tt.pixel_shader
-        ), Tt._shader_onlydepth = new GL$1.Shader(
+          Te.pixel_shader
+        ), Te._shader_onlydepth = new GL$1.Shader(
           Shader.SCREEN_VERTEX_SHADER,
-          Tt.pixel_shader,
+          Te.pixel_shader,
           { ONLY_DEPTH: "" }
         ));
-        var h = this.properties.only_depth ? Tt._shader_onlydepth : Tt._shader, l = null;
+        var h = this.properties.only_depth ? Te._shader_onlydepth : Te._shader, l = null;
         t.near_far_planes ? l = t.near_far_planes : window.LS && LS.Renderer._main_camera ? l = LS.Renderer._main_camera._uniforms.u_camera_planes : l = [0.1, 1e3], s.u_camera_planes = l, this._temp_texture.drawTo(function() {
           t.bind(0), h.uniforms(s).draw(u);
         }), this._temp_texture.near_far_planes = l, this.setOutputData(0, this._temp_texture);
@@ -18238,7 +18269,7 @@ const Tt = class Tt {
     }
   }
 };
-g(Tt, "title", "Depth Range"), g(Tt, "desc", "Generates a texture with a depth range"), g(Tt, "pixel_shader", `precision highp float;
+g(Te, "title", "Depth Range"), g(Te, "desc", "Generates a texture with a depth range"), g(Te, "pixel_shader", `precision highp float;
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
@@ -18268,9 +18299,9 @@ g(Tt, "title", "Depth Range"), g(Tt, "desc", "Generates a texture with a depth r
             #endif
         }
     `);
-let LGraphTextureDepthRange = Tt;
+let LGraphTextureDepthRange = Te;
 LiteGraph.registerNodeType("texture/depth_range", LGraphTextureDepthRange);
-const Mt = class Mt {
+const Me = class Me {
   constructor() {
     this.addInput("Texture", "Texture"), this.addOutput("Texture", "Texture"), this.properties = {
       precision: LGraphTexture.DEFAULT,
@@ -18295,11 +18326,11 @@ const Mt = class Mt {
         var s = this._uniforms;
         s.u_invert = this.properties.invert ? 1 : 0, gl$1.disable(gl$1.BLEND), gl$1.disable(gl$1.DEPTH_TEST);
         var a = Mesh.getScreenQuad();
-        Mt._shader || (Mt._shader = new GL$1.Shader(
+        Me._shader || (Me._shader = new GL$1.Shader(
           GL$1.Shader.SCREEN_VERTEX_SHADER,
-          Mt.pixel_shader
+          Me.pixel_shader
         ));
-        var o = Mt._shader, u = null;
+        var o = Me._shader, u = null;
         t.near_far_planes ? u = t.near_far_planes : window.LS && LS.Renderer._main_camera ? u = LS.Renderer._main_camera._uniforms.u_camera_planes : u = [0.1, 1e3], s.u_camera_planes = u, s.u_ires.set([0, 0]), this._temp_texture.drawTo(function() {
           t.bind(0), o.uniforms(s).draw(a);
         }), this._temp_texture.near_far_planes = u, this.setOutputData(0, this._temp_texture);
@@ -18307,12 +18338,12 @@ const Mt = class Mt {
     }
   }
 };
-g(Mt, "widgets_info", {
+g(Me, "widgets_info", {
   precision: {
     widget: "combo",
     values: LGraphTexture.MODE_VALUES
   }
-}), g(Mt, "title", "Linear Depth"), g(Mt, "desc", "Creates a color texture with linear depth"), g(Mt, "pixel_shader", `precision highp float;
+}), g(Me, "title", "Linear Depth"), g(Me, "desc", "Creates a color texture with linear depth"), g(Me, "pixel_shader", `precision highp float;
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
@@ -18330,9 +18361,9 @@ g(Mt, "widgets_info", {
             gl_FragColor = vec4(vec3(f),1.0);
         }
         `);
-let LGraphTextureLinearDepth = Mt;
+let LGraphTextureLinearDepth = Me;
 LiteGraph.registerNodeType("texture/linear_depth", LGraphTextureLinearDepth);
-const ce = class ce {
+const ct = class ct {
   constructor() {
     this.addInput("Texture", "Texture"), this.addInput("Iterations", "number"), this.addInput("Intensity", "number"), this.addOutput("Blurred", "Texture"), this.properties = {
       intensity: 1,
@@ -18354,7 +18385,7 @@ const ce = class ce {
       var s = this.properties.iterations;
       if (this.isInputConnected(1) && (s = this.getInputData(1), this.properties.iterations = s), s = Math.min(
         Math.floor(s),
-        ce.max_iterations
+        ct.max_iterations
       ), s == 0) {
         this.setOutputData(0, t);
         return;
@@ -18398,15 +18429,15 @@ const ce = class ce {
       ";
   */
 };
-g(ce, "title", "Blur"), g(ce, "desc", "Blur a texture"), g(ce, "widgets_info", {
+g(ct, "title", "Blur"), g(ct, "desc", "Blur a texture"), g(ct, "widgets_info", {
   precision: {
     widget: "combo",
     values: LGraphTexture.MODE_VALUES
   }
-}), g(ce, "max_iterations", 20);
-let LGraphTextureBlur = ce;
+}), g(ct, "max_iterations", 20);
+let LGraphTextureBlur = ct;
 LiteGraph.registerNodeType("texture/blur", LGraphTextureBlur);
-const ot = class ot {
+const oe = class oe {
   constructor() {
     this.intensity = 0.5, this.persistence = 0.6, this.iterations = 8, this.threshold = 0.8, this.scale = 1, this.dirt_texture = null, this.dirt_factor = 0.5, this._textures = [], this._uniforms = {
       u_intensity: 1,
@@ -18423,10 +18454,10 @@ const ot = class ot {
       minFilter: GL$1.LINEAR,
       magFilter: GL$1.LINEAR,
       wrap: gl$1.CLAMP_TO_EDGE
-    }, l = this._uniforms, c = this._textures, d = ot._cut_shader;
-    d || (d = ot._cut_shader = new GL$1.Shader(
+    }, l = this._uniforms, c = this._textures, d = oe._cut_shader;
+    d || (d = oe._cut_shader = new GL$1.Shader(
       GL$1.Shader.SCREEN_VERTEX_SHADER,
-      ot.cut_pixel_shader
+      oe.cut_pixel_shader
     )), gl$1.disable(gl$1.DEPTH_TEST), gl$1.disable(gl$1.BLEND), l.u_threshold = this.threshold;
     var f = c[0] = GL$1.Texture.getTemporary(
       o,
@@ -18437,9 +18468,9 @@ const ot = class ot {
     var _ = f, E = this.iterations;
     E = clamp(E, 1, 16) | 0;
     var m = l.u_texel_size, T = this.intensity;
-    l.u_intensity = 1, l.u_delta = this.scale, d = ot._shader, d || (d = ot._shader = new GL$1.Shader(
+    l.u_intensity = 1, l.u_delta = this.scale, d = oe._shader, d || (d = oe._shader = new GL$1.Shader(
       GL$1.Shader.SCREEN_VERTEX_SHADER,
-      ot.scale_pixel_shader
+      oe.scale_pixel_shader
     ));
     for (var L = 1; L < E && (o = o >> 1, (u | 0) > 1 && (u = u >> 1), !(o < 2)); L++)
       f = c[L] = GL$1.Texture.getTemporary(
@@ -18451,13 +18482,13 @@ const ot = class ot {
       f = c[L], c[L] = null, m[0] = 1 / _.width, m[1] = 1 / _.height, _.blit(f, d.uniforms(l)), GL$1.Texture.releaseTemporary(_), _ = f;
     if (gl$1.disable(gl$1.BLEND), s && _.blit(s), r) {
       var G = r, O = this.dirt_texture, b = this.dirt_factor;
-      l.u_intensity = T, d = O ? ot._dirt_final_shader : ot._final_shader, d || (O ? d = ot._dirt_final_shader = new GL$1.Shader(
+      l.u_intensity = T, d = O ? oe._dirt_final_shader : oe._final_shader, d || (O ? d = oe._dirt_final_shader = new GL$1.Shader(
         GL$1.Shader.SCREEN_VERTEX_SHADER,
-        ot.final_pixel_shader,
+        oe.final_pixel_shader,
         { USE_DIRT: "" }
-      ) : d = ot._final_shader = new GL$1.Shader(
+      ) : d = oe._final_shader = new GL$1.Shader(
         GL$1.Shader.SCREEN_VERTEX_SHADER,
-        ot.final_pixel_shader
+        oe.final_pixel_shader
       )), G.drawTo(function() {
         t.bind(0), _.bind(1), O && (d.setUniform("u_dirt_factor", b), d.setUniform("u_dirt_texture", O.bind(2))), d.toViewport(l);
       });
@@ -18465,13 +18496,13 @@ const ot = class ot {
     GL$1.Texture.releaseTemporary(_);
   }
 };
-g(ot, "cut_pixel_shader", `precision highp float;
+g(oe, "cut_pixel_shader", `precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
         uniform float u_threshold;
         void main() {
             gl_FragColor = max( texture2D( u_texture, v_coord ) - vec4( u_threshold ), vec4(0.0) );
-        }`), g(ot, "scale_pixel_shader", `precision highp float;
+        }`), g(oe, "scale_pixel_shader", `precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
         uniform vec2 u_texel_size;
@@ -18485,7 +18516,7 @@ g(ot, "cut_pixel_shader", `precision highp float;
         }
         void main() {
             gl_FragColor = u_intensity * sampleBox( v_coord );
-        }`), g(ot, "final_pixel_shader", `precision highp float;
+        }`), g(oe, "final_pixel_shader", `precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
         uniform sampler2D u_glow_texture;
@@ -18509,7 +18540,7 @@ g(ot, "cut_pixel_shader", `precision highp float;
             #endif
             gl_FragColor = texture2D( u_texture, v_coord ) + u_intensity * glow;
         }`);
-let FXGlow = ot;
+let FXGlow = oe;
 class LGraphTextureGlow {
   constructor() {
     this.addInput("in", "Texture"), this.addInput("dirt", "Texture"), this.addOutput("out", "Texture"), this.addOutput("glow", "Texture"), this.properties = {
@@ -18584,7 +18615,7 @@ g(LGraphTextureGlow, "title", "Glow"), g(LGraphTextureGlow, "desc", "Filters a t
   precision: { widget: "combo", values: LGraphTexture.MODE_VALUES }
 });
 LiteGraph.registerNodeType("texture/glow", LGraphTextureGlow);
-const Lt = class Lt {
+const Le = class Le {
   constructor() {
     this.addInput("Texture", "Texture"), this.addOutput("Filtered", "Texture"), this.properties = { intensity: 1, radius: 5 };
   }
@@ -18600,18 +18631,18 @@ const Lt = class Lt {
       var s = this.properties.radius;
       if (s = Math.min(
         Math.floor(s),
-        Lt.max_radius
+        Le.max_radius
       ), s == 0) {
         this.setOutputData(0, t);
         return;
       }
       var a = this.properties.intensity, o = LiteGraph.camera_aspect;
-      !o && window.gl !== void 0 && (o = gl$1.canvas.height / gl$1.canvas.width), o || (o = 1), o = this.properties.preserve_aspect ? o : 1, Lt._shaders[s] || (Lt._shaders[s] = new GL$1.Shader(
+      !o && window.gl !== void 0 && (o = gl$1.canvas.height / gl$1.canvas.width), o || (o = 1), o = this.properties.preserve_aspect ? o : 1, Le._shaders[s] || (Le._shaders[s] = new GL$1.Shader(
         Shader.SCREEN_VERTEX_SHADER,
-        Lt.pixel_shader,
+        Le.pixel_shader,
         { RADIUS: s.toFixed(0) }
       ));
-      var u = Lt._shaders[s], h = GL$1.Mesh.getScreenQuad();
+      var u = Le._shaders[s], h = GL$1.Mesh.getScreenQuad();
       t.bind(0), this._temp_texture.drawTo(function() {
         u.uniforms({
           u_texture: 0,
@@ -18623,8 +18654,8 @@ const Lt = class Lt {
     }
   }
 };
-g(Lt, "title", "Kuwahara Filter"), g(Lt, "desc", "Filters a texture giving an artistic oil canvas painting"), g(Lt, "max_radius", 10), g(Lt, "_shaders", []), // from https://www.shadertoy.com/view/MsXSz4
-g(Lt, "pixel_shader", `
+g(Le, "title", "Kuwahara Filter"), g(Le, "desc", "Filters a texture giving an artistic oil canvas painting"), g(Le, "max_radius", 10), g(Le, "_shaders", []), // from https://www.shadertoy.com/view/MsXSz4
+g(Le, "pixel_shader", `
     precision highp float;
     varying vec2 v_coord;
     uniform sampler2D u_texture;
@@ -18717,9 +18748,9 @@ g(Lt, "pixel_shader", `
     }
     }
     `);
-let LGraphTextureKuwaharaFilter = Lt;
+let LGraphTextureKuwaharaFilter = Le;
 LiteGraph.registerNodeType("texture/kuwahara", LGraphTextureKuwaharaFilter);
-const At = class At {
+const Ae = class Ae {
   constructor() {
     this.addInput("Texture", "Texture"), this.addOutput("Filtered", "Texture"), this.properties = {
       sigma: 1.4,
@@ -18737,11 +18768,11 @@ const At = class At {
         type: t.type,
         format: gl$1.RGBA,
         filter: gl$1.LINEAR
-      })), At._xdog_shader || (At._xdog_shader = new GL$1.Shader(
+      })), Ae._xdog_shader || (Ae._xdog_shader = new GL$1.Shader(
         Shader.SCREEN_VERTEX_SHADER,
-        At.xdog_pixel_shader
+        Ae.xdog_pixel_shader
       ));
-      var s = At._xdog_shader, a = GL$1.Mesh.getScreenQuad(), o = this.properties.sigma, u = this.properties.k, h = this.properties.p, l = this.properties.epsilon, c = this.properties.phi;
+      var s = Ae._xdog_shader, a = GL$1.Mesh.getScreenQuad(), o = this.properties.sigma, u = this.properties.k, h = this.properties.p, l = this.properties.epsilon, c = this.properties.phi;
       t.bind(0), this._temp_texture.drawTo(function() {
         s.uniforms({
           src: 0,
@@ -18757,8 +18788,8 @@ const At = class At {
     }
   }
 };
-g(At, "title", "XDoG Filter"), g(At, "desc", "Filters a texture giving an artistic ink style"), g(At, "max_radius", 10), g(At, "_shaders", []), // from https://github.com/RaymondMcGuire/GPU-Based-Image-Processing-Tools/blob/master/lib_webgl/scripts/main.js
-g(At, "xdog_pixel_shader", `
+g(Ae, "title", "XDoG Filter"), g(Ae, "desc", "Filters a texture giving an artistic ink style"), g(Ae, "max_radius", 10), g(Ae, "_shaders", []), // from https://github.com/RaymondMcGuire/GPU-Based-Image-Processing-Tools/blob/master/lib_webgl/scripts/main.js
+g(Ae, "xdog_pixel_shader", `
     precision highp float;
     uniform sampler2D src;
 
@@ -18829,9 +18860,9 @@ g(At, "xdog_pixel_shader", `
     destColor = vec3(edge);
     gl_FragColor = vec4(destColor, 1.0);
     }`);
-let LGraphTextureXDoGFilter = At;
+let LGraphTextureXDoGFilter = Ae;
 LiteGraph.registerNodeType("texture/xDoG", LGraphTextureXDoGFilter);
-const Zt = class Zt {
+const Ze = class Ze {
   constructor() {
     this.addOutput("Webcam", "Texture"), this.properties = { texture_name: "", facingMode: "user" }, this.boxcolor = "black", this.version = 0;
   }
@@ -18847,7 +18878,7 @@ const Zt = class Zt {
     var r = this;
     function s(a) {
       var o;
-      Zt.is_webcam_open = !1, (o = console.log) == null || o.call(console, "Webcam rejected", a), r._webcam_stream = !1, r.boxcolor = "red", r.trigger("stream_error");
+      Ze.is_webcam_open = !1, (o = console.log) == null || o.call(console, "Webcam rejected", a), r._webcam_stream = !1, r.boxcolor = "red", r.trigger("stream_error");
     }
   }
   closeStream() {
@@ -18856,7 +18887,7 @@ const Zt = class Zt {
       if (t.length)
         for (var r = 0; r < t.length; ++r)
           t[r].stop();
-      Zt.is_webcam_open = !1, this._webcam_stream = null, this._video = null, this.boxcolor = "black", this.trigger("stream_closed");
+      Ze.is_webcam_open = !1, this._webcam_stream = null, this._video = null, this.boxcolor = "black", this.trigger("stream_closed");
     }
   }
   streamReady(t) {
@@ -18864,7 +18895,7 @@ const Zt = class Zt {
     var r = this._video;
     r || (r = document.createElement("video"), r.autoplay = !0, r.srcObject = t, this._video = r, r.onloadedmetadata = function(s) {
       var a;
-      Zt.is_webcam_open = !0, (a = console.log) == null || a.call(console, s);
+      Ze.is_webcam_open = !0, (a = console.log) == null || a.call(console, s);
     }), this.trigger("stream_ready", r);
   }
   onPropertyChanged(t, r) {
@@ -18921,10 +18952,10 @@ const Zt = class Zt {
     ];
   }
 };
-g(Zt, "title", "Webcam"), g(Zt, "desc", "Webcam texture"), g(Zt, "is_webcam_open", !1);
-let LGraphTextureWebcam = Zt;
+g(Ze, "title", "Webcam"), g(Ze, "desc", "Webcam texture"), g(Ze, "is_webcam_open", !1);
+let LGraphTextureWebcam = Ze;
 LiteGraph.registerNodeType("texture/webcam", LGraphTextureWebcam);
-const Wt = class Wt {
+const We = class We {
   constructor() {
     this.addInput("in", "Texture"), this.addInput("f", "number"), this.addOutput("out", "Texture"), this.properties = {
       enabled: !0,
@@ -18948,10 +18979,10 @@ const Wt = class Wt {
         format: gl$1.RGBA,
         filter: gl$1.LINEAR
       }));
-      var s = Wt._shader;
-      s || (s = Wt._shader = new GL$1.Shader(
+      var s = We._shader;
+      s || (s = We._shader = new GL$1.Shader(
         GL$1.Shader.SCREEN_VERTEX_SHADER,
-        Wt.pixel_shader
+        We.pixel_shader
       ));
       var a = this.getInputData(1);
       a == null && (a = this.properties.factor);
@@ -18962,7 +18993,7 @@ const Wt = class Wt {
     }
   }
 };
-g(Wt, "title", "Lens FX"), g(Wt, "desc", "distortion and chromatic aberration"), g(Wt, "widgets_info", { precision: { widget: "combo", values: LGraphTexture.MODE_VALUES } }), g(Wt, "pixel_shader", `precision highp float;
+g(We, "title", "Lens FX"), g(We, "desc", "distortion and chromatic aberration"), g(We, "widgets_info", { precision: { widget: "combo", values: LGraphTexture.MODE_VALUES } }), g(We, "pixel_shader", `precision highp float;
     varying vec2 v_coord;
     uniform sampler2D u_texture;
     uniform float u_factor;
@@ -19013,7 +19044,7 @@ g(Wt, "title", "Lens FX"), g(Wt, "desc", "distortion and chromatic aberration"),
         }
         gl_FragColor = sumcol / sumw;
     }`);
-let LGraphLensFX = Wt;
+let LGraphLensFX = We;
 LiteGraph.registerNodeType("texture/lensfx", LGraphLensFX);
 class LGraphTextureFromData {
   constructor() {
@@ -19049,7 +19080,7 @@ g(LGraphTextureFromData, "title", "Data->Tex"), g(LGraphTextureFromData, "desc",
   }
 });
 LiteGraph.registerNodeType("texture/fromdata", LGraphTextureFromData);
-const mt = class mt {
+const me = class me {
   constructor() {
     g(this, "pixel_shader", `precision highp float;
         varying vec2 v_coord;
@@ -19105,10 +19136,10 @@ const mt = class mt {
         format: t.format,
         filter: gl$1.LINEAR
       }));
-      var a = mt._shader;
-      a || (a = mt._shader = new GL$1.Shader(
+      var a = me._shader;
+      a || (a = me._shader = new GL$1.Shader(
         GL$1.Shader.SCREEN_VERTEX_SHADER,
-        mt.pixel_shader
+        me.pixel_shader
       )), (this._must_update || !this._curve_texture) && this.updateCurve();
       var o = this._uniforms, u = this._curve_texture;
       r.drawTo(function() {
@@ -19199,46 +19230,46 @@ const mt = class mt {
         [this.size[0], this.size[1] - this.curve_offset],
         r,
         "#111",
-        mt.channel_line_colors.R,
+        me.channel_line_colors.R,
         !0
       ), t.globalCompositeOperation = "lighten", this.curve_editor.points = this._points.G, this.curve_editor.draw(
         t,
         [this.size[0], this.size[1] - this.curve_offset],
         r,
         null,
-        mt.channel_line_colors.G,
+        me.channel_line_colors.G,
         !0
       ), this.curve_editor.points = this._points.B, this.curve_editor.draw(
         t,
         [this.size[0], this.size[1] - this.curve_offset],
         r,
         null,
-        mt.channel_line_colors.B,
+        me.channel_line_colors.B,
         !0
       ), t.globalCompositeOperation = "source-over") : (this.widgets[1].value = s = "RGB", this.widgets[1].disabled = !0), this.curve_editor.points = this._points[s], this.curve_editor.draw(
         t,
         [this.size[0], this.size[1] - this.curve_offset],
         r,
         this.properties.split_channels ? null : "#111",
-        mt.channel_line_colors[s]
+        me.channel_line_colors[s]
       ), t.restore();
     }
   }
 };
-g(mt, "title", "Curve"), g(mt, "desc", "Generates or applies a curve to a texture"), g(mt, "widgets_info", {
+g(me, "title", "Curve"), g(me, "desc", "Generates or applies a curve to a texture"), g(me, "widgets_info", {
   precision: {
     widget: "combo",
     values: LGraphTexture.MODE_VALUES
   }
-}), g(mt, "channel_line_colors", {
+}), g(me, "channel_line_colors", {
   RGB: "#666",
   R: "#F33",
   G: "#3F3",
   B: "#33F"
 });
-let LGraphTextureCurve = mt;
+let LGraphTextureCurve = me;
 LiteGraph.registerNodeType("texture/curve", LGraphTextureCurve);
-const qt = class qt {
+const qe = class qe {
   constructor() {
     this.addInput("in", "Texture"), this.addInput("exp", "number"), this.addOutput("out", "Texture"), this.properties = { exposition: 1, precision: LGraphTexture.LOW }, this._uniforms = { u_texture: 0, u_exposition: 1 };
   }
@@ -19251,10 +19282,10 @@ const qt = class qt {
         format: gl$1.RGBA,
         filter: gl$1.LINEAR
       }));
-      var s = qt._shader;
-      s || (s = qt._shader = new GL$1.Shader(
+      var s = qe._shader;
+      s || (s = qe._shader = new GL$1.Shader(
         GL$1.Shader.SCREEN_VERTEX_SHADER,
-        qt.pixel_shader
+        qe.pixel_shader
       )), this.properties.exposition;
       var a = this.getInputData(1);
       a != null && (this.properties.exposition = a);
@@ -19265,10 +19296,10 @@ const qt = class qt {
     }
   }
 };
-g(qt, "title", "Exposition"), g(qt, "desc", "Controls texture exposition"), g(qt, "widgets_info", {
+g(qe, "title", "Exposition"), g(qe, "desc", "Controls texture exposition"), g(qe, "widgets_info", {
   exposition: { widget: "slider", min: 0, max: 3 },
   precision: { widget: "combo", values: LGraphTexture.MODE_VALUES }
-}), g(qt, "pixel_shader", `
+}), g(qe, "pixel_shader", `
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
@@ -19279,9 +19310,9 @@ g(qt, "title", "Exposition"), g(qt, "desc", "Controls texture exposition"), g(qt
             gl_FragColor = vec4(color.xyz * u_exposition, color.a);
         }
     `);
-let LGraphExposition = qt;
+let LGraphExposition = qe;
 LiteGraph.registerNodeType("texture/exposition", LGraphExposition);
-const xt = class xt {
+const xe = class xe {
   constructor() {
     this.addInput("in", "Texture"), this.addInput("avg", "number,Texture"), this.addOutput("out", "Texture"), this.properties = {
       enabled: !0,
@@ -19317,12 +19348,12 @@ const xt = class xt {
       var s = this.getInputData(1);
       s == null && (s = this.properties.average_lum);
       var a = this._uniforms, o = null;
-      s.constructor === Number ? (this.properties.average_lum = s, a.u_average_lum = this.properties.average_lum, o = xt._shader, o || (o = xt._shader = new GL$1.Shader(
+      s.constructor === Number ? (this.properties.average_lum = s, a.u_average_lum = this.properties.average_lum, o = xe._shader, o || (o = xe._shader = new GL$1.Shader(
         GL$1.Shader.SCREEN_VERTEX_SHADER,
-        xt.pixel_shader
-      ))) : s.constructor === GL$1.Texture && (a.u_average_texture = s.bind(1), o = xt._shader_texture, o || (o = xt._shader_texture = new GL$1.Shader(
+        xe.pixel_shader
+      ))) : s.constructor === GL$1.Texture && (a.u_average_texture = s.bind(1), o = xe._shader_texture, o || (o = xe._shader_texture = new GL$1.Shader(
         GL$1.Shader.SCREEN_VERTEX_SHADER,
-        xt.pixel_shader,
+        xe.pixel_shader,
         { AVG_TEXTURE: "" }
       ))), a.u_lumwhite2 = this.properties.lum_white * this.properties.lum_white, a.u_scale = this.properties.scale, a.u_igamma = 1 / this.properties.gamma, gl$1.disable(gl$1.DEPTH_TEST), r.drawTo(function() {
         t.bind(0), o.uniforms(a).draw(GL$1.Mesh.getScreenQuad());
@@ -19330,7 +19361,7 @@ const xt = class xt {
     }
   }
 };
-g(xt, "title", "Tone Mapping"), g(xt, "desc", "Applies Tone Mapping to convert from high to low"), g(xt, "widgets_info", { precision: { widget: "combo", values: LGraphTexture.MODE_VALUES } }), g(xt, "pixel_shader", `precision highp float;
+g(xe, "title", "Tone Mapping"), g(xe, "desc", "Applies Tone Mapping to convert from high to low"), g(xe, "widgets_info", { precision: { widget: "combo", values: LGraphTexture.MODE_VALUES } }), g(xe, "pixel_shader", `precision highp float;
     varying vec2 v_coord;
     uniform sampler2D u_texture;
     uniform float u_scale;
@@ -19378,9 +19409,9 @@ g(xt, "title", "Tone Mapping"), g(xt, "desc", "Applies Tone Mapping to convert f
         rgb = pow( rgb, vec3( u_igamma ) );
         gl_FragColor = vec4( rgb, color.a );
     }`);
-let LGraphToneMapping = xt;
+let LGraphToneMapping = xe;
 LiteGraph.registerNodeType("texture/tonemapping", LGraphToneMapping);
-const Yt = class Yt {
+const Ye = class Ye {
   constructor() {
     this.addOutput("out", "Texture"), this.properties = {
       width: 512,
@@ -19428,22 +19459,22 @@ const Yt = class Yt {
       this._key = f;
       var _ = this._uniforms;
       _.u_persistence = o, _.u_octaves = u, _.u_offset.set(h), _.u_scale = l, _.u_amplitude = c, _.u_seed = d * 128, _.u_viewport[0] = t, _.u_viewport[1] = r;
-      var E = Yt._shader;
-      E || (E = Yt._shader = new GL$1.Shader(
+      var E = Ye._shader;
+      E || (E = Ye._shader = new GL$1.Shader(
         GL$1.Shader.SCREEN_VERTEX_SHADER,
-        Yt.pixel_shader
+        Ye.pixel_shader
       )), gl$1.disable(gl$1.BLEND), gl$1.disable(gl$1.DEPTH_TEST), a.drawTo(function() {
         E.uniforms(_).draw(GL$1.Mesh.getScreenQuad());
       }), this.setOutputData(0, a);
     }
   }
 };
-g(Yt, "title", "Perlin"), g(Yt, "desc", "Generates a perlin noise texture"), g(Yt, "widgets_info", {
+g(Ye, "title", "Perlin"), g(Ye, "desc", "Generates a perlin noise texture"), g(Ye, "widgets_info", {
   precision: { widget: "combo", values: LGraphTexture.MODE_VALUES },
   width: { type: "number", precision: 0, step: 1 },
   height: { type: "number", precision: 0, step: 1 },
   octaves: { type: "number", precision: 0, step: 1, min: 1, max: 50 }
-}), g(Yt, "pixel_shader", `precision highp float;
+}), g(Ye, "pixel_shader", `precision highp float;
         varying vec2 v_coord;
         uniform vec2 u_offset;
         uniform float u_scale;
@@ -19495,12 +19526,12 @@ g(Yt, "title", "Perlin"), g(Yt, "desc", "Generates a perlin noise texture"), g(Y
             vec4 color = vec4( pNoise( uv, u_octaves ) * u_amplitude );
             gl_FragColor = color;
         }`);
-let LGraphTexturePerlin = Yt;
+let LGraphTexturePerlin = Ye;
 LiteGraph.registerNodeType("texture/perlin", LGraphTexturePerlin);
-const te = class te {
+const et = class et {
   constructor() {
     this.addInput("v"), this.addOutput("out", "Texture"), this.properties = {
-      code: te.default_code,
+      code: et.default_code,
       width: 512,
       height: 512,
       clear: !0,
@@ -19584,18 +19615,18 @@ const te = class te {
     this.setOutputData(0, a);
   }
 };
-g(te, "title", "Canvas2D"), g(te, "desc", "Executes Canvas2D code inside a texture or the viewport."), g(te, "help", "Set width and height to 0 to match viewport size."), g(te, "default_code", `//vars: canvas,ctx,time
+g(et, "title", "Canvas2D"), g(et, "desc", "Executes Canvas2D code inside a texture or the viewport."), g(et, "help", "Set width and height to 0 to match viewport size."), g(et, "default_code", `//vars: canvas,ctx,time
 ctx.fillStyle='red';
 ctx.fillRect(0,0,50,50);
-`), g(te, "widgets_info", {
+`), g(et, "widgets_info", {
   precision: { widget: "combo", values: LGraphTexture.MODE_VALUES },
   code: { type: "code" },
   width: { type: "number", precision: 0, step: 1 },
   height: { type: "number", precision: 0, step: 1 }
 });
-let LGraphTextureCanvas2D = te;
+let LGraphTextureCanvas2D = et;
 LiteGraph.registerNodeType("texture/canvas2D", LGraphTextureCanvas2D);
-const jt = class jt {
+const je = class je {
   constructor() {
     this.addInput("in", "Texture"), this.addOutput("out", "Texture"), this.properties = {
       key_color: vec3.fromValues(0, 1, 0),
@@ -19622,10 +19653,10 @@ const jt = class jt {
           u_threshold: 1,
           u_slope: 1
         });
-        var r = this._uniforms, s = Mesh.getScreenQuad(), a = jt._shader;
-        a || (a = jt._shader = new GL$1.Shader(
+        var r = this._uniforms, s = Mesh.getScreenQuad(), a = je._shader;
+        a || (a = je._shader = new GL$1.Shader(
           GL$1.Shader.SCREEN_VERTEX_SHADER,
-          jt.pixel_shader
+          je.pixel_shader
         )), r.u_key_color = this.properties.key_color, r.u_threshold = this.properties.threshold, r.u_slope = this.properties.slope, this._tex.drawTo(function() {
           t.bind(0), a.uniforms(r).draw(s);
         }), this.setOutputData(0, this._tex);
@@ -19633,10 +19664,10 @@ const jt = class jt {
     }
   }
 };
-g(jt, "title", "Matte"), g(jt, "desc", "Extracts background"), g(jt, "widgets_info", {
+g(je, "title", "Matte"), g(je, "desc", "Extracts background"), g(je, "widgets_info", {
   key_color: { widget: "color" },
   precision: { widget: "combo", values: LGraphTexture.MODE_VALUES }
-}), g(jt, "pixel_shader", `precision highp float;
+}), g(je, "pixel_shader", `precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
         uniform vec3 u_key_color;
@@ -19650,7 +19681,7 @@ g(jt, "title", "Matte"), g(jt, "desc", "Extracts background"), g(jt, "widgets_in
             float alpha = smoothstep( edge, u_threshold, diff);
             gl_FragColor = vec4( color, alpha );
         }`);
-let LGraphTextureMatte = jt;
+let LGraphTextureMatte = je;
 LiteGraph.registerNodeType("texture/matte", LGraphTextureMatte);
 class LGraphCubemapToTexture2D {
   constructor() {
@@ -19999,7 +20030,7 @@ class LGShaderContext {
       }
   }
 }
-const Ft = class Ft {
+const Fe = class Fe {
   constructor() {
     this.subgraph = new LiteGraph.LGraph(), this.subgraph._subgraph_node = this, this.subgraph._is_subgraph = !0, this.subgraph.filter = "shader", this.addInput("in", "texture"), this.addOutput("out", "texture"), this.properties = {
       width: 0,
@@ -20013,7 +20044,7 @@ const Ft = class Ft {
     r.pos = [400, 300], this.subgraph.add(r);
     var s = LiteGraph.createNode("shader::output/fragcolor");
     s.pos = [600, 300], this.subgraph.add(s), t.connect(0, r), r.connect(0, s), this.size = [180, 60], this.redraw_on_mouse = !0, this._uniforms = {}, this._shader = null, this._context = new LGShaderContext(), this._context.vs_template = `#define VERTEX
-` + GL$1.Shader.SCREEN_VERTEX_SHADER, this._context.fs_template = Ft.template;
+` + GL$1.Shader.SCREEN_VERTEX_SHADER, this._context.fs_template = Fe.template;
   }
   onSerialize(t) {
     t.subgraph = this.subgraph.serialize();
@@ -20126,7 +20157,7 @@ const Ft = class Ft {
     return r;
   }
 };
-g(Ft, "template", `
+g(Fe, "template", `
         #define FRAGMENT
         precision highp float;
         varying vec2 v_coord;
@@ -20142,13 +20173,13 @@ g(Ft, "template", `
             {{fs_code}}
             gl_FragColor = fragcolor;
         }
-    `), g(Ft, "widgets_info", {
+    `), g(Fe, "widgets_info", {
   precision: {
     widget: "combo",
     values: LGraphTexture.MODE_VALUES
   }
-}), g(Ft, "title", "ShaderGraph"), g(Ft, "desc", "Builds a shader using a graph"), g(Ft, "input_node_type", "input/uniform"), g(Ft, "output_node_type", "output/fragcolor"), g(Ft, "title_color", SHADERNODES_COLOR);
-let LGraphShaderGraph = Ft;
+}), g(Fe, "title", "ShaderGraph"), g(Fe, "desc", "Builds a shader using a graph"), g(Fe, "input_node_type", "input/uniform"), g(Fe, "output_node_type", "output/fragcolor"), g(Fe, "title_color", SHADERNODES_COLOR);
+let LGraphShaderGraph = Fe;
 LiteGraph.registerNodeType("texture/shaderGraph", LGraphShaderGraph);
 class LGraphShaderUniform {
   constructor() {
@@ -20354,7 +20385,7 @@ class LGraphShaderConstant {
 }
 g(LGraphShaderConstant, "title", "const");
 registerShaderNode("const/const", LGraphShaderConstant);
-const ee = class ee {
+const tt = class tt {
   constructor() {
     this.addInput("xy", "vec2"), this.addInput("x", "float"), this.addInput("y", "float"), this.addOutput("xy", "vec2"), this.addOutput("x", "float"), this.addOutput("y", "float"), this.properties = { x: 0, y: 0 };
   }
@@ -20365,14 +20396,14 @@ const ee = class ee {
     if (this.shader_destination) {
       var r = this.properties, s = getShaderNodeVarName(this), a = "	vec2 " + s + " = " + valueToGLSL([r.x, r.y]) + `;
 `;
-      for (let l = 0; l < ee.varmodes.length; ++l) {
-        let c = ee.varmodes[l];
+      for (let l = 0; l < tt.varmodes.length; ++l) {
+        let c = tt.varmodes[l];
         var o = getInputLinkID(this, l);
         o && (a += "	" + s + "." + c + " = " + o + `;
 `);
       }
-      for (let l = 0; l < ee.varmodes.length; ++l) {
-        let c = ee.varmodes[l];
+      for (let l = 0; l < tt.varmodes.length; ++l) {
+        let c = tt.varmodes[l];
         var u = getOutputLinkID(this, l);
         if (u) {
           var h = GLSL_types_const[c.length - 1];
@@ -20384,10 +20415,10 @@ const ee = class ee {
     }
   }
 };
-g(ee, "title", "vec2"), g(ee, "varmodes", ["xy", "x", "y"]);
-let LGraphShaderVec2 = ee;
+g(tt, "title", "vec2"), g(tt, "varmodes", ["xy", "x", "y"]);
+let LGraphShaderVec2 = tt;
 registerShaderNode("const/vec2", LGraphShaderVec2);
-const re = class re {
+const rt = class rt {
   constructor() {
     this.addInput("xyz", "vec3"), this.addInput("x", "float"), this.addInput("y", "float"), this.addInput("z", "float"), this.addInput("xy", "vec2"), this.addInput("xz", "vec2"), this.addInput("yz", "vec2"), this.addOutput("xyz", "vec3"), this.addOutput("x", "float"), this.addOutput("y", "float"), this.addOutput("z", "float"), this.addOutput("xy", "vec2"), this.addOutput("xz", "vec2"), this.addOutput("yz", "vec2"), this.properties = { x: 0, y: 0, z: 0 };
   }
@@ -20398,13 +20429,13 @@ const re = class re {
     if (this.shader_destination) {
       var r = this.properties, s = getShaderNodeVarName(this), a = "vec3 " + s + " = " + valueToGLSL([r.x, r.y, r.z]) + `;
 `;
-      for (let u = 0; u < re.varmodes.length; ++u) {
-        let h = re.varmodes[u], l = getInputLinkID(this, u);
+      for (let u = 0; u < rt.varmodes.length; ++u) {
+        let h = rt.varmodes[u], l = getInputLinkID(this, u);
         l && (a += "	" + s + "." + h + " = " + l + `;
 `);
       }
-      for (let u = 0; u < re.varmodes.length; ++u) {
-        let h = re.varmodes[u], l = getOutputLinkID(this, u);
+      for (let u = 0; u < rt.varmodes.length; ++u) {
+        let h = rt.varmodes[u], l = getOutputLinkID(this, u);
         if (l) {
           var o = GLSL_types_const[h.length - 1];
           a += "	" + o + " " + l + " = " + s + "." + h + `;
@@ -20415,10 +20446,10 @@ const re = class re {
     }
   }
 };
-g(re, "title", "vec3"), g(re, "varmodes", ["xyz", "x", "y", "z", "xy", "xz", "yz"]);
-let LGraphShaderVec3 = re;
+g(rt, "title", "vec3"), g(rt, "varmodes", ["xyz", "x", "y", "z", "xy", "xz", "yz"]);
+let LGraphShaderVec3 = rt;
 registerShaderNode("const/vec3", LGraphShaderVec3);
-const ie = class ie {
+const it = class it {
   constructor() {
     this.addInput("xyzw", "vec4"), this.addInput("xyz", "vec3"), this.addInput("x", "float"), this.addInput("y", "float"), this.addInput("z", "float"), this.addInput("w", "float"), this.addInput("xy", "vec2"), this.addInput("yz", "vec2"), this.addInput("zw", "vec2"), this.addOutput("xyzw", "vec4"), this.addOutput("xyz", "vec3"), this.addOutput("x", "float"), this.addOutput("y", "float"), this.addOutput("z", "float"), this.addOutput("xy", "vec2"), this.addOutput("yz", "vec2"), this.addOutput("zw", "vec2"), this.properties = { x: 0, y: 0, z: 0, w: 0 };
   }
@@ -20429,13 +20460,13 @@ const ie = class ie {
     if (this.shader_destination) {
       var r = this.properties, s = getShaderNodeVarName(this), a = "vec4 " + s + " = " + valueToGLSL([r.x, r.y, r.z, r.w]) + `;
 `;
-      for (let u = 0; u < ie.varmodes.length; ++u) {
-        let h = ie.varmodes[u], l = getInputLinkID(this, u);
+      for (let u = 0; u < it.varmodes.length; ++u) {
+        let h = it.varmodes[u], l = getInputLinkID(this, u);
         l && (a += "	" + s + "." + h + " = " + l + `;
 `);
       }
-      for (let u = 0; u < ie.varmodes.length; ++u) {
-        let h = ie.varmodes[u], l = getOutputLinkID(this, u);
+      for (let u = 0; u < it.varmodes.length; ++u) {
+        let h = it.varmodes[u], l = getOutputLinkID(this, u);
         if (l) {
           var o = GLSL_types_const[h.length - 1];
           a += "	" + o + " " + l + " = " + s + "." + h + `;
@@ -20446,7 +20477,7 @@ const ie = class ie {
     }
   }
 };
-g(ie, "title", "vec4"), g(ie, "varmodes", [
+g(it, "title", "vec4"), g(it, "varmodes", [
   "xyzw",
   "xyz",
   "x",
@@ -20457,7 +20488,7 @@ g(ie, "title", "vec4"), g(ie, "varmodes", [
   "yz",
   "zw"
 ]);
-let LGraphShaderVec4 = ie;
+let LGraphShaderVec4 = it;
 registerShaderNode("const/vec4", LGraphShaderVec4);
 class LGraphShaderFragColor {
   constructor() {
@@ -20473,11 +20504,11 @@ class LGraphShaderFragColor {
 }
 g(LGraphShaderFragColor, "title", "FragColor"), g(LGraphShaderFragColor, "desc", "Pixel final color");
 registerShaderNode("output/fragcolor", LGraphShaderFragColor);
-const Le = class Le {
+const Lt = class Lt {
   constructor() {
     this.addInput("A", LGShaders.ALL_TYPES), this.addInput("B", LGShaders.ALL_TYPES), this.addOutput("out", ""), this.properties = { operation: "*" }, this.addWidget("combo", "op.", this.properties.operation, {
       property: "operation",
-      values: Le.operations
+      values: Lt.operations
     });
   }
   getTitle() {
@@ -20511,8 +20542,8 @@ const Le = class Le {
     }
   }
 };
-g(Le, "title", "Operation"), g(Le, "operations", ["+", "-", "*", "/"]);
-let LGraphShaderOperation = Le;
+g(Lt, "title", "Operation"), g(Lt, "operations", ["+", "-", "*", "/"]);
+let LGraphShaderOperation = Lt;
 registerShaderNode("math/operation", LGraphShaderOperation);
 class LGraphShaderFunc {
   constructor() {
@@ -20648,20 +20679,20 @@ class LGraphShaderRand {
 }
 g(LGraphShaderRand, "title", "Rand");
 registerShaderNode("input/rand", LGraphShaderRand);
-const pe = class pe {
+const pt = class pt {
   constructor() {
     this.addInput("out", LGShaders.ALL_TYPES), this.addInput("scale", "float"), this.addOutput("out", "float"), this.properties = {
       type: "noise",
       scale: 1
     }, this.addWidget("combo", "type", this.properties.type, {
       property: "type",
-      values: pe.NOISE_TYPES
+      values: pt.NOISE_TYPES
     }), this.addWidget("number", "scale", this.properties.scale, { property: "scale" });
   }
   onGetCode(t) {
     if (!(!this.shader_destination || !this.isOutputConnected(0))) {
       var r = getInputLinkID(this, 0), s = getOutputLinkID(this, 0), a = this.getInputData(0);
-      r || (a = "vec2", r = t.buffer_names.uvs), t.addFunction("noise", pe.shader_functions), t.addUniform(
+      r || (a = "vec2", r = t.buffer_names.uvs), t.addFunction("noise", pt.shader_functions), t.addUniform(
         "u_noise_scale" + this.id,
         "float",
         this.properties.scale
@@ -20681,7 +20712,7 @@ const pe = class pe {
     }
   }
 };
-g(pe, "NOISE_TYPES", ["noise", "rand"]), g(pe, "title", "noise"), g(pe, "shader_functions", `
+g(pt, "NOISE_TYPES", ["noise", "rand"]), g(pt, "title", "noise"), g(pt, "shader_functions", `
         vec3 permute(vec3 x) { return mod(((x * 34.0) + 1.0) * x, 289.0); }
 
         float snoise(vec2 v) {
@@ -20807,7 +20838,7 @@ g(pe, "NOISE_TYPES", ["noise", "rand"]), g(pe, "title", "noise"), g(pe, "shader_
             return va / wt;
         }
     `);
-let LGraphShaderNoise = pe;
+let LGraphShaderNoise = pt;
 registerShaderNode("math/noise", LGraphShaderNoise);
 class LGraphShaderTime {
   constructor() {
@@ -20828,14 +20859,14 @@ class LGraphShaderTime {
 }
 g(LGraphShaderTime, "title", "Time");
 registerShaderNode("input/time", LGraphShaderTime);
-const de = class de {
+const dt = class dt {
   constructor() {
     this.addInput("in", "T"), this.addOutput("out", "float");
   }
   onGetCode(t) {
     if (!(!this.shader_destination || !this.isOutputConnected(0))) {
       var r = getInputLinkID(this, 0), s = "float", a = getOutputLinkID(this, 0), o = this.getInputData(0);
-      r = varToTypeGLSL(r, o, "float"), t.addFunction("dither8x8", de.dither_func), t.addCode(
+      r = varToTypeGLSL(r, o, "float"), t.addFunction("dither8x8", dt.dither_func), t.addCode(
         "code",
         s + " " + a + " = dither8x8(" + r + ");",
         this.shader_destination
@@ -20843,7 +20874,7 @@ const de = class de {
     }
   }
 };
-g(de, "title", "Dither"), g(de, "dither_values", [
+g(dt, "title", "Dither"), g(dt, "dither_values", [
   0.515625,
   0.140625,
   0.640625,
@@ -20907,7 +20938,7 @@ g(de, "title", "Dither"), g(de, "dither_values", [
   0.46875,
   0.84375,
   0.34375
-]), g(de, "dither_func", `
+]), g(dt, "dither_func", `
         float dither8x8(float brightness) {
             vec2 position = vec2(0.0);
             #ifdef FRAGMENT
@@ -20922,12 +20953,12 @@ g(de, "title", "Dither"), g(de, "dither_values", [
                 // Add more conditions or code here if needed
                 // Example: if (condition) { ... }
             }
-            ${de.dither_values.map((t, r) => `else if (index == ${r + 1}) limit = ${t};`).join(`
+            ${dt.dither_values.map((t, r) => `else if (index == ${r + 1}) limit = ${t};`).join(`
 `)}
             return brightness < limit ? 0.0 : 1.0;
         }
     `);
-let LGraphShaderDither = de;
+let LGraphShaderDither = dt;
 registerShaderNode("math/dither", LGraphShaderDither);
 class LGraphShaderRemap {
   constructor() {
@@ -21196,7 +21227,7 @@ g(j, "RECTANGLE", 1), g(j, "CIRCLE", 2), g(j, "CUBE", 10), g(j, "SPHERE", 11), g
 }), g(j, "title", "list of points"), g(j, "desc", "returns an array of points");
 let LGraphPoints3D = j;
 LiteGraph.registerNodeType("geometry/points3D", LGraphPoints3D);
-const ht = class ht {
+const he = class he {
   constructor() {
     this.addInput("points", "geometry"), this.addOutput("instances", "[mat4]"), this.properties = {
       mode: 1,
@@ -21224,22 +21255,22 @@ const ht = class ht {
       L || (L = a[T] = mat4.create()), L.set(u);
       var G = r.subarray(m, m + 3);
       switch (this.properties.mode) {
-        case ht.NORMAL:
+        case he.NORMAL:
           if (mat4.setTranslation(L, G), s) {
             var O = s.subarray(m, m + 3);
             E.set(O), vec3.normalize(E, E), vec3.cross(_, c, E), vec3.normalize(_, _), vec3.cross(f, _, E), vec3.normalize(f, f), L.set(_, 0), L.set(E, 4), L.set(f, 8), mat4.setTranslation(L, G);
           }
           break;
-        case ht.VERTICAL:
+        case he.VERTICAL:
           mat4.setTranslation(L, G);
           break;
-        case ht.SPHERICAL:
+        case he.SPHERICAL:
           f.set(G), vec3.normalize(f, f), vec3.cross(_, l, f), vec3.normalize(_, _), vec3.cross(E, f, _), vec3.normalize(E, E), L.set(_, 0), L.set(E, 4), L.set(f, 8), mat4.setTranslation(L, G);
           break;
-        case ht.RANDOM:
+        case he.RANDOM:
           h[0] = Math.random() * 2 - 1, h[1] = Math.random() * 2 - 1, h[2] = Math.random() * 2 - 1, vec3.normalize(h, h), quat.setAxisAngle(d, h, Math.random() * 2 * Math.PI), mat4.fromQuat(L, d), mat4.setTranslation(L, G);
           break;
-        case ht.RANDOM_VERTICAL:
+        case he.RANDOM_VERTICAL:
           quat.setAxisAngle(d, l, Math.random() * 2 * Math.PI), mat4.fromQuat(L, d), mat4.setTranslation(L, G);
           break;
       }
@@ -21247,19 +21278,19 @@ const ht = class ht {
     this._version = t._version, this._geometry_id = t._id;
   }
 };
-g(ht, "NORMAL", 0), g(ht, "VERTICAL", 1), g(ht, "SPHERICAL", 2), g(ht, "RANDOM", 3), g(ht, "RANDOM_VERTICAL", 4), g(ht, "modes", {
+g(he, "NORMAL", 0), g(he, "VERTICAL", 1), g(he, "SPHERICAL", 2), g(he, "RANDOM", 3), g(he, "RANDOM_VERTICAL", 4), g(he, "modes", {
   normal: 0,
   vertical: 1,
   spherical: 2,
   random: 3,
   random_vertical: 4
-}), g(ht, "widgets_info", {
+}), g(he, "widgets_info", {
   mode: {
     widget: "combo",
-    values: ht.modes
+    values: he.modes
   }
-}), g(ht, "title", "points to inst");
-let LGraphPointsToInstances = ht;
+}), g(he, "title", "points to inst");
+let LGraphPointsToInstances = he;
 LiteGraph.registerNodeType("geometry/points_to_instances", LGraphPointsToInstances);
 class LGraphGeometryTransform {
   constructor() {
@@ -21780,17 +21811,17 @@ if (typeof GL != "undefined") {
             }
         `), LiteGraph.registerNodeType("geometry/render_points", a);
 }
-const It = class It {
+const Ie = class Ie {
   constructor() {
     this.addInput("Texture", "Texture"), this.addInput("Aberration", "number"), this.addInput("Distortion", "number"), this.addInput("Blur", "number"), this.addOutput("Texture", "Texture"), this.properties = {
       aberration: 1,
       distortion: 1,
       blur: 1,
       precision: LGraphTexture.DEFAULT
-    }, It._shader || (It._shader = new GL$1.Shader(
+    }, Ie._shader || (Ie._shader = new GL$1.Shader(
       GL$1.Shader.SCREEN_VERTEX_SHADER,
-      It.pixel_shader
-    ), It._texture = new GL$1.Texture(3, 1, {
+      Ie.pixel_shader
+    ), Ie._texture = new GL$1.Texture(3, 1, {
       format: gl$1.RGB,
       wrap: gl$1.CLAMP_TO_EDGE,
       magFilter: gl$1.LINEAR,
@@ -21816,7 +21847,7 @@ const It = class It {
       this.isInputConnected(2) && (s = this.getInputData(2), this.properties.distortion = s);
       var a = this.properties.blur;
       this.isInputConnected(3) && (a = this.getInputData(3), this.properties.blur = a), gl$1.disable(gl$1.BLEND), gl$1.disable(gl$1.DEPTH_TEST);
-      var o = Mesh.getScreenQuad(), u = It._shader;
+      var o = Mesh.getScreenQuad(), u = Ie._shader;
       this._tex.drawTo(function() {
         t.bind(0), u.uniforms({
           u_texture: 0,
@@ -21837,12 +21868,12 @@ const It = class It {
       }\n\
   */
 };
-g(It, "title", "Lens"), g(It, "desc", "Camera Lens distortion"), g(It, "widgets_info", {
+g(Ie, "title", "Lens"), g(Ie, "desc", "Camera Lens distortion"), g(Ie, "widgets_info", {
   precision: {
     widget: "combo",
     values: LGraphTexture.MODE_VALUES
   }
-}), g(It, "pixel_shader", `
+}), g(Ie, "pixel_shader", `
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
@@ -21864,9 +21895,9 @@ g(It, "title", "Lens"), g(It, "desc", "Camera Lens distortion"), g(It, "widgets_
             gl_FragColor = color;
         }
     `);
-let LGraphFXLens = It;
+let LGraphFXLens = Ie;
 LiteGraph.registerNodeType("fx/lens", LGraphFXLens);
-const ct = class ct {
+const ce = class ce {
   constructor() {
     this.addInput("Texture", "Texture"), this.addInput("Blurred", "Texture"), this.addInput("Mask", "Texture"), this.addInput("Threshold", "number"), this.addOutput("Texture", "Texture"), this.properties = {
       shape: "",
@@ -21893,15 +21924,15 @@ const ct = class ct {
         format: gl$1.RGBA,
         filter: gl$1.LINEAR
       }));
-      var h = ct._first_shader;
-      h || (h = ct._first_shader = new GL$1.Shader(
+      var h = ce._first_shader;
+      h || (h = ce._first_shader = new GL$1.Shader(
         GL$1.Shader.SCREEN_VERTEX_SHADER,
-        ct._first_pixel_shader
+        ce._first_pixel_shader
       ));
-      var l = ct._second_shader;
-      l || (l = ct._second_shader = new GL$1.Shader(
-        ct._second_vertex_shader,
-        ct._second_pixel_shader
+      var l = ce._second_shader;
+      l || (l = ce._second_shader = new GL$1.Shader(
+        ce._second_vertex_shader,
+        ce._second_pixel_shader
       ));
       var c = this._points_mesh;
       (!c || c._width != t.width || c._height != t.height || c._spacing != 2) && (c = this.createPointsMesh(t.width, t.height, 2));
@@ -21937,7 +21968,7 @@ const ct = class ct {
     return this._points_mesh = GL$1.Mesh.load({ vertices2D: u }), this._points_mesh._width = t, this._points_mesh._height = r, this._points_mesh._spacing = s, this._points_mesh;
   }
 };
-g(ct, "title", "Bokeh"), g(ct, "desc", "applies an Bokeh effect"), g(ct, "widgets_info", { shape: { widget: "texture" } }), /*
+g(ce, "title", "Bokeh"), g(ce, "desc", "applies an Bokeh effect"), g(ce, "widgets_info", { shape: { widget: "texture" } }), /*
 LGraphTextureBokeh._pixel_shader = "precision highp float;\n\
         varying vec2 a_coord;\n\
         uniform sampler2D u_texture;\n\
@@ -21949,7 +21980,7 @@ LGraphTextureBokeh._pixel_shader = "precision highp float;\n\
             gl_FragColor = color;\n\
         }\n";
 */
-g(ct, "_first_pixel_shader", `
+g(ce, "_first_pixel_shader", `
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
@@ -21962,7 +21993,7 @@ g(ct, "_first_pixel_shader", `
             float mask = texture2D(u_mask, v_coord).x;
             gl_FragColor = mix(color, blurred_color, mask);
         }
-    `), g(ct, "_second_vertex_shader", `
+    `), g(ce, "_second_vertex_shader", `
         precision highp float;
         attribute vec2 a_vertex2D;
         varying vec4 v_color;
@@ -21990,7 +22021,7 @@ g(ct, "_first_pixel_shader", `
             gl_PointSize = u_pointSize;
             gl_Position = vec4(a_vertex2D, 0.0, 1.0);
         }
-    `), g(ct, "_second_pixel_shader", `
+    `), g(ce, "_second_pixel_shader", `
         precision highp float;
         varying vec4 v_color;
         uniform sampler2D u_shape;
@@ -22002,9 +22033,9 @@ g(ct, "_first_pixel_shader", `
             gl_FragColor = color;
         }
     `);
-let LGraphFXBokeh = ct;
+let LGraphFXBokeh = ce;
 LiteGraph.registerNodeType("fx/bokeh", LGraphFXBokeh);
-const ft = class ft {
+const fe = class fe {
   constructor() {
     this.addInput("Texture", "Texture"), this.addInput("value1", "number"), this.addInput("value2", "number"), this.addOutput("Texture", "Texture"), this.properties = {
       fx: "halftone",
@@ -22030,12 +22061,12 @@ const ft = class ft {
         this.isInputConnected(1) && (r = this.getInputData(1), this.properties.value1 = r);
         var s = this.properties.value2;
         this.isInputConnected(2) && (s = this.getInputData(2), this.properties.value2 = s);
-        var a = this.properties.fx, o = ft.shaders[a];
+        var a = this.properties.fx, o = fe.shaders[a];
         if (!o) {
-          var u = ft["pixel_shader_" + a];
+          var u = fe["pixel_shader_" + a];
           if (!u)
             return;
-          o = ft.shaders[a] = new GL$1.Shader(
+          o = fe.shaders[a] = new GL$1.Shader(
             GL$1.Shader.SCREEN_VERTEX_SHADER,
             u
           );
@@ -22062,7 +22093,7 @@ const ft = class ft {
     }
   }
 };
-g(ft, "title", "FX"), g(ft, "desc", "applies an FX from a list"), g(ft, "widgets_info", {
+g(fe, "title", "FX"), g(fe, "desc", "applies an FX from a list"), g(fe, "widgets_info", {
   fx: {
     widget: "combo",
     values: ["halftone", "pixelate", "lowpalette", "noise", "gamma"]
@@ -22071,7 +22102,7 @@ g(ft, "title", "FX"), g(ft, "desc", "applies an FX from a list"), g(ft, "widgets
     widget: "combo",
     values: LGraphTexture.MODE_VALUES
   }
-}), g(ft, "shaders", {}), g(ft, "pixel_shader_halftone", `
+}), g(fe, "shaders", {}), g(fe, "pixel_shader_halftone", `
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
@@ -22095,7 +22126,7 @@ g(ft, "title", "FX"), g(ft, "desc", "applies an FX from a list"), g(ft, "widgets
             float average = (color.r + color.g + color.b) / 3.0;
             gl_FragColor = vec4(vec3(average * 10.0 - 5.0 + pattern()), color.a);
         }
-    `), g(ft, "pixel_shader_pixelate", `
+    `), g(fe, "pixel_shader_pixelate", `
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
@@ -22109,7 +22140,7 @@ g(ft, "title", "FX"), g(ft, "desc", "applies an FX from a list"), g(ft, "widgets
             vec4 color = texture2D(u_texture, coord);
             gl_FragColor = color;
         }
-    `), g(ft, "pixel_shader_lowpalette", `
+    `), g(fe, "pixel_shader_lowpalette", `
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
@@ -22122,7 +22153,7 @@ g(ft, "title", "FX"), g(ft, "desc", "applies an FX from a list"), g(ft, "widgets
             vec4 color = texture2D(u_texture, v_coord);
             gl_FragColor = floor(color * u_value1) / u_value1;
         }
-    `), g(ft, "pixel_shader_noise", `
+    `), g(fe, "pixel_shader_noise", `
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
@@ -22137,7 +22168,7 @@ g(ft, "title", "FX"), g(ft, "desc", "applies an FX from a list"), g(ft, "widgets
             vec3 noise = texture2D(u_noise, v_coord * vec2(u_size.x / 512.0, u_size.y / 512.0) + u_rand).xyz - vec3(0.5);
             gl_FragColor = vec4(color.xyz + noise * u_value1, color.a);
         }
-    `), g(ft, "pixel_shader_gamma", `
+    `), g(fe, "pixel_shader_gamma", `
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
@@ -22149,17 +22180,17 @@ g(ft, "title", "FX"), g(ft, "desc", "applies an FX from a list"), g(ft, "widgets
             gl_FragColor = vec4(pow(color.xyz, vec3(gamma)), color.a);
         }
     `);
-let LGraphFXGeneric = ft;
+let LGraphFXGeneric = fe;
 LiteGraph.registerNodeType("fx/generic", LGraphFXGeneric);
-const Pt = class Pt {
+const Pe = class Pe {
   constructor() {
     this.addInput("Tex.", "Texture"), this.addInput("intensity", "number"), this.addOutput("Texture", "Texture"), this.properties = {
       intensity: 1,
       invert: !1,
       precision: LGraphTexture.DEFAULT
-    }, Pt._shader || (Pt._shader = new GL$1.Shader(
+    }, Pe._shader || (Pe._shader = new GL$1.Shader(
       GL$1.Shader.SCREEN_VERTEX_SHADER,
-      Pt.pixel_shader
+      Pe.pixel_shader
     ));
   }
   onExecute() {
@@ -22176,7 +22207,7 @@ const Pt = class Pt {
       );
       var r = this.properties.intensity;
       this.isInputConnected(1) && (r = this.getInputData(1), this.properties.intensity = r), gl$1.disable(gl$1.BLEND), gl$1.disable(gl$1.DEPTH_TEST);
-      var s = Mesh.getScreenQuad(), a = Pt._shader, o = this.properties.invert;
+      var s = Mesh.getScreenQuad(), a = Pe._shader, o = this.properties.invert;
       this._tex.drawTo(function() {
         t.bind(0), a.uniforms({
           u_texture: 0,
@@ -22188,12 +22219,12 @@ const Pt = class Pt {
     }
   }
 };
-g(Pt, "title", "Vigneting"), g(Pt, "desc", "Vigneting"), g(Pt, "widgets_info", {
+g(Pe, "title", "Vigneting"), g(Pe, "desc", "Vigneting"), g(Pe, "widgets_info", {
   precision: {
     widget: "combo",
     values: LGraphTexture.MODE_VALUES
   }
-}), g(Pt, "pixel_shader", `
+}), g(Pe, "pixel_shader", `
         precision highp float;
         varying vec2 v_coord;
         uniform sampler2D u_texture;
@@ -22212,10 +22243,10 @@ g(Pt, "title", "Vigneting"), g(Pt, "desc", "Vigneting"), g(Pt, "widgets_info", {
             gl_FragColor = vec4(luminance * color.xyz, color.a);
         }
     `);
-let LGraphFXVigneting = Pt;
+let LGraphFXVigneting = Pe;
 LiteGraph.registerNodeType("fx/vigneting", LGraphFXVigneting);
 var MIDI_COLOR = "#243";
-const rt = class rt {
+const re = class re {
   constructor(t) {
     this.channel = 0, this.cmd = 0, this.data = new Uint32Array(3), t && this.setup(t);
   }
@@ -22228,22 +22259,22 @@ const rt = class rt {
     var s = r[0];
     this.status = s;
     var a = s & 240;
-    s >= 240 ? this.cmd = s : this.cmd = a, this.cmd == rt.NOTEON && this.velocity == 0 && (this.cmd = rt.NOTEOFF), this.cmd_str = rt.commands[this.cmd] || "", (a >= rt.NOTEON || a <= rt.NOTEOFF) && (this.channel = s & 15);
+    s >= 240 ? this.cmd = s : this.cmd = a, this.cmd == re.NOTEON && this.velocity == 0 && (this.cmd = re.NOTEOFF), this.cmd_str = re.commands[this.cmd] || "", (a >= re.NOTEON || a <= re.NOTEOFF) && (this.channel = s & 15);
   }
   get velocity() {
-    return this.cmd == rt.NOTEON ? this.data[2] : -1;
+    return this.cmd == re.NOTEON ? this.data[2] : -1;
   }
   set velocity(t) {
     this.data[2] = t;
   }
   get note() {
-    return this.cmd != rt.NOTEON ? -1 : rt.toNoteString(this.data[1], !0);
+    return this.cmd != re.NOTEON ? -1 : re.toNoteString(this.data[1], !0);
   }
   set note(t) {
     throw new Error("notes cannot be assigned this way, must modify the data[1]");
   }
   get octave() {
-    if (this.cmd != rt.NOTEON)
+    if (this.cmd != re.NOTEON)
       return -1;
     var t = this.data[1] - 24;
     return Math.floor(t / 12 + 1);
@@ -22272,7 +22303,7 @@ const rt = class rt {
     return t + (r << 7) - 8192;
   }
   setCommandFromString(t) {
-    this.cmd = rt.computeCommandFromString(t);
+    this.cmd = re.computeCommandFromString(t);
   }
   static computeCommandFromString(t) {
     if (!t)
@@ -22282,30 +22313,30 @@ const rt = class rt {
     switch (t = t.toUpperCase(), t) {
       case "NOTE ON":
       case "NOTEON":
-        return rt.NOTEON;
+        return re.NOTEON;
       case "NOTE OFF":
       case "NOTEOFF":
-        return rt.NOTEON;
+        return re.NOTEON;
       case "KEY PRESSURE":
       case "KEYPRESSURE":
-        return rt.KEYPRESSURE;
+        return re.KEYPRESSURE;
       case "CONTROLLER CHANGE":
       case "CONTROLLERCHANGE":
       case "CC":
-        return rt.CONTROLLERCHANGE;
+        return re.CONTROLLERCHANGE;
       case "PROGRAM CHANGE":
       case "PROGRAMCHANGE":
       case "PC":
-        return rt.PROGRAMCHANGE;
+        return re.PROGRAMCHANGE;
       case "CHANNEL PRESSURE":
       case "CHANNELPRESSURE":
-        return rt.CHANNELPRESSURE;
+        return re.CHANNELPRESSURE;
       case "PITCH BEND":
       case "PITCHBEND":
-        return rt.PITCHBEND;
+        return re.PITCHBEND;
       case "TIME TICK":
       case "TIMETICK":
-        return rt.TIMETICK;
+        return re.TIMETICK;
       default:
         return Number(t);
     }
@@ -22314,34 +22345,34 @@ const rt = class rt {
   static toNoteString(t, r) {
     t = Math.round(t);
     var s = t - 21, a = Math.floor((t - 24) / 12 + 1);
-    return s = s % 12, s < 0 && (s = 12 + s), rt.notes[s] + (r ? "" : a);
+    return s = s % 12, s < 0 && (s = 12 + s), re.notes[s] + (r ? "" : a);
   }
   static NoteStringToPitch(t) {
     t = t.toUpperCase();
     var r = t[0], s = 4;
     t[1] == "#" ? (r += "#", t.length > 2 && (s = Number(t[2]))) : t.length > 1 && (s = Number(t[1]));
-    var a = rt.note_to_index[r];
+    var a = re.note_to_index[r];
     return a == null ? null : (s - 1) * 12 + a + 21;
   }
   toString() {
     var t = "" + this.channel + ". ";
     switch (this.cmd) {
-      case rt.NOTEON:
-        t += "NOTEON " + rt.toNoteString(this.data[1]);
+      case re.NOTEON:
+        t += "NOTEON " + re.toNoteString(this.data[1]);
         break;
-      case rt.NOTEOFF:
-        t += "NOTEOFF " + rt.toNoteString(this.data[1]);
+      case re.NOTEOFF:
+        t += "NOTEOFF " + re.toNoteString(this.data[1]);
         break;
-      case rt.CONTROLLERCHANGE:
+      case re.CONTROLLERCHANGE:
         t += "CC " + this.data[1] + " " + this.data[2];
         break;
-      case rt.PROGRAMCHANGE:
+      case re.PROGRAMCHANGE:
         t += "PC " + this.data[1];
         break;
-      case rt.PITCHBEND:
+      case re.PITCHBEND:
         t += "PITCHBEND " + this.getPitchBend();
         break;
-      case rt.KEYPRESSURE:
+      case re.KEYPRESSURE:
         t += "KEYPRESS " + this.data[1];
         break;
     }
@@ -22357,7 +22388,7 @@ const rt = class rt {
     };
   }
 };
-g(rt, "notes", [
+g(re, "notes", [
   "A",
   "A#",
   "B",
@@ -22370,7 +22401,7 @@ g(rt, "notes", [
   "F#",
   "G",
   "G#"
-]), g(rt, "note_to_index", {
+]), g(re, "note_to_index", {
   A: 0,
   "A#": 1,
   B: 2,
@@ -22383,7 +22414,7 @@ g(rt, "notes", [
   "F#": 9,
   G: 10,
   "G#": 11
-}), g(rt, "commands", {
+}), g(re, "commands", {
   128: "note off",
   144: "note on",
   160: "key pressure",
@@ -22401,7 +22432,7 @@ g(rt, "notes", [
   252: "Stop Song",
   254: "Sensing",
   255: "Reset"
-}), g(rt, "commands_short", {
+}), g(re, "commands_short", {
   128: "NOTEOFF",
   144: "NOTEOFF",
   160: "KEYP",
@@ -22419,8 +22450,8 @@ g(rt, "notes", [
   252: "STOP",
   254: "SENS",
   255: "RESET"
-}), g(rt, "commands_reversed", {});
-let MIDIEvent = rt;
+}), g(re, "commands_reversed", {});
+let MIDIEvent = re;
 MIDIEvent.NOTEOFF = 128;
 MIDIEvent.NOTEON = 144;
 MIDIEvent.KEYPRESSURE = 160;
@@ -22432,7 +22463,7 @@ MIDIEvent.TIMETICK = 248;
 LiteGraph.MIDIEvent = MIDIEvent;
 for (var i$1 in MIDIEvent.commands)
   MIDIEvent.commands_reversed[MIDIEvent.commands[i$1]] = i$1;
-const fe = class fe {
+const ft = class ft {
   constructor(t, r) {
     var s;
     if (!navigator.requestMIDIAccess) {
@@ -22471,11 +22502,11 @@ const fe = class fe {
     var s = this.input_ports.get("input-" + t);
     if (!s)
       return !1;
-    fe.input = this;
+    ft.input = this;
     var a = this;
     return s.onmidimessage = function(u) {
       var h = new MIDIEvent(u.data);
-      a.updateState(h), r && r(u.data, h), fe.on_message && fe.on_message(u.data, h);
+      a.updateState(h), r && r(u.data, h), ft.on_message && ft.on_message(u.data, h);
     }, (o = console.log) == null || o.call(console, "port open: ", s), !0;
   }
   updateState(t) {
@@ -22494,12 +22525,12 @@ const fe = class fe {
   sendMIDI(t, r) {
     if (r) {
       var s = this.output_ports_info[t];
-      s && (fe.output = this, r.constructor === MIDIEvent ? s.send(r.data) : s.send(r));
+      s && (ft.output = this, r.constructor === MIDIEvent ? s.send(r.data) : s.send(r));
     }
   }
 };
-g(fe, "input", null);
-let MIDIInterface = fe;
+g(ft, "input", null);
+let MIDIInterface = ft;
 MIDIInterface.MIDIEvent = MIDIEvent;
 class LGMIDIIn {
   constructor() {
@@ -22573,7 +22604,7 @@ class LGMIDIIn {
 g(LGMIDIIn, "title", "MIDI Input"), g(LGMIDIIn, "desc", "Reads MIDI from a input port"), g(LGMIDIIn, "color", MIDI_COLOR);
 LGMIDIIn.MIDIInterface = MIDIInterface;
 LiteGraph.registerNodeType("midi/input", LGMIDIIn);
-const ve = class ve {
+const vt = class vt {
   constructor() {
     this.addInput("send", LiteGraph.EVENT), this.properties = { port: 0 };
     var t = this;
@@ -22592,7 +22623,7 @@ const ve = class ve {
   }
   getMIDIOutputs() {
     var t = {};
-    if (!this._midi) return ve.default_ports;
+    if (!this._midi) return vt.default_ports;
     if (this._midi.output_ports_info)
       for (var r = 0; r < this._midi.output_ports_info.length; ++r) {
         var s = this._midi.output_ports_info[r];
@@ -22613,8 +22644,8 @@ const ve = class ve {
     return [["on_midi", LiteGraph.EVENT]];
   }
 };
-g(ve, "title", "MIDI Output"), g(ve, "desc", "Sends MIDI to output channel"), g(ve, "color", MIDI_COLOR), g(ve, "default_ports", { 0: "unknown" });
-let LGMIDIOut = ve;
+g(vt, "title", "MIDI Output"), g(vt, "desc", "Sends MIDI to output channel"), g(vt, "color", MIDI_COLOR), g(vt, "default_ports", { 0: "unknown" });
+let LGMIDIOut = vt;
 LGMIDIOut.MIDIInterface = MIDIInterface;
 LiteGraph.registerNodeType("midi/output", LGMIDIOut);
 class LGMIDIShow {
@@ -22801,14 +22832,14 @@ class LGMIDICC {
 }
 g(LGMIDICC, "title", "MIDICC"), g(LGMIDICC, "desc", "gets a Controller Change"), g(LGMIDICC, "color", MIDI_COLOR);
 LiteGraph.registerNodeType("midi/cc", LGMIDICC);
-const se = class se {
+const st = class st {
   constructor() {
     this.addInput("generate", LiteGraph.ACTION), this.addInput("scale", "string"), this.addInput("octave", "number"), this.addOutput("note", LiteGraph.EVENT), this.properties = {
       notes: "A,A#,B,C,C#,D,D#,E,F,F#,G,G#",
       octave: 2,
       duration: 0.5,
       mode: "sequence"
-    }, this.notes_pitches = se.processScale(this.properties.notes), this.sequence_index = 0;
+    }, this.notes_pitches = st.processScale(this.properties.notes), this.sequence_index = 0;
   }
   static processScale(t) {
     for (var r = t.split(","), s = 0; s < r.length; ++s) {
@@ -22818,13 +22849,13 @@ const se = class se {
     return r;
   }
   onPropertyChanged(t, r) {
-    t == "notes" && (this.notes_pitches = se.processScale(r));
+    t == "notes" && (this.notes_pitches = st.processScale(r));
   }
   onExecute() {
     var t = this.getInputData(2);
     t != null && (this.properties.octave = t);
     var r = this.getInputData(1);
-    r && (this.notes_pitches = se.processScale(r));
+    r && (this.notes_pitches = st.processScale(r));
   }
   onAction(t, r) {
     var s = 0, a = this.notes_pitches.length, o = 0;
@@ -22841,8 +22872,8 @@ const se = class se {
     );
   }
 };
-g(se, "title", "MIDI Generator"), g(se, "desc", "Generates a random MIDI note"), g(se, "color", MIDI_COLOR);
-let LGMIDIGenerator = se;
+g(st, "title", "MIDI Generator"), g(st, "desc", "Generates a random MIDI note"), g(st, "color", MIDI_COLOR);
+let LGMIDIGenerator = st;
 LiteGraph.registerNodeType("midi/generator", LGMIDIGenerator);
 class LGMIDITranspose {
   constructor() {
@@ -22993,7 +23024,7 @@ class LGMIDIPlay {
 }
 g(LGMIDIPlay, "title", "MIDI Play"), g(LGMIDIPlay, "desc", "Plays a MIDI note"), g(LGMIDIPlay, "color", MIDI_COLOR);
 LiteGraph.registerNodeType("midi/play", LGMIDIPlay);
-const ae = class ae {
+const at = class at {
   constructor() {
     this.properties = {
       num_octaves: 2,
@@ -23008,7 +23039,7 @@ const ae = class ae {
       t.globalAlpha = 1;
       for (var o = 0; o < 2; o++)
         for (var u = 0; u < r; ++u) {
-          var h = ae.keys[u % 12];
+          var h = at.keys[u % 12];
           if (h.t == o) {
             var l = Math.floor(u / 12), c = l * 7 * s + h.x * s;
             o == 0 ? t.fillStyle = this.keys[u] ? "#CCC" : "white" : t.fillStyle = this.keys[u] ? "#333" : "black", t.fillRect(
@@ -23024,7 +23055,7 @@ const ae = class ae {
   getKeyIndex(t) {
     for (var r = this.size[0] / (this.properties.num_octaves * 7), s = this.size[1], a = 1; a >= 0; a--)
       for (var o = 0; o < this.keys.length; ++o) {
-        var u = ae.keys[o % 12];
+        var u = at.keys[o % 12];
         if (u.t == a) {
           var h = Math.floor(o / 12), l = h * 7 * r + u.x * r, c = r * u.w, d = s * u.h;
           if (!(t[0] < l || t[0] > l + c || t[1] > d))
@@ -23072,7 +23103,7 @@ const ae = class ae {
     }
   }
 };
-g(ae, "title", "MIDI Keys"), g(ae, "desc", "Keyboard to play notes"), g(ae, "color", MIDI_COLOR), g(ae, "keys", [
+g(at, "title", "MIDI Keys"), g(at, "desc", "Keyboard to play notes"), g(at, "color", MIDI_COLOR), g(at, "keys", [
   { x: 0, w: 1, h: 1, t: 0 },
   { x: 0.75, w: 0.5, h: 0.6, t: 1 },
   { x: 1, w: 1, h: 1, t: 0 },
@@ -23086,9 +23117,9 @@ g(ae, "title", "MIDI Keys"), g(ae, "desc", "Keyboard to play notes"), g(ae, "col
   { x: 5.75, w: 0.5, h: 0.6, t: 1 },
   { x: 6, w: 1, h: 1, t: 0 }
 ]);
-let LGMIDIKeys = ae;
+let LGMIDIKeys = at;
 LiteGraph.registerNodeType("midi/keys", LGMIDIKeys);
-const lt = class lt {
+const le = class le {
   static getAudioContext() {
     var t;
     if (!this._audio_context) {
@@ -23132,7 +23163,7 @@ const lt = class lt {
         let u = t.graph.getNodeById(o.origin_id), h = null;
         u.getAudioNodeInOutputSlot ? h = u.getAudioNodeInOutputSlot(o.origin_slot) : h = u.audionode;
         let l = null;
-        t.getAudioNodeInInputSlot ? l = t.getAudioNodeInInputSlot(s) : l = t.audionode, r ? lt.connect(h, l) : lt.disconnect(h, l);
+        t.getAudioNodeInInputSlot ? l = t.getAudioNodeInInputSlot(s) : l = t.audionode, r ? le.connect(h, l) : le.disconnect(h, l);
       }
     if (t.outputs)
       for (let s = 0; s < t.outputs.length; ++s) {
@@ -23144,7 +23175,7 @@ const lt = class lt {
           let h = null;
           t.getAudioNodeInOutputSlot ? h = t.getAudioNodeInOutputSlot(s) : h = t.audionode;
           let l = t.graph.getNodeById(u.target_id), c = null;
-          l.getAudioNodeInInputSlot ? c = l.getAudioNodeInInputSlot(u.target_slot) : c = l.audionode, r ? lt.connect(h, c) : lt.disconnect(h, c);
+          l.getAudioNodeInInputSlot ? c = l.getAudioNodeInInputSlot(u.target_slot) : c = l.audionode, r ? le.connect(h, c) : le.disconnect(h, c);
         }
       }
   }
@@ -23156,7 +23187,7 @@ const lt = class lt {
         var u = null;
         this.getAudioNodeInOutputSlot ? u = this.getAudioNodeInOutputSlot(r) : u = this.audionode;
         var h = null;
-        o.getAudioNodeInInputSlot ? h = o.getAudioNodeInInputSlot(a.target_slot) : h = o.audionode, s ? lt.connect(u, h) : lt.disconnect(u, h);
+        o.getAudioNodeInInputSlot ? h = o.getAudioNodeInInputSlot(a.target_slot) : h = o.audionode, s ? le.connect(u, h) : le.disconnect(u, h);
       }
     }
   }
@@ -23165,24 +23196,24 @@ const lt = class lt {
     var r = t.prototype.onPropertyChanged;
     t.prototype.onPropertyChanged = function(s, a) {
       r && r.call(this, s, a), this.audionode && this.audionode[s] !== void 0 && (this.audionode[s].value !== void 0 ? this.audionode[s].value = a : this.audionode[s] = a);
-    }, t.prototype.onConnectionsChange = lt.onConnectionsChange;
+    }, t.prototype.onConnectionsChange = le.onConnectionsChange;
   }
   static loadSound(t, r, s) {
-    if (lt.cached_audios[t] && t.includes("blob:")) {
-      r && r(lt.cached_audios[t]);
+    if (le.cached_audios[t] && t.includes("blob:")) {
+      r && r(le.cached_audios[t]);
       return;
     }
-    lt.onProcessAudioURL && (t = lt.onProcessAudioURL(t));
+    le.onProcessAudioURL && (t = le.onProcessAudioURL(t));
     var a = new XMLHttpRequest();
     a.open("GET", t, !0), a.responseType = "arraybuffer";
-    var o = lt.getAudioContext();
+    var o = le.getAudioContext();
     a.onload = function() {
       var h;
       (h = console.log) == null || h.call(console, "AudioSource loaded"), o.decodeAudioData(
         a.response,
         function(l) {
           var c;
-          (c = console.log) == null || c.call(console, "AudioSource decoded"), lt.cached_audios[t] = l, r && r(l);
+          (c = console.log) == null || c.call(console, "AudioSource decoded"), le.cached_audios[t] = l, r && r(l);
         },
         u
       );
@@ -23195,8 +23226,8 @@ const lt = class lt {
   }
 };
 // contains the samples decoded of the loaded audios in AudioBuffer format
-g(lt, "cached_audios", {});
-let LGAudio = lt;
+g(le, "cached_audios", {});
+let LGAudio = le;
 class LGAudioSource {
   constructor() {
     this.properties = {
@@ -23748,17 +23779,17 @@ class LGAudioBandSignal {
 }
 g(LGAudioBandSignal, "title", "Signal"), g(LGAudioBandSignal, "desc", "extract the signal of some frequency");
 LiteGraph.registerNodeType("audio/signal", LGAudioBandSignal);
-const vt = class vt {
+const ve = class ve {
   constructor() {
     g(this, "@code", { widget: "code", type: "code" });
     var o;
-    if (!vt.default_code) {
-      var t = vt.default_function.toString(), r = t.indexOf("{") + 1, s = t.lastIndexOf("}");
-      vt.default_code = t.substr(r, s - r);
+    if (!ve.default_code) {
+      var t = ve.default_function.toString(), r = t.indexOf("{") + 1, s = t.lastIndexOf("}");
+      ve.default_code = t.substr(r, s - r);
     }
-    this.properties = { code: vt.default_code };
+    this.properties = { code: ve.default_code };
     var a = LGAudio.getAudioContext();
-    a.createScriptProcessor ? this.audionode = a.createScriptProcessor(4096, 1, 1) : ((o = console.warn) == null || o.call(console, "ScriptProcessorNode deprecated"), this.audionode = a.createGain()), this.processCode(), vt._bypass_function || (vt._bypass_function = this.audionode.onaudioprocess), this.addInput("in", "audio"), this.addOutput("out", "audio");
+    a.createScriptProcessor ? this.audionode = a.createScriptProcessor(4096, 1, 1) : ((o = console.warn) == null || o.call(console, "ScriptProcessorNode deprecated"), this.audionode = a.createGain()), this.processCode(), ve._bypass_function || (ve._bypass_function = this.audionode.onaudioprocess), this.addInput("in", "audio"), this.addOutput("out", "audio");
   }
   onAdded(t) {
     t.status == LiteGraph.LGraph.STATUS_RUNNING && (this.audionode.onaudioprocess = this._callback);
@@ -23767,10 +23798,10 @@ const vt = class vt {
     this.audionode.onaudioprocess = this._callback;
   }
   onStop() {
-    this.audionode.onaudioprocess = vt._bypass_function;
+    this.audionode.onaudioprocess = ve._bypass_function;
   }
   onPause() {
-    this.audionode.onaudioprocess = vt._bypass_function;
+    this.audionode.onaudioprocess = ve._bypass_function;
   }
   onUnpause() {
     this.audionode.onaudioprocess = this._callback;
@@ -23778,7 +23809,7 @@ const vt = class vt {
   onExecute() {
   }
   onRemoved() {
-    this.audionode.onaudioprocess = vt._bypass_function;
+    this.audionode.onaudioprocess = ve._bypass_function;
   }
   processCode() {
     var r;
@@ -23786,7 +23817,7 @@ const vt = class vt {
       var t = new Function("properties", this.properties.code);
       this._script = new t(this.properties), this._old_code = this.properties.code, this._callback = this._script.onaudioprocess;
     } catch (s) {
-      (r = console.error) == null || r.call(console, "Error in onaudioprocess code", s), this._callback = vt._bypass_function, this.audionode.onaudioprocess = this._callback;
+      (r = console.error) == null || r.call(console, "Error in onaudioprocess code", s), this._callback = ve._bypass_function, this.audionode.onaudioprocess = this._callback;
     }
   }
   onPropertyChanged(t, r) {
@@ -23800,8 +23831,8 @@ const vt = class vt {
     };
   }
 };
-g(vt, "title", "Script"), g(vt, "desc", "apply script to signal");
-let LGAudioScript = vt;
+g(ve, "title", "Script"), g(ve, "desc", "apply script to signal");
+let LGAudioScript = ve;
 LGAudio.createAudioNodeWrapper(LGAudioScript);
 LiteGraph.registerNodeType("audio/script", LGAudioScript);
 class LGAudioDestination {

@@ -22,7 +22,7 @@
     "license": "MIT",
     "files": [
         "build",
-        "css/litegraph.css",
+        "src/css/litegraph.css",
         "src/litegraph.d.ts"
     ],
     "bugs": {
