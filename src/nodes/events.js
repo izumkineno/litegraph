@@ -59,19 +59,19 @@ class Sequence {
 
     static title = "Sequence";
     static desc = "Triggers a sequence of events when an event arrives";
-    // @ BUG: fails to construct Node
 
     constructor() {
         var that = this;
-        this.addInput("", LiteGraph.ACTION);
-        this.addInput("", LiteGraph.ACTION);
-        this.addInput("", LiteGraph.ACTION);
-        this.addOutput("", LiteGraph.EVENT);
-        this.addOutput("", LiteGraph.EVENT);
-        this.addOutput("", LiteGraph.EVENT);
+        this.addInput("in_1", LiteGraph.ACTION);
+        this.addInput("in_2", LiteGraph.ACTION);
+        this.addInput("in_3", LiteGraph.ACTION);
+        this.addOutput("out_1", LiteGraph.EVENT);
+        this.addOutput("out_2", LiteGraph.EVENT);
+        this.addOutput("out_3", LiteGraph.EVENT);
         this.addWidget("button", "+", null, function () {
-            that.addInput("", LiteGraph.ACTION);
-            that.addOutput("", LiteGraph.EVENT);
+            const index = (that.outputs?.length || 0) + 1;
+            that.addInput(`in_${index}`, LiteGraph.ACTION);
+            that.addOutput(`out_${index}`, LiteGraph.EVENT);
         });
         this.size = [90, 70];
         this.flags = { horizontal: true, render_box: false };

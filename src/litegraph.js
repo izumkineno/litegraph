@@ -120,15 +120,16 @@ export var LiteGraph = new class {
         this.node_box_coloured_when_on = false; // [true!] this make the nodes box (top left circle) coloured when triggered (execute/action), visual feedback
         this.node_box_coloured_by_mode = false; // [true!] nodebox based on node mode, visual feedback
 
-        this.dialog_close_on_mouse_leave = true; // [false on mobile] better true if not touch device, TODO add an helper/listener to close if false
+        this.dialog_close_on_mouse_leave = true; // desktop-friendly default
         this.dialog_close_on_mouse_leave_delay = 500;
 
-        this.shift_click_do_break_link_from = false; // [false!] prefer false if results too easy to break links - implement with ALT or TODO custom keys
+        this.shift_click_do_break_link_from = false; // conservative default to avoid accidental disconnections
         this.click_do_break_link_to = false; // [false!]prefer false, way too easy to break links
 
-        this.search_hide_on_mouse_leave = true; // [false on mobile] better true if not touch device, TODO add an helper/listener to close if false
+        this.search_hide_on_mouse_leave = true; // desktop-friendly default
         this.search_filter_enabled = false; // [true!] enable filtering slots type in the search widget, !requires auto_load_slot_types or manual set registered_slot_[in/out]_types and slot_types_[in/out]
         this.search_show_all_on_open = true; // [true!] opens the results list when opening the search widget
+        this.applyPointerDefaults();
 
         this.show_node_tooltip = false; // [true!] show a tooltip with node property "tooltip" over the selected node
         this.show_node_tooltip_use_descr_property = false; // enabled tooltip from desc when property tooltip not set
@@ -866,7 +867,18 @@ export var LiteGraph = new class {
         return null;
     }
 
-    // @TODO These weren't even directly bound, so could be used as free functions
+    applyPointerDefaults() {
+        if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+            return;
+        }
+        const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+        if (isCoarsePointer) {
+            this.dialog_close_on_mouse_leave = false;
+            this.search_hide_on_mouse_leave = false;
+        }
+    }
+
+    // Kept as instance helpers for backward compatibility with downstream extensions.
     compareObjects(a, b) {
         const aKeys = Object.keys(a);
 

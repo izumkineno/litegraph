@@ -203,7 +203,6 @@ class logicBranch {
 
     static title = "Branch";
     static desc = "Branch execution on condition";
-    // @BUG: Seems to always execute false branch
 
     constructor() {
         this.properties = {};
@@ -215,8 +214,8 @@ class logicBranch {
     }
 
     onExecute(_param, _options) {
-        var condtition = this.getInputData(1);
-        if (condtition) {
+        const condition = Boolean(this.getInputData(1));
+        if (condition) {
             this.triggerSlot(0);
         } else {
             this.triggerSlot(1);

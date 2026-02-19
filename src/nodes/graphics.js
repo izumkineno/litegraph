@@ -342,7 +342,6 @@ class ImageFade {
 
     onExecute() {
         var ctx = this.canvas.getContext("2d");
-        // this.canvas.width = this.canvas.width; //@BUG: Test with this excised, I couldn't find a setter
 
         var A = this.getInputData(0);
         if (A != null) {
@@ -731,27 +730,8 @@ class ImageVideo {
         this._video.pause();
     }
 
-    onWidget(_e, _widget) { // @BUG: Consider excising this, it's dead code
-        /*
-    if(widget.name == "demo")
-    {
-        this.loadVideo();
-    }
-    else if(widget.name == "play")
-    {
-        if(this._video)
-            this.playPause();
-    }
-    if(widget.name == "stop")
-    {
-        this.stop();
-    }
-    else if(widget.name == "mute")
-    {
-        if(this._video)
-            this._video.muted = !this._video.muted;
-    }
-    */
+    onWidget(_e, _widget) {
+        // Widgets are handled through dedicated callbacks.
     }
 
     static widgets = [

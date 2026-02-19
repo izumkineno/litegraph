@@ -365,7 +365,7 @@ export class LGraphTexture {
     // used to replace shader code
     static replaceCode(code, context) {
         return code.replace(/\{\{[a-zA-Z0-9_]*\}\}/g, function (v) {
-            v = v.replace(/[\{\}]/g, ""); // @BUG: These escapes are being flagged as useless
+            v = v.replace(/[{}]/g, "");
             return context[v] || "";
         });
     }
@@ -1884,6 +1884,7 @@ class LGraphTextureMinMax {
         this._min = new Float32Array(4);
 
         this._textures_chain = [];
+        this._temp_texture = null;
     }
 
     static widgets_info = {
@@ -1902,7 +1903,9 @@ class LGraphTextureMinMax {
         }
 
         this.setOutputData(0, this._temp_texture);
-        this.setOutputData(1, this._luminance);
+        this.setOutputData(1, this._temp_texture);
+        this.setOutputData(2, this._min);
+        this.setOutputData(3, this._max);
     }
 
     // executed before rendering the frame
@@ -1939,23 +1942,31 @@ class LGraphTextureMinMax {
             !this._textures_chain.length ||
             this._textures_chain[0].type != type
         ) {
-            while (i) {
+            this._textures_chain = [];
+            for (let i = 0; size >= 1; ++i) {
                 this._textures_chain[i] = new GL.Texture(size, size, {
                     type: type,
                     format: gl.RGBA,
                     filter: gl.NEAREST,
                 });
-                size = size >> 2;
-                i++;
-                if (size == 1) break;
+                if (size === 1) break;
+                size = Math.max(1, size >> 2);
             }
         }
 
-        // @BUG: the behavior of tex here is probably a bug.
-        tex.copyTo(this._textures_chain[0]);
-        for (let i = 1; i <= this._textures_chain.length; ++i) {
-            tex = this._textures_chain[i];
+        if (!this._temp_texture || this._temp_texture.type !== type) {
+            this._temp_texture = new GL.Texture(1, 1, {
+                type: type,
+                format: gl.RGBA,
+                filter: gl.NEAREST,
+            });
         }
+
+        tex.copyTo(this._textures_chain[0]);
+        for (let i = 1; i < this._textures_chain.length; ++i) {
+            this._textures_chain[i - 1].copyTo(this._textures_chain[i]);
+        }
+        tex = this._textures_chain[this._textures_chain.length - 1];
 
         var shader = LGraphTextureMinMax._shader;
         var uniforms = this._uniforms;
@@ -5018,13 +5029,13 @@ class LGraphExposition {
             );
         }
 
-        // @BUG: It isn't actually *using* exp or exp_input in execution.
         var exp = this.properties.exposition;
         var exp_input = this.getInputData(1);
         if (exp_input != null) {
             exp = this.properties.exposition = exp_input;
         }
         var uniforms = this._uniforms;
+        uniforms.u_exposition = exp;
 
         // apply shader
         temp.drawTo(function () {

@@ -442,9 +442,7 @@ if (glMatrix) {
         onExecute() {
             var q = this.getInputData(0);
             if (!q) return;
-            // @BUG: R is unused, but I don't know where it *should* be used because I don't know this math off the top
-            // It *probably* goes in one of the next two lines
-            var R = quat.toEuler(this._value, q);
+            quat.toEuler(this._value, q);
             vec3.scale(this._value, this._value, DEG2RAD);
             this.setOutputData(0, this._value);
         }

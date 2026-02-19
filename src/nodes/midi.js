@@ -296,7 +296,6 @@ class MIDIEvent {
 
     static commands_reversed = {};
 }
-// @TODO: Enum
 MIDIEvent.NOTEOFF = 0x80;
 MIDIEvent.NOTEON = 0x90;
 MIDIEvent.KEYPRESSURE = 0xa0;

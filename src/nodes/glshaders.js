@@ -757,7 +757,7 @@ class LGraphShaderGraph {
     }
 
     /*
-    * @TODO: Either make it or excise it
+    * Reserved hook for custom subgraph background rendering.
     * LGraphShaderGraph.prototype.onDrawSubgraphBackground = function () {};
     */
     getExtraMenuOptions() {
@@ -778,7 +778,7 @@ class LGraphShaderGraph {
 LiteGraph.registerNodeType("texture/shaderGraph", LGraphShaderGraph);
 
 /*
-    * @TODO: Either write it or excise it.
+    * Reserved helper for future function-based shader node generation.
     * function shaderNodeFromFunction() {};
     */
 

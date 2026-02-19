@@ -153,11 +153,9 @@ export class ContextMenu {
         const root = this.root;
         const that = this;
 
-        // Atlasan's code: @BUG: Variable names will mismatch
-        if (LiteGraph.context_menu_filter_enabled) {
+        if (LiteGraph.context_menu_filter_enabled && !this.options.parentMenu) {
             if(doc) {
                 // TEXT FILTER by KEYPRESS
-                // TODO FIX THIS :: need to remove correctly events !! getting multiple
                 if(root.f_textfilter) {
                     doc.removeEventListener("keydown",root.f_textfilter,false);
                     doc.removeEventListener("keydown",root.f_textfilter,true);
@@ -243,7 +241,7 @@ export class ContextMenu {
                                 if(that.selectedOption !== false) {
 
                                     if(that.allOptions[that.selectedOption]) {
-                                        LiteGraph.debug?.("ContextElement simCLICK",that.allOptions[iO]);
+                                        LiteGraph.debug?.("ContextElement simCLICK", that.allOptions[that.selectedOption]);
                                         // checking because of bad event removal :: FIX
                                         if(that.allOptions[that.selectedOption].do_click) {
                                             that.allOptions[that.selectedOption].do_click(that.options.event, ignore_parent_menu);
@@ -284,15 +282,7 @@ export class ContextMenu {
                                 kdone = true;
                                 break;
                             default:
-                                LiteGraph.debug?.("ContextMenu filter: keyEvent",e.keyCode,e.key);
-                                if (String.fromCharCode(e.key).match(/(\w|\s)/g)) {
-                                    // pressed key is a char
-                                } else {
-                                    // pressed key is a non-char
-                                    // DBG ("--not char break--")
-                                    // do not return
-                                    // ?? kdone = true;
-                                }
+                                LiteGraph.debug?.("ContextMenu filter: keyEvent", e.key);
                                 break;
                         }
                         if(!kdone && e.key.length == 1) {
@@ -396,11 +386,9 @@ export class ContextMenu {
                     // e.preventDefault();
                     // return false;
                 }
-                doc.addEventListener(
-                    "keydown"
-                    ,root.f_textfilter
-                    ,true,
-                );
+                doc.removeEventListener("keydown", root.f_textfilter, true);
+                doc.addEventListener("keydown", root.f_textfilter, true);
+                this._filterDoc = doc;
             }else{
                 LiteGraph.warn?.("NO root document to add context menu and event",doc,options);
             }
@@ -575,18 +563,11 @@ export class ContextMenu {
      */
     close(e, ignore_parent_menu) {
 
-        if(this.root.f_textfilter) {
-            let doc = document;
-            doc.removeEventListener('keydown',this.root.f_textfilter,true);
-            doc.removeEventListener('keydown',this.root.f_textfilter,false);
-            if (e && e.target) {
-                doc = e.target.ownerDocument;
-            }
-            if (!doc) {
-                doc = document;
-            }
-            doc.removeEventListener('keydown',this.root.f_textfilter,true);
-            doc.removeEventListener('keydown',this.root.f_textfilter,false);
+        if (this.root.f_textfilter) {
+            const doc = this._filterDoc || e?.target?.ownerDocument || document;
+            doc.removeEventListener("keydown", this.root.f_textfilter, true);
+            doc.removeEventListener("keydown", this.root.f_textfilter, false);
+            this._filterDoc = null;
         }
 
         if (this.parentMenu && !ignore_parent_menu) {
@@ -635,9 +616,8 @@ export class ContextMenu {
      * @param {HTMLElement} element - The element on which to trigger the event.
      * @param {string} event_name - The name of the event to trigger.
      * @param {Object} params - Additional parameters to include in the event.
-     * @param {HTMLElement} origin - The origin of the event <currently not supported as CustomEvent can't have a target!>
+     * @param {HTMLElement} origin - Optional origin element.
      * @returns {CustomEvent} - The created CustomEvent instance.
-     * @BUG: Probable bug related to params, origin not being configured/populated correctly
      */
     static trigger(element, event_name, params, origin) {
         const evt = new CustomEvent(event_name, {
@@ -645,7 +625,9 @@ export class ContextMenu {
             cancelable: true,
             detail: params,
         });
-        Object.defineProperty(evt, 'target', { value: origin });
+        if (origin) {
+            Object.defineProperty(evt, "litegraphTarget", { value: origin });
+        }
         if (element.dispatchEvent) {
             element.dispatchEvent(evt);
         } else if (element.__events) {

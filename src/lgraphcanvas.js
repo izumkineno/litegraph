@@ -55,7 +55,7 @@ export class LGraphCanvas {
         this.clear_background_color = "#222";
 
         this.read_only = false; // if set to true users cannot modify the graph
-        //  this.render_only_selected = true; // @TODO Atlasan figures this isn't used
+        // this.render_only_selected = true;
         this.live_mode = false;
         this.show_info = true;
         this.allow_dragcanvas = true;
@@ -63,7 +63,7 @@ export class LGraphCanvas {
         this.allow_interaction = true; // allow to control widgets, buttons, collapse, etc
         this.multi_select = false; // allow selecting multi nodes without pressing extra keys
         this.allow_searchbox = true;
-        //  this.allow_reconnect_links = true; // @TODO: replaced by Atlasan.  Clean up.  allows to change a connection with having to redo it again
+        // this.allow_reconnect_links = true;
         this.move_destination_link_without_shift = false;
         this.align_to_grid = false; // snap to grid
 
@@ -89,7 +89,7 @@ export class LGraphCanvas {
 
         this.links_render_mode = LiteGraph.SPLINE_LINK;
 
-        // TODO refactor: options object do need refactoring .. all the options are actually outside of it
+        // Options are still mirrored on the instance for backward compatibility.
         this.autoresize = options.autoresize;
         this.skip_render = options.skip_render;
         this.clip_all_nodes = options.clip_all_nodes;
@@ -699,7 +699,7 @@ export class LGraphCanvas {
                                     continue;
                                 }
                                 if (ob_link.type === LiteGraph.EVENT) {
-                                    // DBG LiteGraph.debug?.("skip moving events :: TODO put a sequencer in the middle or implement multi input",input);
+                                    // DBG LiteGraph.debug?.("skip moving events, event links are not rewired on node move", input);
                                     continue;
                                 }
                                 // DBG LiteGraph.debug?.("find link node",ob_link);
@@ -1077,7 +1077,6 @@ export class LGraphCanvas {
 
         }
 
-        // TODO
         // if(this.node_selected != prev_selected)
         //	this.onNodeSelectionChange(this.node_selected);
 
@@ -1237,11 +1236,11 @@ export class LGraphCanvas {
                                 let slot_type = node.inputs[slot].type;
                                 if ( LiteGraph.isValidConnection( this.connecting_output.type, slot_type ) ) {
                                     this._highlight_input = pos;
-                                    this._highlight_input_slot = node.inputs[slot]; // @TODO CHECK THIS
+                                    this._highlight_input_slot = node.inputs[slot];
                                 }
                             } else {
                                 this._highlight_input = null;
-                                this._highlight_input_slot = null; // @TODO CHECK THIS
+                                this._highlight_input_slot = null;
                             }
                         }
 
@@ -1496,21 +1495,6 @@ export class LGraphCanvas {
 
                 // node below mouse
                 if (node) {
-
-                    /* @TODO: Excise?
-                    // no need to condition on event type.. just another type
-                    if (
-                        connType == LiteGraph.EVENT &&
-                        this.isOverNodeBox(node, e.canvasX, e.canvasY)
-                    ) {
-
-                        this.connecting_node.connect(
-                            this.connecting_slot,
-                            node,
-                            LiteGraph.EVENT
-                        );
-
-                    } else {*/
 
                     // slot below mouse? connect
                     let slot;
@@ -1864,7 +1848,6 @@ export class LGraphCanvas {
             }
             LiteGraph.debug?.("Canvas keydown "+e.keyCode); // debug keydown
 
-            // TODO
             if (this.selected_nodes) {
                 for (let i in this.selected_nodes) {
                     this.selected_nodes[i].onKeyDown?.(e);
@@ -3763,7 +3746,11 @@ export class LGraphCanvas {
                     var grad = LGraphCanvas.gradients[title_color];
                     if (!grad) {
                         grad = LGraphCanvas.gradients[title_color] = ctx.createLinearGradient(0, 0, 400, 0);
-                        grad.addColorStop(0, title_color); // TODO refactor: validate color !! prevent DOMException
+                        try {
+                            grad.addColorStop(0, title_color);
+                        } catch (_error) {
+                            grad.addColorStop(0, LiteGraph.NODE_DEFAULT_COLOR);
+                        }
                         grad.addColorStop(1, "#000");
                     }
                     ctx.fillStyle = grad;
@@ -3877,7 +3864,7 @@ export class LGraphCanvas {
                     if (node.flags.collapsed) {
                         ctx.textAlign = "left";
                         ctx.fillText(
-                            title.substr(0,20), // avoid urls too long //@TODO: Replace with substring
+                            title.substring(0, 20), // avoid urls too long
                             title_height,// + measure.width * 0.5,
                             LiteGraph.NODE_TITLE_TEXT_Y - title_height,
                         );
@@ -4807,7 +4794,6 @@ export class LGraphCanvas {
                                 ref_window,
                             );
 
-                            // @TODO: Excise this, bound to w above
                             function inner_clicked(v) {
                                 if(values != values_list)
                                     v = text_values.indexOf(v);
@@ -4861,7 +4847,6 @@ export class LGraphCanvas {
                     if (event.type == "pointerdown") {
                         this.prompt(
                             "Value",w.value,function(v) {
-                                // @TODO: this.value = v; // CHECK
                                 inner_value_change(this, v);
                             }.bind(w),
                             event,w.options ? w.options.multiline : false,
@@ -5019,7 +5004,7 @@ export class LGraphCanvas {
         }, 1);
     }
 
-    /* @TODO: Validate this is never called
+    /*
     onNodeSelectionChange() {
         return; // disabled
     }
@@ -5368,8 +5353,7 @@ export class LGraphCanvas {
 
             if (v.value) {
                 node.graph.beforeChange();
-                var slotOpts = {}; // TODO CHECK THIS :: can be removed: removabled:true? .. optional: true?
-                if (v.value[2]) slotOpts = Object.assign(slotOpts, v.value[2]);
+                const slotOpts = v.value[2] ? Object.assign({}, v.value[2]) : {};
 
                 node.addInput(v.value[0], v.value[1], slotOpts);
                 node.onNodeInputAdd?.(v.value);
@@ -5500,8 +5484,7 @@ export class LGraphCanvas {
                 return false;
             } else {
                 node.graph.beforeChange();
-                var slotOpts = {}; // TODO CHECK THIS :: can be removed: removabled:true? .. optional: true?
-                if (v.value[2]) slotOpts = Object.assign(slotOpts, v.value[2]);
+                const slotOpts = v.value[2] ? Object.assign({}, v.value[2]) : {};
                 // if(v.opts) slotOpts = Object.assign(slotOpts, v.opts);
 
                 node.addOutput(v.value[0], v.value[1], slotOpts);
@@ -5610,10 +5593,7 @@ export class LGraphCanvas {
         var destType = false;
         if (node_right && node_right.outputs && node_right.outputs[link.target_slot]) destType = node_right.inputs[link.target_slot].type;
 
-        // @TODO: See if deleting this is a bug:
-        // var options = ["Add Node",null,"Delete",null];
-
-
+        var options = ["Add Node", null, "Delete"];
         var menu = new LiteGraph.ContextMenu(options, {
             event: e,
             title: link.data != null ? link.data.constructor.name : null,
@@ -5789,7 +5769,7 @@ export class LGraphCanvas {
 
                     /* if connecting in between
                     if (isFrom && isTo){
-                        //@TODO
+                        // no-op
                     }
                     */
 
@@ -5896,12 +5876,10 @@ export class LGraphCanvas {
         return false;
     }
 
-    // TODO refactor :: this is used fot title but not for properties!
+    // This editor handles node title and arbitrary string-like properties.
     static onShowPropertyEditor(item, options, e, menu, node) {
         var property = item.property || "title";
         var value = node[property];
-
-        // TODO refactor :: use createDialog ?
 
         var dialog = document.createElement("div");
         dialog.is_modified = false;
@@ -6021,9 +5999,9 @@ export class LGraphCanvas {
         }
 
         var dialogCloseTimer = null;
-        var prevent_timeout = false;
+        var prevent_timeout = 0;
         dialog.addEventListener("pointerleave", (_event) => {
-            if (prevent_timeout) return;
+            if (prevent_timeout > 0) return;
             if (LiteGraph.dialog_close_on_mouse_leave && !dialog.is_modified && LiteGraph.dialog_close_on_mouse_leave) {
                 dialogCloseTimer = setTimeout(dialog.close, LiteGraph.dialog_close_on_mouse_leave_delay);
             }
@@ -6037,17 +6015,19 @@ export class LGraphCanvas {
 
         const selInDia = dialog.querySelectorAll("select");
         if (selInDia) {
-            // @BUG: prevent_timeout is never used.  This is literally thrashing just to keep some timeout from happening!
-            let prevent_timeout = 0;
+            prevent_timeout = 0;
             selInDia.forEach((selIn) => {
-                selIn.addEventListener("click", (_event) => {
+                selIn.addEventListener("pointerdown", (_event) => {
+                    prevent_timeout++;
+                });
+                selIn.addEventListener("focus", (_event) => {
                     prevent_timeout++;
                 });
                 selIn.addEventListener("blur", (_event) => {
-                    prevent_timeout = 0;
+                    prevent_timeout = Math.max(0, prevent_timeout - 1);
                 });
                 selIn.addEventListener("change", (_event) => {
-                    prevent_timeout = -1;
+                    prevent_timeout = 0;
                 });
             });
         }
@@ -6064,11 +6044,11 @@ export class LGraphCanvas {
         input.addEventListener("keydown", (e) => {
             dialog.is_modified = true;
 
-            switch (e.keyCode) {
-                case 27: // ESC key
+            switch (e.key) {
+                case "Escape":
                     dialog.close();
                     break;
-                case 13: // Enter key
+                case "Enter":
                     if (e.target.localName !== "textarea" && typeof(callback)=="function") {
                         callback(input.value);
                         this.setDirty(true); // CHECK should probably call graphChanged instead
@@ -6123,7 +6103,11 @@ export class LGraphCanvas {
             slot_from: null,
             node_from: null,
             node_to: null,
-            do_type_filter: LiteGraph.search_filter_enabled, // TODO check for registered_slot_[in/out]_types not empty // this will be checked for functionality enabled : filter on slot type, in and out
+            do_type_filter: LiteGraph.search_filter_enabled &&
+                (
+                    Object.keys(LiteGraph.registered_slot_in_types || {}).length > 0 ||
+                    Object.keys(LiteGraph.registered_slot_out_types || {}).length > 0
+                ),
             type_filter_in: false, // these are default: pass to set initially set values
             type_filter_out: false,
             show_general_if_none_on_typefilter: true,
@@ -6186,7 +6170,7 @@ export class LGraphCanvas {
 
         // hide on mouse leave
         if(options.hide_on_mouse_leave) {
-            var prevent_timeout = false;
+            var prevent_timeout = 0;
             var timeout_close = null;
             dialog.addEventListener("pointerenter", function(_event) {
                 if (timeout_close) {
@@ -6195,7 +6179,7 @@ export class LGraphCanvas {
                 }
             });
             dialog.addEventListener("pointerleave", function(_event) {
-                if (prevent_timeout) {
+                if (prevent_timeout > 0) {
                     return;
                 }
                 timeout_close = setTimeout(function() {
@@ -6204,24 +6188,25 @@ export class LGraphCanvas {
             });
             // if filtering, check focus changed to comboboxes and prevent closing
             if (options.do_type_filter) {
-                selIn.addEventListener("click", function(_event) {
-                    prevent_timeout++;
-                });
-                selIn.addEventListener("blur", function(_event) {
-                    prevent_timeout = 0;
-                });
-                selIn.addEventListener("change", function(_event) {
-                    prevent_timeout = -1;
-                });
-                selOut.addEventListener("click", function(_event) {
-                    prevent_timeout++;
-                });
-                selOut.addEventListener("blur", function(_event) {
-                    prevent_timeout = 0;
-                });
-                selOut.addEventListener("change", function(_event) {
-                    prevent_timeout = -1;
-                });
+                const attachTimeoutGuard = function(selectElement) {
+                    if (!selectElement) {
+                        return;
+                    }
+                    selectElement.addEventListener("pointerdown", function(_event) {
+                        prevent_timeout++;
+                    });
+                    selectElement.addEventListener("focus", function(_event) {
+                        prevent_timeout++;
+                    });
+                    selectElement.addEventListener("blur", function(_event) {
+                        prevent_timeout = Math.max(0, prevent_timeout - 1);
+                    });
+                    selectElement.addEventListener("change", function(_event) {
+                        prevent_timeout = 0;
+                    });
+                };
+                attachTimeoutGuard(selIn);
+                attachTimeoutGuard(selOut);
             }
         }
 
@@ -6243,16 +6228,16 @@ export class LGraphCanvas {
                     this.focus();
             });
             input.addEventListener("keydown", function(e) {
-                if (e.keyCode == 38) { // @TODO: deprecated
+                if (e.key === "ArrowUp") {
                     // UP
                     changeSelection(false);
-                } else if (e.keyCode == 40) {
+                } else if (e.key === "ArrowDown") {
                     // DOWN
                     changeSelection(true);
-                } else if (e.keyCode == 27) {
+                } else if (e.key === "Escape") {
                     // ESC
                     dialog.close();
-                } else if (e.keyCode == 13) {
+                } else if (e.key === "Enter") {
                     refreshHelper();
                     if (selected) {
                         select(selected.innerHTML);
@@ -6682,13 +6667,13 @@ export class LGraphCanvas {
                     first = type;
                 }
                 help.innerText = type;
-                help.dataset["type"] = escape(type); // @TODO: deprecated
+                help.dataset["type"] = encodeURIComponent(type);
                 help.className = "litegraph lite-search-item";
                 if (className) {
                     help.className += " " + className;
                 }
                 help.addEventListener("click", function(_event) {
-                    select(unescape(this.dataset["type"]));
+                    select(decodeURIComponent(this.dataset["type"]));
                 });
                 helper.appendChild(help);
             }
@@ -6832,7 +6817,7 @@ export class LGraphCanvas {
         return dialog;
     }
 
-    // TODO refactor, theer are different dialog, some uses createDialog, some dont
+    // Generic dialog helper used by property editors and custom panels.
     createDialog(html, options) {
         var def_options = { checkForInput: false, closeOnLeave: true, closeOnLeave_checkModified: true };
         options = Object.assign(def_options, options || {});
@@ -6899,9 +6884,9 @@ export class LGraphCanvas {
         };
 
         var dialogCloseTimer = null;
-        var prevent_timeout = false;
+        var prevent_timeout = 0;
         dialog.addEventListener("pointerleave", function(_event) {
-            if (prevent_timeout)
+            if (prevent_timeout > 0)
                 return;
             if(options.closeOnLeave || LiteGraph.dialog_close_on_mouse_leave)
                 if (!dialog.is_modified && LiteGraph.dialog_close_on_mouse_leave)
@@ -6915,14 +6900,17 @@ export class LGraphCanvas {
         if (selInDia) {
             // if filtering, check focus changed to comboboxes and prevent closing
             selInDia.forEach(function(selIn) {
-                selIn.addEventListener("click", function(_event) {
+                selIn.addEventListener("pointerdown", function(_event) {
+                    prevent_timeout++;
+                });
+                selIn.addEventListener("focus", function(_event) {
                     prevent_timeout++;
                 });
                 selIn.addEventListener("blur", function(_event) {
-                    prevent_timeout = 0;
+                    prevent_timeout = Math.max(0, prevent_timeout - 1);
                 });
                 selIn.addEventListener("change", function(_event) {
-                    prevent_timeout = -1;
+                    prevent_timeout = 0;
                 });
             });
         }
@@ -6962,13 +6950,9 @@ export class LGraphCanvas {
             if (root.onClose && typeof root.onClose == "function") {
                 root.onClose();
             }
-            if(root.parentNode)
+            if (root.parentNode) {
                 root.parentNode.removeChild(root);
-            /* XXX CHECK THIS */
-            if(this.parentNode) {
-                this.parentNode.removeChild(this);
             }
-            /* XXX this was not working, was fixed with an IF, check this */
         }
 
         // function to swap panel content
@@ -7319,9 +7303,6 @@ export class LGraphCanvas {
             for(var pName in node.properties) {
                 var value = node.properties[pName];
                 var info = node.getPropertyInfo(pName);
-                // @TODO: Figure out if deleting this is a bug:
-                // var type = info.type || "string";
-
                 // in case the user wants control over the side panel widget
                 if( node.onAddPropertyToPanel && node.onAddPropertyToPanel(pName, panel, value, info, fUpdate) ) {
                     continue;
@@ -7910,13 +7891,6 @@ export class LGraphCanvas {
                 callback: LGraphCanvas.onMenuNodeClone,
             });
         }
-        /*
-        if(0) // @TODO: Figure out what this was for
-        options.push({
-            content: "To Subgraph",
-            callback: LGraphCanvas.onMenuNodeToSubgraph
-        });
-        */
         if (Object.keys(this.selected_nodes).length > 1) {
             options.push({
                 content: "Align Selected To",

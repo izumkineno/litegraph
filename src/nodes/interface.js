@@ -346,7 +346,6 @@ class WidgetKnob {
         var center_x = this.size[0] * 0.5;
         var center_y = this.size[1] * 0.5;
         var radius = Math.min(this.size[0], this.size[1]) * 0.5 - 5;
-        // var w = Math.floor(radius * 0.05); //@BUG: unused variable, test without
 
         ctx.globalAlpha = 1;
         ctx.save();
@@ -631,7 +630,6 @@ class WidgetText {
 
     static title = "Text";
     static desc = "Shows the input value";
-    // @BUG: Will draw text straight off the node with no wrapping
 
     constructor() {
         this.addInputs("", 0);
@@ -669,14 +667,48 @@ class WidgetText {
             typeof v == "number" ? v.toFixed(this.properties["decimals"]) : v;
 
         if (typeof this.str == "string") {
-            var lines = this.str.replace(/[\r\n]/g, "\\n").split("\\n");
-            for (var i = 0; i < lines.length; i++) {
+            const rawLines = this.str.replace(/[\r\n]/g, "\\n").split("\\n");
+            const maxWidth = Math.max(0, this.size[0] - 30);
+            const wrappedLines = [];
+            for (let i = 0; i < rawLines.length; i++) {
+                const line = rawLines[i];
+                if (ctx.measureText(line).width <= maxWidth) {
+                    wrappedLines.push(line);
+                    continue;
+                }
+
+                const words = line.split(" ");
+                let current = "";
+                for (let j = 0; j < words.length; j++) {
+                    const candidate = current ? `${current} ${words[j]}` : words[j];
+                    if (ctx.measureText(candidate).width <= maxWidth) {
+                        current = candidate;
+                        continue;
+                    }
+                    if (current) {
+                        wrappedLines.push(current);
+                    }
+                    current = words[j];
+                }
+                if (current) {
+                    wrappedLines.push(current);
+                }
+            }
+
+            const lines = wrappedLines.length ? wrappedLines : [this.str];
+            const maxLines = Math.max(1, Math.floor((this.size[1] - 4) / fontsize));
+            for (let i = 0; i < Math.min(lines.length, maxLines); i++) {
                 ctx.fillText(
                     lines[i],
-                    this.properties["align"] == "left" ? 15 : this.size[0] - 15,
+                    this.properties["align"] == "left"
+                        ? 15
+                        : this.properties["align"] == "center"
+                            ? this.size[0] * 0.5
+                            : this.size[0] - 15,
                     fontsize * -0.15 + fontsize * (parseInt(i) + 1),
                 );
             }
+            this.str = lines.join("\\n");
         }
 
         ctx.shadowColor = "transparent";

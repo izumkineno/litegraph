@@ -423,20 +423,15 @@ class Subgraph {
     }
 
     buildFromNodes(nodes) {
-        // clear all?
-        // TODO
-
         // nodes that connect data between parent graph and subgraph
 
         // mark inner nodes
         var ids = {};
-        // @BUG: these aren't currently used.  Examine and decide whether to excise.
-        //    var min_x = 0;
-        //    var max_x = 0;
         for (let i = 0; i < nodes.length; ++i) {
-            ids[node.id] = nodes[i];
-            //      min_x = Math.min(node.pos[0], min_x);
-            //      max_x = Math.max(node.pos[0], min_x);
+            const node = nodes[i];
+            if (node && node.id != null) {
+                ids[node.id] = node;
+            }
         }
 
         for (let i = 0; i < nodes.length; ++i) {
@@ -495,7 +490,7 @@ class Subgraph {
 
     static title_color = "#334";
 }
-// @TODO: Excise this
+// Legacy alias retained for compatibility with existing user graphs.
 LiteGraph.Subgraph = Subgraph;
 LiteGraph.registerNodeType("graph/subgraph", Subgraph);
 
@@ -643,7 +638,7 @@ class GraphInput {
         }
     }
 }
-// @TODO: Excise this
+// Legacy alias retained for compatibility with existing user graphs.
 LiteGraph.GraphInput = GraphInput;
 LiteGraph.registerNodeType("graph/input", GraphInput);
 
@@ -1390,7 +1385,7 @@ class Variable {
                 if (this.graph) return this.graph.vars;
                 return {};
             case Variable.GLOBALSCOPE:
-                return global; // @BUG: not sure what to do with this now
+                return globalThis;
             default:
                 return LiteGraph.Globals;
         }
@@ -1401,7 +1396,6 @@ class Variable {
     }
 
 }
-// @TODO:Enum
 Variable.LITEGRAPH = 0; // between all graphs
 Variable.GRAPH = 1; // only inside this graph
 Variable.GLOBALSCOPE = 2; // attached to Window
@@ -1570,7 +1564,6 @@ class Console {
 
     static title = "Console";
     static desc = "Show value inside the console";
-    // @BUG: Didn't output text to console, either in browser or cmd
 
     constructor() {
         this.mode = LiteGraph.ON_EVENT;

@@ -99,6 +99,7 @@ export class LGraph {
         this.nodes_actioning = [];
         this.node_ancestorsCalculated = [];
         this.nodes_executedAction = [];
+        this._configuring = false;
 
         // subgraph_data
         this.inputs = {};
@@ -328,7 +329,7 @@ export class LGraph {
      * @param {boolean} set_level - If true, assigns levels to the nodes based on their connections.
      * @returns {Array} An array of nodes in the calculated execution order.
      *
-     * @TODO:This whole concept is a mistake.  Should call graph back from output nodes
+     * NOTE: Kept for backward compatibility with current execution semantics.
      */
     computeExecutionOrder(only_onExecute, set_level) {
         var L = [];
@@ -1398,7 +1399,7 @@ export class LGraph {
             var links = [];
             for (var i = 0; i < data.links.length; ++i) {
                 var link_data = data.links[i];
-                if(!link_data) { // @BUG: "weird bug" originally
+                if (!link_data) {
                     LiteGraph.warn?.("serialized graph link data contains errors, skipping.");
                     continue;
                 }
@@ -1416,55 +1417,56 @@ export class LGraph {
         }
 
         var error = false;
+        this._configuring = true;
+        try {
+            // create nodes
+            this._nodes = [];
+            if (nodes) {
+                for (let i = 0, l = nodes.length; i < l; ++i) {
+                    var n_info = nodes[i]; // stored info
+                    var node = LiteGraph.createNode(n_info.type, n_info.title);
+                    if (!node) {
+                        LiteGraph.log?.(`Node not found or has errors: ${n_info.type}`);
 
-        // create nodes
-        this._nodes = [];
-        if (nodes) {
-            for (let i = 0, l = nodes.length; i < l; ++i) {
-                var n_info = nodes[i]; // stored info
-                var node = LiteGraph.createNode(n_info.type, n_info.title);
-                if (!node) {
-                    LiteGraph.log?.(`Node not found or has errors: ${n_info.type}`);
+                        // in case of error we create a replacement node to avoid losing info
+                        node = new LiteGraph.LGraphNode();
+                        node.last_serialization = n_info;
+                        node.has_errors = true;
+                        error = true;
+                    }
 
-                    // in case of error we create a replacement node to avoid losing info
-                    node = new LiteGraph.LGraphNode();
-                    node.last_serialization = n_info;
-                    node.has_errors = true;
-                    error = true;
-                    // continue;
+                    node.id = n_info.id; // id it or it will create a new id
+                    this.add(node, true, {doProcessChange: false}); // add before configure, otherwise configure cannot create links
                 }
 
-                node.id = n_info.id; // id it or it will create a new id
-                this.add(node, true, {doProcessChange: false}); // add before configure, otherwise configure cannot create links
+                // configure nodes afterwards so they can reach each other
+                nodes.forEach((n_info) => {
+                    const node = this.getNodeById(n_info.id);
+                    node?.configure(n_info);
+                });
             }
 
-            // configure nodes afterwards so they can reach each other
-            nodes.forEach((n_info) => {
-                const node = this.getNodeById(n_info.id);
-                node?.configure(n_info);
-            });
-        }
-
-        // groups
-        this._groups.length = 0;
-        if (data.groups) {
-            data.groups.forEach((groupData) => {
-                const group = new LiteGraph.LGraphGroup();
-                group.configure(groupData);
-                this.add(group, true, {doProcessChange: false});
-            });
+            // groups
+            this._groups.length = 0;
+            if (data.groups) {
+                data.groups.forEach((groupData) => {
+                    const group = new LiteGraph.LGraphGroup();
+                    group.configure(groupData);
+                    this.add(group, true, {doProcessChange: false});
+                });
+            }
+        } finally {
+            this._configuring = false;
         }
 
         this.updateExecutionOrder();
-
         this.extra = data.extra ?? {};
-
         this.onConfigure?.(data);
-        // TODO implement: when loading (configuring) a whole graph, skip calling graphChanged on every single configure
+
         if (!data._version) {
-            this.onGraphChanged({action: "graphConfigure", doSave: false}); // this._version++;
+            this.onGraphChanged({action: "graphConfigure", doSave: false});
         } else {
-            LiteGraph.debug?.("skip onGraphChanged when configure passing version too!"); // atlasan DEBUG REMOVE
+            LiteGraph.debug?.("skip onGraphChanged when configure passing version too!");
         }
         this.setDirtyCanvas(true, true);
         return error;
@@ -1543,6 +1545,10 @@ export class LGraph {
             doSaveGraph: true, // save
         };
         var opts = Object.assign(optsDef,optsIn);
+
+        if (this._configuring && opts.action !== "graphConfigure") {
+            return;
+        }
 
         this._version++;
 

@@ -149,6 +149,7 @@ class objPropertyWidget {
         this._obin = null;
         this._value = null;
         this._properties = [];
+        this._properties_signature = "";
     }
 
     setValue(v) {
@@ -161,18 +162,20 @@ class objPropertyWidget {
         if (data != null) {
             this._obin = data;
             if(this._obin) { // } && typeof this._obin == "Object"){
-                // TODO should detect change or rebuild use a widget/action to refresh properties list
                 try{
-                    this._properties = Object.keys(this._obin);
-                    if(this._properties && this._properties.sort)
-                        this._properties = this._properties.sort();
+                    const nextProperties = Object.keys(this._obin).sort();
+                    const nextSignature = nextProperties.join("|");
+                    if (nextSignature !== this._properties_signature) {
+                        this._properties = nextProperties;
+                        this._properties_signature = nextSignature;
+                        this.widgets = [];
+                        this.widg_prop = this.addWidget("combo", "prop", this.properties.prop, {
+                            property: "prop",
+                            values: this._properties,
+                        });
+                    }
                 }catch(e) {
                     console.error?.(e);
-                }
-                if(this._properties) {
-                    // this.removeWidget();
-                    this.widgets = [];
-                    this.widg_prop = this.addWidget("combo","prop",this.properties.prop,{ property: "prop", values: this._properties });
                 }
                 if(typeof this._obin[this.properties.prop] !== "undefined") {
                     this._value = this._obin[this.properties.prop];
@@ -251,6 +254,7 @@ class objMethodWidget {
         this._obin = null;
         this._function = null;
         this._methods = [];
+        this._methods_signature = "";
     }
 
     setValue(v) {
@@ -263,25 +267,27 @@ class objMethodWidget {
         if (data != null) {
             this._obin = data;
             if(this._obin) { // } && typeof this._obin == "Object"){
-                // TODO should detect change or rebuild use a widget/action to refresh properties list
                 try{
-                    this._methods = [];
                     var allProps = Object.keys(this._obin);
-                    console.debug?.("Props",allProps);
+                    const nextMethods = [];
                     for(var iM in allProps) {
-                        // console.debug?.("dbg prop",allProps[iM],typeof(this._obin[allProps[iM]]));
                         if(typeof(this._obin[allProps[iM]]) == "function") {
-                            this._methods.push(allProps[iM]);
+                            nextMethods.push(allProps[iM]);
                         }
                     }
-                    if(this._methods && this._methods.sort) this._methods = this._methods.sort();
+                    nextMethods.sort();
+                    const nextSignature = nextMethods.join("|");
+                    if (nextSignature !== this._methods_signature) {
+                        this._methods = nextMethods;
+                        this._methods_signature = nextSignature;
+                        this.widgets = [];
+                        this.widg_prop = this.addWidget("combo", "method", this.properties.method, {
+                            property: "method",
+                            values: this._methods,
+                        });
+                    }
                 }catch(e) {
                     console.warn?.("Err on methods get",e);
-                }
-                if(this._methods) {
-                    // this.removeWidget();
-                    this.widgets = [];
-                    this.widg_prop = this.addWidget("combo","method",this.properties.method,{ property: "method", values: this._methods });
                 }
 
             }else{
@@ -297,8 +303,8 @@ class objMethodWidget {
     }
 
     updateInputsForMethod() {
-        // TODO fixthis :: property is not yet updated?
-        var actVal = this.widg_prop.value; // this.properties.method
+        var actVal = this.widg_prop.value;
+        this.properties.method = actVal;
         if(actVal && this._obin && typeof this._obin[actVal] !== "undefined") {
 
             // if changed, reset inputs

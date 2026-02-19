@@ -152,8 +152,41 @@ export class Editor {
 
     onLoadButton() {
         var panel = this.graphcanvas.createPanel("Load session",{closable: true});
+        var info = document.createElement("p");
+        info.textContent = "Load a graph from a local JSON file or a URL.";
+        panel.content.appendChild(info);
 
-        // @TODO
+        var fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = ".json,application/json";
+        fileInput.addEventListener("change", (event) => {
+            var file = event.target.files?.[0];
+            if (!file) {
+                return;
+            }
+            this.graph.load(file, () => panel.close());
+        });
+        panel.content.appendChild(fileInput);
+
+        var urlWrapper = document.createElement("div");
+        var urlInput = document.createElement("input");
+        urlInput.type = "text";
+        urlInput.placeholder = "https://example.com/graph.json";
+        urlInput.style.width = "100%";
+
+        var loadButton = document.createElement("button");
+        loadButton.textContent = "Load URL";
+        loadButton.addEventListener("click", () => {
+            const url = urlInput.value?.trim();
+            if (!url) {
+                return;
+            }
+            this.graph.load(url, () => panel.close());
+        });
+
+        urlWrapper.appendChild(urlInput);
+        urlWrapper.appendChild(loadButton);
+        panel.content.appendChild(urlWrapper);
 
         this.root.appendChild(panel);
     }

@@ -366,7 +366,6 @@ class GamepadInput {
     ];
 }
 
-// @TODO: Enums
 GamepadInput.CENTER = 0;
 GamepadInput.LEFT = 1;
 GamepadInput.RIGHT = 2;

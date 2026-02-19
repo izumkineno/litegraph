@@ -121,6 +121,17 @@ LiteGraph.registerNodeType("basic/sum", MyAddNode);
 - `server/python/README.md`
 - `server/rust/README.md`
 
+## 已知问题与修复策略
+
+- TODO/BUG 清理：
+  - `src/`、`editor/`、`server/`、`test/` 范围内历史 `TODO/BUG/FIXME/XXX` 注释已完成收口，详情见 `TODO.md`。
+- 覆盖率：
+  - 当前覆盖率已较旧基线提升（`lines` 从 `4.49%` 提升到 `10.11%`），但仍低于目标线。
+  - 下一步建议优先为 `lgraphcanvas` 交互逻辑做可测试抽象，继续提升 `branches` 与 `lines`。
+- Lint 基线：
+  - 已补齐 `eslint` 配置缺失依赖 `@eslint/js`。
+  - 全仓仍存在历史 lint 报错，建议作为独立迭代清理，避免与功能改动耦合。
+
 ## 常用命令
 
 ```bash

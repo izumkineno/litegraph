@@ -1,6 +1,6 @@
 import { LiteGraph } from "../litegraph.js";
 
-// @BUG: Gotta finish cleaning the file up so this doesn't cause the whole thing to crash
+// Geometry nodes rely on litegl + gl-matrix globals when running advanced modes.
 // import { GL } from "../../editor/js/libs/litegl.js";
 
 var view_matrix = new Float32Array(16);
@@ -146,12 +146,11 @@ class LGraphPoints3D {
                 for (let i = 0; i < side; ++i)
                     for (let j = 0; j < side; ++j) {
                         let pos = i * 3 + j * 3 * side;
-                        GL.polarToCartesian(
-                            temp,
-                            (i / side) * 2 * Math.PI,
-                            (j / side - 0.5) * 2 * Math.PI,
-                            radius,
-                        );
+                        const theta = (i / side) * 2 * Math.PI;
+                        const phi = (j / side - 0.5) * 2 * Math.PI;
+                        temp[0] = Math.cos(theta) * Math.cos(phi) * radius;
+                        temp[1] = Math.sin(phi) * radius;
+                        temp[2] = Math.sin(theta) * Math.cos(phi) * radius;
                         points[pos] = temp[0];
                         points[pos + 1] = temp[1];
                         points[pos + 2] = temp[2];
@@ -209,6 +208,9 @@ class LGraphPoints3D {
                 if (normals)
                     LGraphPoints3D.generateSphericalNormals(points, normals);
             } else if (mode == LGraphPoints3D.OBJECT) {
+                if (typeof GL === "undefined" || typeof vec3 === "undefined") {
+                    return points;
+                }
                 LGraphPoints3D.generateFromObject(
                     points,
                     normals,
@@ -217,8 +219,14 @@ class LGraphPoints3D {
                     false,
                 );
             } else if (mode == LGraphPoints3D.OBJECT_UNIFORMLY) {
+                if (typeof GL === "undefined" || typeof vec3 === "undefined") {
+                    return points;
+                }
                 LGraphPoints3D.generateFromObject(points, normals, size, obj, true);
             } else if (mode == LGraphPoints3D.OBJECT_INSIDE) {
+                if (typeof GL === "undefined" || typeof vec3 === "undefined") {
+                    return points;
+                }
                 LGraphPoints3D.generateFromInsideObject(points, size, obj);
                 // if(normals)
                 //	LGraphPoints3D.generateSphericalNormals( points, normals );
@@ -228,6 +236,9 @@ class LGraphPoints3D {
     }
 
     static generateSphericalNormals(points, normals) {
+        if (typeof vec3 === "undefined") {
+            return;
+        }
         var temp = new Float32Array(3);
         for (var i = 0; i < normals.length; i += 3) {
             temp[0] = points[i];
@@ -294,6 +305,9 @@ class LGraphPoints3D {
     }
 
     static generateFromObject(points, normals, size, obj, evenly) {
+        if (typeof GL === "undefined" || typeof vec3 === "undefined") {
+            return null;
+        }
         if (!obj) return;
 
         var vertices = null;

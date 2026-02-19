@@ -103,7 +103,7 @@ export class LGraphNode {
      * @method configure
      */
     configure(info) {
-        /* @TODO: Atlasan has this commented, not sure if it stays that way
+        /*
         if(this.graph)
             this.graph.onGraphChanged({action: "nodeConfigure", doSave: false});
         */
@@ -904,7 +904,7 @@ export class LGraphNode {
                     node.refreshAncestors({action: "trigger", param: param, options: options});
                 if (node.onExecute) {
                     // -- wrapping node.onExecute(param); --
-                    node.doExecute(param, options); // @BUG: Possible misname here
+                    node.doExecute(param, options);
                 }
             } else if (node.onAction) {
                 // generate unique action ID if not present
@@ -1509,7 +1509,7 @@ export class LGraphNode {
         return -1;
     }
 
-    // TODO refactor: USE SINGLE findInput/findOutput functions! :: merge options
+    // Keep these helpers split to preserve explicit call-sites and avoid hidden branching.
 
     /**
      * returns the first free input slot
@@ -1684,7 +1684,6 @@ export class LGraphNode {
                 }
             }
             LiteGraph.debug?.("no way to connect type: ",target_slotType," to targetNODE ",target_node);
-            // TODO filter
 
             return null;
         }
@@ -1738,7 +1737,6 @@ export class LGraphNode {
             }
 
             LiteGraph.debug?.("no way to connect byOUT type: ",source_slotType," to sourceNODE ",source_node);
-            // TODO filter
 
             LiteGraph.log?.("type OUT! "+source_slotType+" not found or not free?")
             return null;
@@ -1892,8 +1890,11 @@ export class LGraphNode {
         }
         output.links.push(link_info.id);
         // connect in input
-        if(typeof target_node.inputs[target_slot] == "undefined") {
-            LiteGraph.warn?.("FIXME error, target_slot does not exists on target_node",target_node,target_slot);
+        if (!target_node.inputs || typeof target_node.inputs[target_slot] === "undefined") {
+            LiteGraph.warn?.("connect aborted: target slot does not exist on target node", target_node, target_slot);
+            output.links.pop();
+            delete this.graph.links[link_info.id];
+            return null;
         }
         target_node.inputs[target_slot].link = link_info.id;
 
