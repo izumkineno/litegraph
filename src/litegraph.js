@@ -1057,18 +1057,74 @@ export var LiteGraph = new class {
         return a > v ? a : b < v ? b : v;
     };
 
-    // @BUG: Re-add these
-    pointerAddListener = () => {
-        console.error?.("Removed and being re-integrated sorta");
+    pointer_to_mouse_events = Object.freeze({
+        pointerdown: "mousedown",
+        pointermove: "mousemove",
+        pointerup: "mouseup",
+        pointercancel: "mouseup",
+        pointerover: "mouseover",
+        pointerout: "mouseout",
+        pointerenter: "mouseenter",
+        pointerleave: "mouseleave",
+    });
+
+    mouse_to_pointer_events = Object.freeze({
+        mousedown: "pointerdown",
+        mousemove: "pointermove",
+        mouseup: "pointerup",
+        mouseover: "pointerover",
+        mouseout: "pointerout",
+        mouseenter: "pointerenter",
+        mouseleave: "pointerleave",
+    });
+
+    resolvePointerEventName(event_name) {
+        if (typeof event_name !== "string") {
+            return event_name;
+        }
+
+        const normalized_event_name = event_name.toLowerCase();
+        const mode = this.pointerevents_method;
+        if (mode === "mouse") {
+            return this.pointer_to_mouse_events[normalized_event_name] || normalized_event_name;
+        }
+        if (mode === "pointer") {
+            return this.mouse_to_pointer_events[normalized_event_name] || normalized_event_name;
+        }
+
+        return normalized_event_name;
+    }
+
+    pointerAddListener = (target, event_name, callback, options) => {
+        if (!target?.addEventListener || typeof callback !== "function") {
+            return false;
+        }
+
+        const resolved_event_name = this.resolvePointerEventName(event_name);
+        target.addEventListener(resolved_event_name, callback, options);
+        return true;
     };
-    pointerRemoveListener = () => {
-        console.error?.("Removed and being re-integrated sorta");
+
+    pointerRemoveListener = (target, event_name, callback, options) => {
+        if (!target?.removeEventListener || typeof callback !== "function") {
+            return false;
+        }
+
+        const resolved_event_name = this.resolvePointerEventName(event_name);
+        target.removeEventListener(resolved_event_name, callback, options);
+        return true;
     };
+
     set pointerevents_method(v) {
-        console.error?.("Removed and being re-integrated sorta");
+        const method = typeof v === "string" ? v.toLowerCase() : "";
+        if (method === "mouse" || method === "pointer") {
+            this._pointerevents_method = method;
+            return;
+        }
+        this._pointerevents_method = "pointer";
     }
     get pointerevents_method() {
-        console.error?.("Removed and being re-integrated sorta");
+        return this._pointerevents_method || "pointer";
     }
 
     closeAllContextMenus = () => {

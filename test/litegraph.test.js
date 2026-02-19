@@ -1,4 +1,16 @@
-import { jest } from "@jest/globals";
+const testRuntime = typeof globalThis.Bun !== "undefined"
+    ? await import("bun:test")
+    : await import("@jest/globals");
+
+const {
+    jest,
+    describe,
+    test,
+    expect,
+    beforeAll,
+    beforeEach,
+    afterEach,
+} = testRuntime;
 import { LiteGraph } from "../src/litegraph.js";
 import { LGraphNode } from "../src/lgraphnode.js";
 
@@ -23,7 +35,7 @@ describe("register node types", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        jest.resetModules();
+        jest.resetModules?.();
 
         // attempt at resetting LiteGraph each time, because Jest can't just do that
         // and neither can I.
@@ -56,22 +68,28 @@ describe("register node types", () => {
 
     test("callback triggers", () => {
         const consoleSpy = jest
-            .spyOn(console, "log")
+            .spyOn(console, "debug")
             .mockImplementation(() => {});
 
-        LiteGraph.onNodeTypeRegistered = jest.fn();
-        LiteGraph.onNodeTypeReplaced = jest.fn();
-        LiteGraph.registerNodeType("math/sum", Sum);
-        expect(LiteGraph.onNodeTypeRegistered).toHaveBeenCalled();
-        expect(LiteGraph.onNodeTypeReplaced).not.toHaveBeenCalled();
-        LiteGraph.registerNodeType("math/sum", Sum);
-        expect(LiteGraph.onNodeTypeReplaced).toHaveBeenCalled();
-        expect(consoleSpy).toHaveBeenCalledWith(
-            expect.stringMatching("replacing node type")
-        );
-        expect(consoleSpy).toHaveBeenCalledWith(
-            expect.stringMatching("math/sum")
-        );
+        const previousDebugLevel = LiteGraph.debug_level;
+        LiteGraph.logging_set_level(4);
+        try {
+            LiteGraph.onNodeTypeRegistered = jest.fn();
+            LiteGraph.onNodeTypeReplaced = jest.fn();
+            LiteGraph.registerNodeType("math/sum", Sum);
+            expect(LiteGraph.onNodeTypeRegistered).toHaveBeenCalled();
+            expect(LiteGraph.onNodeTypeReplaced).not.toHaveBeenCalled();
+            LiteGraph.registerNodeType("math/sum", Sum);
+            expect(LiteGraph.onNodeTypeReplaced).toHaveBeenCalled();
+
+            const hasReplaceLog = consoleSpy.mock.calls.some((call) => {
+                const message = call.map((value) => String(value)).join(" ");
+                return message.includes("replacing node type") && message.includes("math/sum");
+            });
+            expect(hasReplaceLog).toBe(true);
+        } finally {
+            LiteGraph.logging_set_level(previousDebugLevel);
+        }
     });
 
     test("node with title", () => {
@@ -125,11 +143,13 @@ describe("register node types", () => {
 
         Sum.prototype.onPropertyChange = true;
         LiteGraph.registerNodeType("math/sum", Sum);
-        expect(consoleSpy).toBeCalledTimes(1);
-        expect(consoleSpy).toBeCalledWith(
-            expect.stringContaining("has onPropertyChange method")
-        );
-        expect(consoleSpy).toBeCalledWith(expect.stringContaining("math/sum"));
+        expect(consoleSpy).toHaveBeenCalledTimes(1);
+
+        const warningMessage = consoleSpy.mock.calls[0]
+            .map((value) => String(value))
+            .join(" ");
+        expect(warningMessage).toContain("has onPropertyChange method");
+        expect(warningMessage).toContain("math/sum");
     });
 
     test("registering supported file extensions", () => {
@@ -198,7 +218,7 @@ describe("unregister node types", () => {
     let Sum;
 
     beforeEach(async () => {
-        jest.resetModules();
+        jest.resetModules?.();
         Sum = function Sum() {
             this.addInput("a", "number");
             this.addInput("b", "number");
