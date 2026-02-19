@@ -11,3 +11,7 @@ coverage/*
 !/.vscode/extensions.json
 *.bak
 .project
+
+# Python cache
+__pycache__/
+*.py[cod]

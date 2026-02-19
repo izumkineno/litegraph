@@ -7,9 +7,9 @@
     "types": "src/litegraph.d.ts",
     "private": false,
     "scripts": {
-        "build": "python3 build.py",
+        "build": "python3 scripts/build.py",
         "docs": "jsdoc -c ./docs/.jsdoc.config -d ./docs -r --verbose --debug",
-        "server": "nodemon server.js",
+        "server": "nodemon scripts/server.js",
         "test": "node --experimental-vm-modules node_modules/jest-cli/bin/jest.js",
         "lint": "npx eslint src",
         "lint:fix": "npx eslint --fix src"

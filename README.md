@@ -47,6 +47,15 @@ npm i @mr_pebble/litegraph
 
 Or downloading the ```build/litegraph.js``` and ```css/litegraph.css``` version from this repository.
 
+## Repository docs and scripts
+
+- API guide: [`docs/guide.md`](docs/guide.md)
+- Generated JSDoc site: [`docs/index.html`](docs/index.html)
+- Project changelog: [`docs/project/CHANGELOG.md`](docs/project/CHANGELOG.md)
+- Project roadmap: [`docs/project/ROADMAP.md`](docs/project/ROADMAP.md)
+- UI/UX design system (ui-ux-pro-max): [`design-system/litegraph/MASTER.md`](design-system/litegraph/MASTER.md)
+- Build/dev scripts: [`scripts/build.py`](scripts/build.py), [`scripts/server.js`](scripts/server.js)
+
 ## First project ##
 
 ```html
@@ -169,7 +178,6 @@ graph.start()
 ```
 These all work to some extent right now:
 npm run docs
-npm run prettifier
 npm run build
 npm run test
 npm run lint
@@ -185,7 +193,7 @@ I have also run:
 -----
 The demo includes some examples of graphs. In order to try them you can visit [demo site](http://tamats.com/projects/litegraph/editor) or install it on your local computer, to do so you need `git`, `node` and `npm`. Given those dependencies are installed, run the following commands to try it out:
 ```sh
-$ git clone https://github.com/jagenjo/litegraph.js.git
+$ git clone https://github.com/daniel-lewis-ab/litegraph.js.git
 $ cd litegraph.js
 $ npm i
 $ npm run server
