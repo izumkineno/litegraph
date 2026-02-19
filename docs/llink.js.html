@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: LGraphNode</title>
+    <title>JSDoc: Source: llink.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,754 +17,82 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: LGraphNode</h1>
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2><span class="attribs"><span class="type-signature"></span></span>LGraphNode<span class="signature">(name)</span><span class="type-signature"></span></h2>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-    
-
-    
-    <h4 class="name" id="LGraphNode"><span class="type-signature"></span>new LGraphNode<span class="signature">(name)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Base Class for all the node type classes
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">a name for the node</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lgraphnode.js.html">lgraphnode.js</a>, <a href="lgraphnode.js.html#line54">line 54</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="addInput"><span class="type-signature"></span>addInput<span class="signature">(name, type, extra_info, isInput)</span><span class="type-signature"> &rarr; {Object}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Add a new input or output slot to use in this node.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Name of the slot.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>type</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Type of the slot ("vec3", "number", etc). For a generic type, use "0".</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>extra_info</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Additional information for the slot (e.g., label, color, position).</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>isInput</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Whether the slot being added is an input slot.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lgraphnode.js.html">lgraphnode.js</a>, <a href="lgraphnode.js.html#line1000">line 1000</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    The newly added slot (input or output).
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Object</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="addInputs"><span class="type-signature"></span>addInputs<span class="signature">(array, isInput)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Add multiple input or output slots to use in this node.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>array</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Array of triplets like [[name, type, extra_info], [...]].</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>isInput</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Whether the slots being added are input slots.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lgraphnode.js.html">lgraphnode.js</a>, <a href="lgraphnode.js.html#line1037">line 1037</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="findInputSlotByType"><span class="type-signature"></span>findInputSlotByType<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    findSlotByType for INPUTS
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lgraphnode.js.html">lgraphnode.js</a>, <a href="lgraphnode.js.html#line1571">line 1571</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="findOutputSlotByType"><span class="type-signature"></span>findOutputSlotByType<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    findSlotByType for OUTPUTS
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lgraphnode.js.html">lgraphnode.js</a>, <a href="lgraphnode.js.html#line1578">line 1578</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">Source: llink.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+/**
+ * Class representing a link object that stores link information between two nodes.
+ */
+export class LLink {
+
+    /**
+     * Create a link object.
+     * @param {string} id - The unique identifier of the link.
+     * @param {string} type - The type of the link.
+     * @param {string} origin_id - The identifier of the origin node.
+     * @param {string} origin_slot - The slot of the origin node the link is connected to.
+     * @param {string} target_id - The identifier of the target node.
+     * @param {string} target_slot - The slot of the target node the link is connected to.
+     */
+    constructor(id, type, origin_id, origin_slot, target_id, target_slot) {
+        this.id = id;
+        this.type = type;
+        this.origin_id = origin_id;
+        this.origin_slot = origin_slot;
+        this.target_id = target_id;
+        this.target_slot = target_slot;
+
+        this._data = null;
+        this._pos = new Float32Array(2); // center
+    }
+
+    /**
+     * Configure the link object with new data.
+     * @param {Array|Object} o - An array or object containing link data to configure.
+     */
+    configure(o) {
+        if (o.constructor === Array) {
+            this.id = o[0];
+            this.origin_id = o[1];
+            this.origin_slot = o[2];
+            this.target_id = o[3];
+            this.target_slot = o[4];
+            this.type = o[5];
+        } else {
+            this.id = o.id;
+            this.type = o.type;
+            this.origin_id = o.origin_id;
+            this.origin_slot = o.origin_slot;
+            this.target_id = o.target_id;
+            this.target_slot = o.target_slot;
+        }
+    }
+
+    /**
+     * Serialize the link object to an array.
+     * @returns {Array} An array containing the serialized link data.
+     */
+    serialize() {
+        return [
+            this.id,
+            this.origin_id,
+            this.origin_slot,
+            this.target_id,
+            this.target_slot,
+            this.type,
+        ];
+    }
+}
+</code></pre>
+        </article>
+    </section>
 
 
 

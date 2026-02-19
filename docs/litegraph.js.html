@@ -26,31 +26,36 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>
+            <pre class="prettyprint source linenums"><code>import { LLink } from "./llink.js";
+import { LGraph } from "./lgraph.js";
 import { LGraphNode } from "./lgraphnode.js";
+import { LGraphGroup } from "./lgraphgroup.js";
+import { LGraphCanvas } from "./lgraphcanvas.js";
+import { DragAndScale } from "./dragandscale.js";
+import { ContextMenu } from "./contextmenu.js";
 
 /**
  * @class LiteGraph
  *
  * @NOTE:
  * Try to avoid adding things to this class.
- *
- * this was just converted over from a global Object to class on 2024-05-09 in the early morning
- * and my goal is to fix the anti-pattern which involves putting all of this stuff where it *actually*
- * belongs.
- *
  * https://dzone.com/articles/singleton-anti-pattern
- *
  */
-
 export var LiteGraph = new class {
     constructor() {
-        // @TODO: This is awful, and these settings need to be put where they belong.
 
-        this.VERSION = "0.9.12";
+        this.VERSION = "0.10.2";
+
+        // from OG LiteGraph, just bringing it back for compatibility
+        this.LLink = LLink;
+        this.LGraph = LGraph;
+        this.LGraphNode = LGraphNode;
+        this.LGraphGroup = LGraphGroup;
+        this.LGraphCanvas = LGraphCanvas;
+        this.DragAndScale = DragAndScale;
+        this.ContextMenu = ContextMenu;
 
         this.CANVAS_GRID_SIZE = 10;
-
         this.NODE_TITLE_HEIGHT = 30;
         this.NODE_TITLE_TEXT_Y = 20;
         this.NODE_SLOT_HEIGHT = 20;
@@ -100,12 +105,13 @@ export var LiteGraph = new class {
         this.EVENT = -1; // for outputs
         this.ACTION = -1; // for inputs
 
-        this.NODE_MODES = ["Always", "On Event", "Never", "On Trigger"]; // helper, will add "On Request" and more in the future
+        this.NODE_MODES = ["Always", "On Event", "Never", "On Trigger", "On Request"]; // helper, will add "On Request" and more in the future
         this.NODE_MODES_COLORS = ["#666","#422","#333","#224","#626"]; // use with node_box_coloured_by_mode
         this.ALWAYS = 0;
         this.ON_EVENT = 1;
         this.NEVER = 2;
         this.ON_TRIGGER = 3;
+        this.ON_REQUEST = 4; // used from event-based nodes, where ancestors are recursively executed on needed
 
         this.UP = 1;
         this.DOWN = 2;
@@ -127,7 +133,6 @@ export var LiteGraph = new class {
         this.proxy = null; // used to redirect calls
         this.node_images_path = "";
 
-        this.debug = false;
         this.catch_exceptions = true;
         this.throw_errors = true;
         this.allow_scripts = false; // if set to true some nodes like Formula would be allowed to evaluate code that comes from unsafe sources (like node configuration), which could lead to exploits
@@ -153,6 +158,9 @@ export var LiteGraph = new class {
         this.search_filter_enabled = false; // [true!] enable filtering slots type in the search widget, !requires auto_load_slot_types or manual set registered_slot_[in/out]_types and slot_types_[in/out]
         this.search_show_all_on_open = true; // [true!] opens the results list when opening the search widget
 
+        this.show_node_tooltip = false; // [true!] show a tooltip with node property "tooltip" over the selected node
+        this.show_node_tooltip_use_descr_property = false; // enabled tooltip from desc when property tooltip not set
+
         this.auto_load_slot_types = false; // [if want false, use true, run, get vars values to be statically set, than disable] nodes types and nodeclass association with node types need to be calculated, if dont want this, calculate once and set registered_slot_[in/out]_types and slot_types_[in/out]
 
         // set these values if not using auto_load_slot_types
@@ -163,7 +171,13 @@ export var LiteGraph = new class {
         this.slot_types_default_in = []; // specify for each IN slot type a(/many) default node(s), use single string, array, or object (with node, title, parameters, ..) like for search
         this.slot_types_default_out = []; // specify for each OUT slot type a(/many) default node(s), use single string, array, or object (with node, title, parameters, ..) like for search
 
+        this.graphDefaultConfig = {
+            align_to_grid: true,
+            links_ontop: false,
+        };
+
         this.alt_drag_do_clone_nodes = false; // [true!] very handy, ALT click to clone and drag the new node
+        this.alt_shift_drag_connect_clone_with_input = true; // [true!] very handy, when cloning, keep input connections with SHIFT
 
         this.do_add_triggers_slots = false; // [true!] will create and connect event slots when using action/events connections, !WILL CHANGE node mode when using onTrigger (enable mode colors), onExecuted does not need this
 
@@ -172,13 +186,127 @@ export var LiteGraph = new class {
         this.middle_click_slot_add_default_node = false; // [true!] allows to create and connect a ndoe clicking with the third button (wheel)
 
         this.release_link_on_empty_shows_menu = false; // [true!] dragging a link to empty space will open a menu, add from list, search or defaults
+        this.two_fingers_opens_menu = false; // [true!] using pointer event isPrimary, when is not simulate right click
 
+        this.backspace_delete = true; // [false!] delete key is enough, don't mess with text edit and custom
 
         this.ctrl_shift_v_paste_connect_unselected_outputs = false; // [true!] allows ctrl + shift + v to paste nodes with the outputs of the unselected nodes connected with the inputs of the newly pasted nodes
+
+        this.actionHistory_enabled = false; // cntrlZ, cntrlY
+        this.actionHistoryMaxSave = 40;
+
+        /* EXECUTING ACTIONS AFTER UPDATING VALUES - ANCESTORS */
+        this.refreshAncestorsOnTriggers = false; // [true!]
+        this.refreshAncestorsOnActions = false; // [true!]
+        this.ensureUniqueExecutionAndActionCall = false; // [true!] the new tecnique.. let's make it working best of
 
         // if true, all newly created nodes/links will use string UUIDs for their id fields instead of integers.
         // use this if you must have node IDs that are unique across all graphs and subgraphs.
         this.use_uuids = false;
+
+        // enable filtering elements of the context menu with keypress (+ arrows for navigation, escape to close)
+        this.context_menu_filter_enabled = false; // FIX event handler removal
+
+        this.showCanvasOptions = false; // [true!] customize availableCanvasOptions
+        this.availableCanvasOptions = [
+            "allow_addOutSlot_onExecuted",
+            "free_resize",
+            "highquality_render",
+            "use_gradients", // set to true to render titlebar with gradients
+            "pause_rendering",
+            "clear_background",
+            "read_only", // if set to true users cannot modify the graph
+            // "render_only_selected", // not implemented
+            "live_mode",
+            "show_info",
+            "allow_dragcanvas",
+            "allow_dragnodes",
+            "allow_interaction", // allow to control widgets, buttons, collapse, etc
+            "allow_searchbox",
+            "move_destination_link_without_shift", // rename: old allow_reconnect_links //allows to change a connection, no need to hold shift
+            "set_canvas_dirty_on_mouse_event", // forces to redraw the canvas if the mouse does anything
+            "always_render_background",
+            "render_shadows",
+            "render_canvas_border",
+            "render_connections_shadows", // too much cpu
+            "render_connections_border",
+            // ,"render_curved_connections", // always on, or specific fixed graph
+            "render_connection_arrows",
+            "render_collapsed_slots",
+            "render_execution_order",
+            "render_title_colored",
+            "render_link_tooltip",
+        ];
+        // ,"editor_alpha" //= 1; //used for transition
+
+        this.actionHistoryMaxSave = 40;
+
+        this.canRemoveSlots = true;
+        this.canRemoveSlots_onlyOptional = true;
+        this.canRenameSlots = true;
+        this.canRenameSlots_onlyOptional = true;
+
+        this.ensureNodeSingleExecution = false; // OLD this will prevent nodes to be executed more than once for step (comparing graph.iteration)
+        this.ensureNodeSingleAction = false; // OLD this will prevent nodes to be executed more than once for action call!
+        this.preventAncestorRecalculation = false; // OLD(?) when calculating the ancestors, set a flag to prevent recalculate the subtree
+
+        this.ensureUniqueExecutionAndActionCall = true; // NEW ensure single event execution
+
+        this.allowMultiOutputForEvents = false; // being events, it is strongly reccomended to use them sequentually, one by one
+
+
+        this.log_methods = ['error', 'warn', 'info', 'log', 'debug'];
+        // this.loggingSetup();
+
+        // this.debug = 1; // has custom get set, in this.debug_level is stored the actual numeric value
+        // this.debug_level = 1;
+        this.logging_set_level(2);
+    }
+
+    // get and set debug (log)level
+    // from -1 (none), 0 (error), .. to 4 (debug) based on console methods 'error', 'warn', 'info', 'log', 'debug'
+    logging_set_level(v) {
+        this.debug_level = Number(v);
+    }
+
+    // entrypoint to debug log
+    logging(lvl/**/) { // arguments
+
+        if(lvl > this.debug_level)
+            return; // -- break, debug only below or equal current --
+
+        function clean_args(args) {
+            let aRet = [];
+            for(let iA=1; iA&lt;args.length; iA++) {
+                if(typeof(args[iA])!=="undefined") aRet.push(args[iA]);
+            }
+            return aRet;
+        }
+
+        let lvl_txt = "debug";
+        if(lvl>=0&amp;&amp;lvl&lt;=4) lvl_txt = ['error', 'warn', 'info', 'log', 'debug'][lvl];
+
+        if(typeof(console[lvl_txt])!=="function") {
+            console.warn("[LG-log] invalid console method",lvl_txt,clean_args(arguments));
+            throw new RangeError;
+        }
+
+        console[lvl_txt]("[LG]",...clean_args(arguments));
+    }
+    error() {
+        this.logging(0,...arguments);
+    }
+    warn() {
+        this.logging(1,...arguments);
+    }
+    info() {
+        this.logging(2,...arguments);
+    }
+    log() {
+        this.logging(3,...arguments);
+    }
+    debug() {
+        this.logging(4,...arguments);
     }
 
     /**
@@ -193,9 +321,7 @@ export var LiteGraph = new class {
         }
         base_class.type = type;
 
-        if (LiteGraph.debug) {
-            console.log("Node registered: " + type);
-        }
+        this.debug?.("registerNodeType","start",type);
 
         const classname = base_class.name;
 
@@ -219,7 +345,7 @@ export var LiteGraph = new class {
 
         const prev = this.registered_node_types[type];
         if(prev) {
-            console.log("replacing node type: " + type);
+            this.debug?.("registerNodeType","replacing node type",type,prev);
         }
         if( !Object.prototype.hasOwnProperty.call( base_class.prototype, "shape") ) {
             Object.defineProperty(base_class.prototype, "shape", {
@@ -274,15 +400,25 @@ export var LiteGraph = new class {
 
         // warnings
         if (base_class.prototype.onPropertyChange) {
-            console.warn("LiteGraph node class " +
+            LiteGraph.warn("LiteGraph node class " +
                     type +
                     " has onPropertyChange method, it must be called onPropertyChanged with d at the end");
         }
 
-        // TODO one would want to know input and ouput :: this would allow through registerNodeAndSlotType to get all the slots types
-        if (this.auto_load_slot_types) {
-            new base_class(base_class.title || "tmpnode");
+        // used to know which nodes create when dragging files to the canvas
+        if (base_class.supported_extensions) {
+            for (var i=0; i &lt; base_class.supported_extensions.length; i++) {
+                var ext = base_class.supported_extensions[i];
+                if(ext &amp;&amp; ext.constructor === String)
+                    this.node_types_by_file_extension[ext.toLowerCase()] = base_class;
+            }
         }
+
+        this.debug?.("registerNodeType","type registered",type);
+
+        if (this.auto_load_slot_types)
+            this.debug?.("registerNodeType","do auto_load_slot_types",type);
+        new base_class(base_class.title ?? "tmpnode");
     }
 
     /**
@@ -485,9 +621,7 @@ export var LiteGraph = new class {
         const base_class = this.registered_node_types[type] ?? null;
 
         if (!base_class) {
-            if (LiteGraph.debug) {
-                console.log(`GraphNode type "${type}" not registered.`);
-            }
+            this.log?.(`GraphNode type "${type}" not registered.`);
             return null;
         }
 
@@ -499,7 +633,7 @@ export var LiteGraph = new class {
             try {
                 node = new base_class(title);
             } catch (err) {
-                console.error(err);
+                this.error?.(err);
                 return null;
             }
         } else {
@@ -605,9 +739,7 @@ export var LiteGraph = new class {
             }
 
             try {
-                if (LiteGraph.debug) {
-                    console.log("Reloading: " + src);
-                }
+                this.log?.("Reloading: " + src);
                 var dynamicScript = document.createElement("script");
                 dynamicScript.type = "text/javascript";
                 dynamicScript.src = src;
@@ -617,15 +749,10 @@ export var LiteGraph = new class {
                 if (LiteGraph.throw_errors) {
                     throw err;
                 }
-                if (LiteGraph.debug) {
-                    console.log("Error while reloading " + src);
-                }
+                this.log?.("Error while reloading " + src);
             }
         }
-
-        if (LiteGraph.debug) {
-            console.log("Nodes reloaded");
-        }
+        this.log?.("Nodes reloaded");
     }
 
     // separated just to improve if it doesn't work
@@ -744,7 +871,7 @@ export var LiteGraph = new class {
                         on_complete(data);
                 })
                 .catch((error) => {
-                    console.error("error fetching file:",url);
+                    this.error?.("error fetching file:",url);
                     if(on_error)
                         on_error(error);
                 });
@@ -798,6 +925,34 @@ export var LiteGraph = new class {
             (c.length == 4 ? c[3].toFixed(2) : "1.0") +
             ")"
         );
+    }
+
+    canvasFillTextMultiline(context, text, x, y, maxWidth, lineHeight) {
+        var words = (text+"").trim().split(' ');
+        var line = '';
+        var ret = {lines: [], maxW: 0, height: 0};
+        if (words.length>1) {
+            for(var n = 0; n &lt; words.length; n++) {
+                var testLine = line + words[n] + ' ';
+                var metrics = context.measureText(testLine);
+                var testWidth = metrics.width;
+                if (testWidth > maxWidth &amp;&amp; n > 0) {
+                    context.fillText(line, x, y+(lineHeight*ret.lines.length));
+                    line = words[n] + ' ';
+                    // y += lineHeight;
+                    ret.max = testWidth;
+                    ret.lines.push(line);
+                }else{
+                    line = testLine;
+                }
+            }
+        } else {
+            line = words[0];
+        }
+        context.fillText(line, x, y+(lineHeight*ret.lines.length));
+        ret.lines.push(line);
+        ret.height = lineHeight*ret.lines.length || lineHeight;
+        return ret;
     }
 
     isInsideRectangle(x, y, left, top, width, height) {
@@ -928,7 +1083,26 @@ export var LiteGraph = new class {
 
     clamp = (v, a, b) => {
         return a > v ? a : b &lt; v ? b : v;
+    };
+
+    // @BUG: Re-add these
+    pointerAddListener = () => {
+        console.error?.("Removed and being re-integrated sorta");
+    };
+    pointerRemoveListener = () => {
+        console.error?.("Removed and being re-integrated sorta");
+    };
+    set pointerevents_method(v) {
+        console.error?.("Removed and being re-integrated sorta");
     }
+    get pointerevents_method() {
+        console.error?.("Removed and being re-integrated sorta");
+    }
+
+    closeAllContextMenus = () => {
+        LiteGraph.warn('LiteGraph.closeAllContextMenus is deprecated in favor of ContextMenu.closeAll()');
+        ContextMenu.closeAll();
+    };
 }
 
 // timer that works everywhere
@@ -965,13 +1139,13 @@ if (typeof window != "undefined" &amp;&amp; !window["requestAnimationFrame"]) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ContextMenu_ContextMenu.html">ContextMenu</a></li><li><a href="DragAndScale.html">DragAndScale</a></li><li><a href="LGraph.html">LGraph</a></li><li><a href="LGraphCanvas.html">LGraphCanvas</a></li><li><a href="LGraphGroup_LGraphGroup.html">LGraphGroup</a></li><li><a href="LGraphNode.html">LGraphNode</a></li><li><a href="LiteGraph.html">LiteGraph</a></li></ul><h3>Global</h3><ul><li><a href="global.html#actionDo">actionDo</a></li><li><a href="global.html#add">add</a></li><li><a href="global.html#addConnection">addConnection</a></li><li><a href="global.html#addGlobalInput">addGlobalInput</a></li><li><a href="global.html#addNodeMethod">addNodeMethod</a></li><li><a href="global.html#addOutput">addOutput</a></li><li><a href="global.html#addProperty">addProperty</a></li><li><a href="global.html#addWidget">addWidget</a></li><li><a href="global.html#adjustMouseEvent">adjustMouseEvent</a></li><li><a href="global.html#arrange">arrange</a></li><li><a href="global.html#attachCanvas">attachCanvas</a></li><li><a href="global.html#bindEvents">bindEvents</a></li><li><a href="global.html#bringToFront">bringToFront</a></li><li><a href="global.html#buildNodeClassFromObject">buildNodeClassFromObject</a></li><li><a href="global.html#centerOnNode">centerOnNode</a></li><li><a href="global.html#change">change</a></li><li><a href="global.html#changeInputType">changeInputType</a></li><li><a href="global.html#changeOutputType">changeOutputType</a></li><li><a href="global.html#checkNodeTypes">checkNodeTypes</a></li><li><a href="global.html#clear">clear</a></li><li><a href="global.html#clearRegisteredTypes">clearRegisteredTypes</a></li><li><a href="global.html#clearTriggeredSlot">clearTriggeredSlot</a></li><li><a href="global.html#clearTriggeredSlots">clearTriggeredSlots</a></li><li><a href="global.html#closeSubgraph">closeSubgraph</a></li><li><a href="global.html#collapse">collapse</a></li><li><a href="global.html#computeSize">computeSize</a></li><li><a href="global.html#computeVisibleNodes">computeVisibleNodes</a></li><li><a href="global.html#configure">configure</a></li><li><a href="global.html#connect">connect</a></li><li><a href="global.html#connectByType">connectByType</a></li><li><a href="global.html#convertCanvasToOffset">convertCanvasToOffset</a></li><li><a href="global.html#convertOffsetToCanvas">convertOffsetToCanvas</a></li><li><a href="global.html#createNode">createNode</a></li><li><a href="global.html#deleteSelectedNodes">deleteSelectedNodes</a></li><li><a href="global.html#deselectAllNodes">deselectAllNodes</a></li><li><a href="global.html#deselectNode">deselectNode</a></li><li><a href="global.html#detachCanvas">detachCanvas</a></li><li><a href="global.html#disconnectInput">disconnectInput</a></li><li><a href="global.html#disconnectOutput">disconnectOutput</a></li><li><a href="global.html#doExecute">doExecute</a></li><li><a href="global.html#draw">draw</a></li><li><a href="global.html#drawBackCanvas">drawBackCanvas</a></li><li><a href="global.html#drawConnections">drawConnections</a></li><li><a href="global.html#drawFrontCanvas">drawFrontCanvas</a></li><li><a href="global.html#drawGroups">drawGroups</a></li><li><a href="global.html#drawNode">drawNode</a></li><li><a href="global.html#drawNodeShape">drawNodeShape</a></li><li><a href="global.html#drawNodeWidgets">drawNodeWidgets</a></li><li><a href="global.html#drawSubgraphPanel">drawSubgraphPanel</a></li><li><a href="global.html#enableWebGL">enableWebGL</a></li><li><a href="global.html#executePendingActions">executePendingActions</a></li><li><a href="global.html#fetchFile">fetchFile</a></li><li><a href="global.html#findInputSlot">findInputSlot</a></li><li><a href="global.html#findInputSlotFree">findInputSlotFree</a></li><li><a href="global.html#findNodeByTitle">findNodeByTitle</a></li><li><a href="global.html#findNodesByClass">findNodesByClass</a></li><li><a href="global.html#findNodesByTitle">findNodesByTitle</a></li><li><a href="global.html#findNodesByType">findNodesByType</a></li><li><a href="global.html#findOutputSlot">findOutputSlot</a></li><li><a href="global.html#findOutputSlotFree">findOutputSlotFree</a></li><li><a href="global.html#findSlotByType">findSlotByType</a></li><li><a href="global.html#getAncestors">getAncestors</a></li><li><a href="global.html#getBounding">getBounding</a></li><li><a href="global.html#getCanvasWindow">getCanvasWindow</a></li><li><a href="global.html#getConnectionPos">getConnectionPos</a></li><li><a href="global.html#getCurrentGraph">getCurrentGraph</a></li><li><a href="global.html#getElapsedTime">getElapsedTime</a></li><li><a href="global.html#getFixedTime">getFixedTime</a></li><li><a href="global.html#getGroupOnPos">getGroupOnPos</a></li><li><a href="global.html#getInputData">getInputData</a></li><li><a href="global.html#getInputDataByName">getInputDataByName</a></li><li><a href="global.html#getInputDataType">getInputDataType</a></li><li><a href="global.html#getInputInfo">getInputInfo</a></li><li><a href="global.html#getInputLink">getInputLink</a></li><li><a href="global.html#getInputNode">getInputNode</a></li><li><a href="global.html#getInputOrProperty">getInputOrProperty</a></li><li><a href="global.html#getNodeById">getNodeById</a></li><li><a href="global.html#getNodeOnPos">getNodeOnPos</a></li><li><a href="global.html#getNodeType">getNodeType</a></li><li><a href="global.html#getNodeTypesCategories">getNodeTypesCategories</a></li><li><a href="global.html#getOutputData">getOutputData</a></li><li><a href="global.html#getOutputInfo">getOutputInfo</a></li><li><a href="global.html#getOutputNodes">getOutputNodes</a></li><li><a href="global.html#getPropertyInfo">getPropertyInfo</a></li><li><a href="global.html#getSlotInPosition">getSlotInPosition</a></li><li><a href="global.html#getTime">getTime</a></li><li><a href="global.html#getTitle">getTitle</a></li><li><a href="global.html#getTopGraph">getTopGraph</a></li><li><a href="global.html#isAnyOutputConnected">isAnyOutputConnected</a></li><li><a href="global.html#isInputConnected">isInputConnected</a></li><li><a href="global.html#isLive">isLive</a></li><li><a href="global.html#isOutputConnected">isOutputConnected</a></li><li><a href="global.html#isOverNodeBox">isOverNodeBox</a></li><li><a href="global.html#isOverNodeInput">isOverNodeInput</a></li><li><a href="global.html#isOverNodeOuput">isOverNodeOuput</a></li><li><a href="global.html#isPointInside">isPointInside</a></li><li><a href="global.html#isValidConnection">isValidConnection</a></li><li><a href="global.html#openSubgraph">openSubgraph</a></li><li><a href="global.html#pin">pin</a></li><li><a href="global.html#processDrop">processDrop</a></li><li><a href="global.html#processKey">processKey</a></li><li><a href="global.html#processMouseMove">processMouseMove</a></li><li><a href="global.html#processMouseUp">processMouseUp</a></li><li><a href="global.html#processMouseWheel">processMouseWheel</a></li><li><a href="global.html#processNodeWidgets">processNodeWidgets</a></li><li><a href="global.html#registerNodeType">registerNodeType</a></li><li><a href="global.html#registerSearchboxExtra">registerSearchboxExtra</a></li><li><a href="global.html#registerSlotType">registerSlotType</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#removeInput">removeInput</a></li><li><a href="global.html#removeLink">removeLink</a></li><li><a href="global.html#removeOutput">removeOutput</a></li><li><a href="global.html#renameInput">renameInput</a></li><li><a href="global.html#renameOutput">renameOutput</a></li><li><a href="global.html#renderInfo">renderInfo</a></li><li><a href="global.html#renderLink">renderLink</a></li><li><a href="global.html#resize">resize</a></li><li><a href="global.html#runStep">runStep</a></li><li><a href="global.html#selectNode">selectNode</a></li><li><a href="global.html#selectNodes">selectNodes</a></li><li><a href="global.html#sendEventToAllNodes">sendEventToAllNodes</a></li><li><a href="global.html#sendToBack">sendToBack</a></li><li><a href="global.html#serialize">serialize</a></li><li><a href="global.html#setCanvas">setCanvas</a></li><li><a href="global.html#setDirty">setDirty</a></li><li><a href="global.html#setGlobalInputData">setGlobalInputData</a></li><li><a href="global.html#setGraph">setGraph</a></li><li><a href="global.html#setOutputData">setOutputData</a></li><li><a href="global.html#setOutputDataType">setOutputDataType</a></li><li><a href="global.html#setProperty">setProperty</a></li><li><a href="global.html#setSize">setSize</a></li><li><a href="global.html#setZoom">setZoom</a></li><li><a href="global.html#start">start</a></li><li><a href="global.html#startRendering">startRendering</a></li><li><a href="global.html#stopexecution">stop execution</a></li><li><a href="global.html#stopRendering">stopRendering</a></li><li><a href="global.html#switchLiveMode">switchLiveMode</a></li><li><a href="global.html#toString">toString</a></li><li><a href="global.html#trigger">trigger</a></li><li><a href="global.html#triggerSlot">triggerSlot</a></li><li><a href="global.html#unbindEvents">unbindEvents</a></li><li><a href="global.html#unregisterNodeType">unregisterNodeType</a></li><li><a href="global.html#updateExecutionOrder">updateExecutionOrder</a></li><li><a href="global.html#wrapFunctionAsNode">wrapFunctionAsNode</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ContextMenu_ContextMenu.html">ContextMenu</a></li><li><a href="DragAndScale.html">DragAndScale</a></li><li><a href="LGraph.html">LGraph</a></li><li><a href="LGraphCanvas.html">LGraphCanvas</a></li><li><a href="LGraphGroup_LGraphGroup.html">LGraphGroup</a></li><li><a href="LGraphNode.html">LGraphNode</a></li><li><a href="LLink.html">LLink</a></li><li><a href="LiteGraph.html">LiteGraph</a></li></ul><h3>Global</h3><ul><li><a href="global.html#actionDo">actionDo</a></li><li><a href="global.html#actionHistoryBack">actionHistoryBack</a></li><li><a href="global.html#actionHistoryForward">actionHistoryForward</a></li><li><a href="global.html#actionHistoryLoad">actionHistoryLoad</a></li><li><a href="global.html#add">add</a></li><li><a href="global.html#addConnection">addConnection</a></li><li><a href="global.html#addGlobalInput">addGlobalInput</a></li><li><a href="global.html#addNodeMethod">addNodeMethod</a></li><li><a href="global.html#addOutput">addOutput</a></li><li><a href="global.html#addProperty">addProperty</a></li><li><a href="global.html#addWidget">addWidget</a></li><li><a href="global.html#adjustMouseEvent">adjustMouseEvent</a></li><li><a href="global.html#arrange">arrange</a></li><li><a href="global.html#attachCanvas">attachCanvas</a></li><li><a href="global.html#bindEvents">bindEvents</a></li><li><a href="global.html#bringToFront">bringToFront</a></li><li><a href="global.html#buildNodeClassFromObject">buildNodeClassFromObject</a></li><li><a href="global.html#centerOnNode">centerOnNode</a></li><li><a href="global.html#change">change</a></li><li><a href="global.html#changeInputType">changeInputType</a></li><li><a href="global.html#changeOutputType">changeOutputType</a></li><li><a href="global.html#checkNodeTypes">checkNodeTypes</a></li><li><a href="global.html#clear">clear</a></li><li><a href="global.html#clearRegisteredTypes">clearRegisteredTypes</a></li><li><a href="global.html#clearTriggeredSlot">clearTriggeredSlot</a></li><li><a href="global.html#clearTriggeredSlots">clearTriggeredSlots</a></li><li><a href="global.html#closeSubgraph">closeSubgraph</a></li><li><a href="global.html#collapse">collapse</a></li><li><a href="global.html#computeSize">computeSize</a></li><li><a href="global.html#computeVisibleNodes">computeVisibleNodes</a></li><li><a href="global.html#configApply">configApply</a></li><li><a href="global.html#configure">configure</a></li><li><a href="global.html#connect">connect</a></li><li><a href="global.html#connectByType">connectByType</a></li><li><a href="global.html#convertCanvasToOffset">convertCanvasToOffset</a></li><li><a href="global.html#convertOffsetToCanvas">convertOffsetToCanvas</a></li><li><a href="global.html#createNode">createNode</a></li><li><a href="global.html#deleteSelectedNodes">deleteSelectedNodes</a></li><li><a href="global.html#deselectAllNodes">deselectAllNodes</a></li><li><a href="global.html#deselectNode">deselectNode</a></li><li><a href="global.html#detachCanvas">detachCanvas</a></li><li><a href="global.html#disconnectInput">disconnectInput</a></li><li><a href="global.html#disconnectOutput">disconnectOutput</a></li><li><a href="global.html#doExecute">doExecute</a></li><li><a href="global.html#draw">draw</a></li><li><a href="global.html#drawBackCanvas">drawBackCanvas</a></li><li><a href="global.html#drawConnections">drawConnections</a></li><li><a href="global.html#drawFrontCanvas">drawFrontCanvas</a></li><li><a href="global.html#drawGroups">drawGroups</a></li><li><a href="global.html#drawNode">drawNode</a></li><li><a href="global.html#drawNodeShape">drawNodeShape</a></li><li><a href="global.html#drawNodeWidgets">drawNodeWidgets</a></li><li><a href="global.html#drawSubgraphPanel">drawSubgraphPanel</a></li><li><a href="global.html#enableWebGL">enableWebGL</a></li><li><a href="global.html#executePendingActions">executePendingActions</a></li><li><a href="global.html#fetchFile">fetchFile</a></li><li><a href="global.html#findInputSlot">findInputSlot</a></li><li><a href="global.html#findInputSlotFree">findInputSlotFree</a></li><li><a href="global.html#findNodeByTitle">findNodeByTitle</a></li><li><a href="global.html#findNodesByClass">findNodesByClass</a></li><li><a href="global.html#findNodesByTitle">findNodesByTitle</a></li><li><a href="global.html#findNodesByType">findNodesByType</a></li><li><a href="global.html#findOutputSlot">findOutputSlot</a></li><li><a href="global.html#findOutputSlotFree">findOutputSlotFree</a></li><li><a href="global.html#findSlotByType">findSlotByType</a></li><li><a href="global.html#getAncestors">getAncestors</a></li><li><a href="global.html#getBounding">getBounding</a></li><li><a href="global.html#getCanvasWindow">getCanvasWindow</a></li><li><a href="global.html#getConnectionPos">getConnectionPos</a></li><li><a href="global.html#getCurrentGraph">getCurrentGraph</a></li><li><a href="global.html#getElapsedTime">getElapsedTime</a></li><li><a href="global.html#getFixedTime">getFixedTime</a></li><li><a href="global.html#getGroupOnPos">getGroupOnPos</a></li><li><a href="global.html#getInputData">getInputData</a></li><li><a href="global.html#getInputDataByName">getInputDataByName</a></li><li><a href="global.html#getInputDataType">getInputDataType</a></li><li><a href="global.html#getInputInfo">getInputInfo</a></li><li><a href="global.html#getInputLink">getInputLink</a></li><li><a href="global.html#getInputNode">getInputNode</a></li><li><a href="global.html#getInputOrProperty">getInputOrProperty</a></li><li><a href="global.html#getNodeById">getNodeById</a></li><li><a href="global.html#getNodeOnPos">getNodeOnPos</a></li><li><a href="global.html#getNodeType">getNodeType</a></li><li><a href="global.html#getNodeTypesCategories">getNodeTypesCategories</a></li><li><a href="global.html#getOutputData">getOutputData</a></li><li><a href="global.html#getOutputInfo">getOutputInfo</a></li><li><a href="global.html#getOutputNodes">getOutputNodes</a></li><li><a href="global.html#getPropertyInfo">getPropertyInfo</a></li><li><a href="global.html#getSlotInPosition">getSlotInPosition</a></li><li><a href="global.html#getTime">getTime</a></li><li><a href="global.html#getTitle">getTitle</a></li><li><a href="global.html#getTopGraph">getTopGraph</a></li><li><a href="global.html#isAnyOutputConnected">isAnyOutputConnected</a></li><li><a href="global.html#isInputConnected">isInputConnected</a></li><li><a href="global.html#isLive">isLive</a></li><li><a href="global.html#isOutputConnected">isOutputConnected</a></li><li><a href="global.html#isOverNodeBox">isOverNodeBox</a></li><li><a href="global.html#isOverNodeInput">isOverNodeInput</a></li><li><a href="global.html#isOverNodeOuput">isOverNodeOuput</a></li><li><a href="global.html#isPointInside">isPointInside</a></li><li><a href="global.html#isValidConnection">isValidConnection</a></li><li><a href="global.html#onGraphChanged">onGraphChanged</a></li><li><a href="global.html#onGraphSaved">onGraphSaved</a></li><li><a href="global.html#openSubgraph">openSubgraph</a></li><li><a href="global.html#pin">pin</a></li><li><a href="global.html#processDrop">processDrop</a></li><li><a href="global.html#processKey">processKey</a></li><li><a href="global.html#processMouseMove">processMouseMove</a></li><li><a href="global.html#processMouseUp">processMouseUp</a></li><li><a href="global.html#processMouseWheel">processMouseWheel</a></li><li><a href="global.html#processNodeWidgets">processNodeWidgets</a></li><li><a href="global.html#registerNodeType">registerNodeType</a></li><li><a href="global.html#registerSearchboxExtra">registerSearchboxExtra</a></li><li><a href="global.html#registerSlotType">registerSlotType</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#removeInput">removeInput</a></li><li><a href="global.html#removeLink">removeLink</a></li><li><a href="global.html#removeOutput">removeOutput</a></li><li><a href="global.html#renameInput">renameInput</a></li><li><a href="global.html#renameOutput">renameOutput</a></li><li><a href="global.html#renderInfo">renderInfo</a></li><li><a href="global.html#renderLink">renderLink</a></li><li><a href="global.html#resize">resize</a></li><li><a href="global.html#runStep">runStep</a></li><li><a href="global.html#selectNode">selectNode</a></li><li><a href="global.html#selectNodes">selectNodes</a></li><li><a href="global.html#sendEventToAllNodes">sendEventToAllNodes</a></li><li><a href="global.html#sendToBack">sendToBack</a></li><li><a href="global.html#serialize">serialize</a></li><li><a href="global.html#setCanvas">setCanvas</a></li><li><a href="global.html#setDirty">setDirty</a></li><li><a href="global.html#setGlobalInputData">setGlobalInputData</a></li><li><a href="global.html#setGraph">setGraph</a></li><li><a href="global.html#setOutputData">setOutputData</a></li><li><a href="global.html#setOutputDataType">setOutputDataType</a></li><li><a href="global.html#setProperty">setProperty</a></li><li><a href="global.html#setSize">setSize</a></li><li><a href="global.html#setZoom">setZoom</a></li><li><a href="global.html#start">start</a></li><li><a href="global.html#startRendering">startRendering</a></li><li><a href="global.html#stopexecution">stop execution</a></li><li><a href="global.html#stopRendering">stopRendering</a></li><li><a href="global.html#switchLiveMode">switchLiveMode</a></li><li><a href="global.html#toString">toString</a></li><li><a href="global.html#trigger">trigger</a></li><li><a href="global.html#triggerSlot">triggerSlot</a></li><li><a href="global.html#unbindEvents">unbindEvents</a></li><li><a href="global.html#unregisterNodeType">unregisterNodeType</a></li><li><a href="global.html#updateExecutionOrder">updateExecutionOrder</a></li><li><a href="global.html#wrapFunctionAsNode">wrapFunctionAsNode</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Sun May 19 2024 17:15:02 GMT-0600 (Mountain Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Feb 19 2026 11:26:20 GMT+0800 (香港标准时间)
 </footer>
 
 <script> prettyPrint(); </script>
