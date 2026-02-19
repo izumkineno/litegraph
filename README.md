@@ -1,224 +1,150 @@
+﻿# litegraph.js
 
-# litegraph.js
+一个在浏览器中运行的节点图编辑与执行库，交互体验接近 Blueprint。
+适用于流程编排、可视化逻辑编辑、节点式工具界面等场景。
 
-A library in Javascript to create graphs in the browser similar to Unreal Blueprints. Nodes can be programmed easily and it includes an editor to construct and tests the graphs.
+## 原仓库
 
-It can be integrated easily in any existing web applications and graphs can be run without the need of the editor.
+- 原始仓库地址：`https://github.com/daniel-lewis-ab/litegraph.js`
+- 本仓库基于原项目进行持续维护与扩展。
 
-Try (original) in the [demo site](https://tamats.com/projects/litegraph/editor).
+## 项目特性
 
-![Node Graph](imgs/node_graph_example.png "WebGLStudio")
+- Canvas2D 渲染，支持缩放、平移、大图编辑
+- 内置编辑器（搜索、快捷键、多选、右键菜单）
+- 节点系统可扩展，支持自定义节点与子图
+- 支持 Live 模式与多种内置节点类型
+- 可在浏览器与 Node.js 环境运行（部分节点仅浏览器可用）
+- 提供 TypeScript 类型定义
 
-## Features
-- Renders on Canvas2D (zoom in/out and panning, easy to render complex interfaces, can be used inside a WebGLTexture)
-- Easy to use editor (searchbox, keyboard shortcuts, multiple selection, context menu, ...)
-- Optimized to support hundreds of nodes per graph (on editor but also on execution)
-- Customizable theme (colors, shapes, background)
-- Callbacks to personalize every action/drawing/event of nodes
-- Subgraphs (nodes that contain graphs themselves)
-- Live mode system (hides the graph but calls nodes to render whatever they want, useful to create UIs)
-- Graphs can be executed in NodeJS
-- Highly customizable nodes (color, shape, slots vertical or horizontal, widgets, custom rendering)
-- Easy to integrate in any JS application (one single file, no dependencies)
-- Typescript support
+## 快速开始
 
-## Nodes provided
-Although it is easy to create new node types, LiteGraph comes with some default nodes that could be useful for many cases:
-- Interface (Widgets)
-- Math (trigonometry, math operations)
-- Audio (AudioAPI and MIDI)
-- 3D Graphics (Postprocessing in WebGL)
-- Input (read Gamepad)
+### 1. 安装依赖
 
-## Installation
-
-You can install it using npm 
-```
-git clone https://github.com/daniel-lewis-ab/litegraph.js.git
-cd litegraph.js
-npm i
+```bash
+bun install
 ```
 
-or
+### 2. 构建
 
+```bash
+bun run build
 ```
-npm i @mr_pebble/litegraph
+
+### 3. 启动本地编辑器服务
+
+```bash
+bun run server
 ```
 
-Or downloading the `build/litegraph.js` and `build/resources/css/litegraph.css` files from this repository.
+启动后访问：`http://127.0.0.1:8000/editor/`
 
-## Repository docs and scripts
+## 直接使用构建产物
 
-- API guide: [`docs/guide.md`](docs/guide.md)
-- Generated JSDoc site: [`docs/index.html`](docs/index.html)
-- Project changelog: [`docs/project/CHANGELOG.md`](docs/project/CHANGELOG.md)
-- Project roadmap: [`docs/project/ROADMAP.md`](docs/project/ROADMAP.md)
-- UI/UX design system (ui-ux-pro-max): [`design-system/litegraph/MASTER.md`](design-system/litegraph/MASTER.md)
-- Build/dev scripts: [`scripts/build-vite.mjs`](scripts/build-vite.mjs), [`server/js/server.js`](server/js/server.js)
-- Server dynamic nodes demo (shared for JS/Python/Rust backends): [`server/shared/editor/server_nodes_from_server.html`](server/shared/editor/server_nodes_from_server.html)
-- Server dynamic nodes API contract (v1): `GET /api/v1/editor/server-nodes/manifest`, modules `/api/v1/editor/server-nodes/modules/*`, graphs `/api/v1/editor/server-nodes/graphs/*`
+可直接使用以下文件：
 
-## First project ##
+- `build/litegraph.js`
+- `build/resources/css/litegraph.css`
+
+## 最小示例
 
 ```html
 <html>
 <head>
-	<link rel="stylesheet" type="text/css" href="litegraph.css">
-	<script type="module" src="litegraph.js"></script>
+  <link rel="stylesheet" type="text/css" href="litegraph.css">
+  <script type="module" src="litegraph.js"></script>
 </head>
-<body style='width:100%; height:100%'>
-<canvas id='mycanvas' width='1024' height='720' style='border: 1px solid'></canvas>
-<script>
-var graph = new LGraph();
+<body style="width:100%;height:100%">
+  <canvas id="mycanvas" width="1024" height="720" style="border:1px solid"></canvas>
+  <script>
+    var graph = new LGraph();
+    var canvas = new LGraphCanvas("#mycanvas", graph);
 
-var canvas = new LGraphCanvas("#mycanvas", graph);
+    var nodeConst = LiteGraph.createNode("basic/const");
+    nodeConst.pos = [200, 200];
+    graph.add(nodeConst);
+    nodeConst.setValue(4.5);
 
-var node_const = LiteGraph.createNode("basic/const");
-node_const.pos = [200,200];
-graph.add(node_const);
-node_const.setValue(4.5);
+    var nodeWatch = LiteGraph.createNode("basic/watch");
+    nodeWatch.pos = [700, 200];
+    graph.add(nodeWatch);
 
-var node_watch = LiteGraph.createNode("basic/watch");
-node_watch.pos = [700,200];
-graph.add(node_watch);
-
-node_const.connect(0, node_watch, 0 );
-
-graph.start()
-</script>
+    nodeConst.connect(0, nodeWatch, 0);
+    graph.start();
+  </script>
 </body>
 </html>
 ```
 
-## How to code a new Node type
-
-Here is an example of how to build a node that sums two inputs:
+## 自定义节点示例
 
 ```javascript
-//node constructor class
-function MyAddNode()
-{
-  this.addInput("A","number");
-  this.addInput("B","number");
-  this.addOutput("A+B","number");
-  this.properties = { precision: 1 };
+function MyAddNode() {
+  this.addInput("A", "number");
+  this.addInput("B", "number");
+  this.addOutput("A+B", "number");
 }
 
-//name to show
 MyAddNode.title = "Sum";
 
-//function to call when the node is executed
-MyAddNode.prototype.onExecute = function()
-{
-  var A = this.getInputData(0);
-  if( A === undefined )
-    A = 0;
-  var B = this.getInputData(1);
-  if( B === undefined )
-    B = 0;
-  this.setOutputData( 0, A + B );
-}
+MyAddNode.prototype.onExecute = function () {
+  var A = this.getInputData(0) ?? 0;
+  var B = this.getInputData(1) ?? 0;
+  this.setOutputData(0, A + B);
+};
 
-//register in the system
-LiteGraph.registerNodeType("basic/sum", MyAddNode );
-
+LiteGraph.registerNodeType("basic/sum", MyAddNode);
 ```
 
-or you can wrap an existing function:
+## 服务端动态节点 Demo（JS / Python / Rust）
 
-```js
-function sum(a,b)
-{
-   return a+b;
-}
+统一入口页面：
 
-LiteGraph.wrapFunctionAsNode("math/sum",sum, ["Number","Number"],"Number");
+- `server/shared/editor/server_nodes_from_server.html`
+
+统一 API（v1）：
+
+- `GET /api/v1/editor/server-nodes/manifest`
+- `GET /api/v1/editor/server-nodes/modules/*`
+- `GET /api/v1/editor/server-nodes/graphs/*`
+
+说明：
+
+- `manifest` 使用 `{ data, meta }` 包装
+- `/api/v1/*` 统一返回 JSON 错误包
+- 旧路径 `/api/editor/server-nodes/*` 已移除
+
+详细说明见：
+
+- `server/README.md`
+- `server/js/README.md`
+- `server/python/README.md`
+- `server/rust/README.md`
+
+## 常用命令
+
+```bash
+bun run docs
+bun run build
+bun run test
+bun run lint
+bun run server
 ```
 
-## Server side
+## 文档索引
 
-It also works server-side using NodeJS although some nodes do not work in server (audio, graphics, input, etc).
+- API 指南：`docs/guide.md`
+- JSDoc 页面：`docs/index.html`
+- 变更日志：`docs/project/CHANGELOG.md`
+- 路线图：`docs/project/ROADMAP.md`
+- 设计系统：`design-system/litegraph/MASTER.md`
+- 构建脚本：`scripts/build-vite.mjs`
 
-```js
-import { LiteGraph, LGraph } from "./litegraph.js";
+## 相关项目（原版生态）
 
-var graph = new LGraph();
+- [ComfyUI](https://github.com/comfyanonymous/ComfyUI)
+- [webglstudio.org](http://webglstudio.org)
 
-var node_time = LiteGraph.createNode("basic/time");
-graph.add(node_time);
+## 反馈与许可证
 
-var node_console = LiteGraph.createNode("basic/console");
-node_console.mode = LiteGraph.ALWAYS;
-graph.add(node_console);
-
-node_time.connect( 0, node_console, 1 );
-
-graph.start()
-```
-
-
-## Projects using original litegraph.js
-
-### [comfyUI](https://github.com/comfyanonymous/ComfyUI)
-![screenshot](https://github.com/comfyanonymous/ComfyUI/blob/6efe561c2a7321501b1b27f47039c7616dda1860/comfyui_screenshot.png)
-
-### [webglstudio.org](http://webglstudio.org)
-
-![WebGLStudio](imgs/webglstudio.gif "WebGLStudio")
-
-### [MOI Elephant](http://moiscript.weebly.com/elephant-systegraveme-nodal.html)
-
-![MOI Elephant](imgs/elephant.gif "MOI Elephant")
-
-### Mynodes
-
-![MyNodes](imgs/mynodes.png "MyNodes")
-
-## Utils
------
-
-```
-These all work to some extent right now:
-npm run docs
-npm run build
-npm run test
-npm run lint
-npm run server
-```
-
-I have also run:
-
-`npm audit`
-
-
-## Demo
------
-The demo includes some examples of graphs. In order to try them you can visit [demo site](http://tamats.com/projects/litegraph/editor) or install it on your local computer, to do so you need `git`, `node` and `npm`. Given those dependencies are installed, run the following commands to try it out:
-```sh
-$ git clone https://github.com/daniel-lewis-ab/litegraph.js.git
-$ cd litegraph.js
-$ npm i
-$ npm run server
-Example app listening on port 8000!
-```
-Open your browser and point it to http://localhost:8000/. You can select a demo from the dropdown at the top of the page.
-
-## Feedback
---------
-
-You can write any feedback to daniel.lewis.ab@gmail.com
-
-## Contributors
-
-- Javi (Javengo) is original author
-- atlasan
-- kriffe
-- rappestad
-- InventivetalentDev
-- NateScarlet
-- coderofsalvation
-- ilyabesk
-- gausszhou
-
-
-
+- License：`MIT`

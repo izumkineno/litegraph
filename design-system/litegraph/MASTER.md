@@ -1,72 +1,72 @@
-# Design System Master File
+﻿# 设计系统主文件
 
-> **LOGIC:** When building a specific page, first check `design-system/pages/[page-name].md`.
-> If that file exists, its rules **override** this Master file.
-> If not, strictly follow the rules below.
-
----
-
-**Project:** LiteGraph
-**Generated:** 2026-02-19 11:04:37
-**Category:** Developer Tool / IDE
+> **规则：** 当你要实现某个具体页面时，先检查 `design-system/pages/[page-name].md`。  
+> 如果该文件存在，其规则 **优先于** 本主文件。  
+> 如果不存在，则严格遵循本文件规则。
 
 ---
 
-## Global Rules
+**项目：** LiteGraph  
+**生成时间：** 2026-02-19 11:04:37  
+**类别：** 开发者工具 / IDE
 
-### Color Palette
+---
 
-| Role | Hex | CSS Variable |
-|------|-----|--------------|
-| Primary | `#1E293B` | `--color-primary` |
-| Secondary | `#334155` | `--color-secondary` |
-| CTA/Accent | `#22C55E` | `--color-cta` |
-| Background | `#0F172A` | `--color-background` |
-| Text | `#F8FAFC` | `--color-text` |
+## 全局规则
 
-**Color Notes:** Code dark + run green
+### 色彩方案
 
-### Typography
+| 角色 | Hex | CSS 变量 |
+|------|-----|----------|
+| 主色 | `#1E293B` | `--color-primary` |
+| 次色 | `#334155` | `--color-secondary` |
+| CTA/强调 | `#22C55E` | `--color-cta` |
+| 背景 | `#0F172A` | `--color-background` |
+| 文本 | `#F8FAFC` | `--color-text` |
 
-- **Heading Font:** JetBrains Mono
-- **Body Font:** IBM Plex Sans
-- **Mood:** code, developer, technical, precise, functional, hacker
-- **Google Fonts:** [JetBrains Mono + IBM Plex Sans](https://fonts.google.com/share?selection.family=IBM+Plex+Sans:wght@300;400;500;600;700|JetBrains+Mono:wght@400;500;600;700)
+**配色说明：** 深色代码风 + 运行态绿色强调
 
-**CSS Import:**
+### 字体系统
+
+- **标题字体：** JetBrains Mono
+- **正文字体：** IBM Plex Sans
+- **风格关键词：** 代码感、开发者、技术向、精确、功能导向
+- **Google Fonts：** [JetBrains Mono + IBM Plex Sans](https://fonts.google.com/share?selection.family=IBM+Plex+Sans:wght@300;400;500;600;700|JetBrains+Mono:wght@400;500;600;700)
+
+**CSS 引入：**
 ```css
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 ```
 
-### Spacing Variables
+### 间距变量
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--space-xs` | `4px` / `0.25rem` | Tight gaps |
-| `--space-sm` | `8px` / `0.5rem` | Icon gaps, inline spacing |
-| `--space-md` | `16px` / `1rem` | Standard padding |
-| `--space-lg` | `24px` / `1.5rem` | Section padding |
-| `--space-xl` | `32px` / `2rem` | Large gaps |
-| `--space-2xl` | `48px` / `3rem` | Section margins |
-| `--space-3xl` | `64px` / `4rem` | Hero padding |
+| Token | 数值 | 用途 |
+|-------|------|------|
+| `--space-xs` | `4px` / `0.25rem` | 极小间隙 |
+| `--space-sm` | `8px` / `0.5rem` | 图标间距、行内间距 |
+| `--space-md` | `16px` / `1rem` | 标准内边距 |
+| `--space-lg` | `24px` / `1.5rem` | 区块内边距 |
+| `--space-xl` | `32px` / `2rem` | 大间距 |
+| `--space-2xl` | `48px` / `3rem` | 区块外边距 |
+| `--space-3xl` | `64px` / `4rem` | Hero 区内边距 |
 
-### Shadow Depths
+### 阴影层级
 
-| Level | Value | Usage |
-|-------|-------|-------|
-| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` | Subtle lift |
-| `--shadow-md` | `0 4px 6px rgba(0,0,0,0.1)` | Cards, buttons |
-| `--shadow-lg` | `0 10px 15px rgba(0,0,0,0.1)` | Modals, dropdowns |
-| `--shadow-xl` | `0 20px 25px rgba(0,0,0,0.15)` | Hero images, featured cards |
+| 层级 | 数值 | 用途 |
+|------|------|------|
+| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` | 轻微悬浮 |
+| `--shadow-md` | `0 4px 6px rgba(0,0,0,0.1)` | 卡片、按钮 |
+| `--shadow-lg` | `0 10px 15px rgba(0,0,0,0.1)` | 弹窗、下拉菜单 |
+| `--shadow-xl` | `0 20px 25px rgba(0,0,0,0.15)` | Hero 图片、重点卡片 |
 
 ---
 
-## Component Specs
+## 组件规范
 
-### Buttons
+### 按钮
 
 ```css
-/* Primary Button */
+/* 主按钮 */
 .btn-primary {
   background: #22C55E;
   color: white;
@@ -82,7 +82,7 @@
   transform: translateY(-1px);
 }
 
-/* Secondary Button */
+/* 次按钮 */
 .btn-secondary {
   background: transparent;
   color: #1E293B;
@@ -95,7 +95,7 @@
 }
 ```
 
-### Cards
+### 卡片
 
 ```css
 .card {
@@ -113,7 +113,7 @@
 }
 ```
 
-### Inputs
+### 输入框
 
 ```css
 .input {
@@ -131,7 +131,7 @@
 }
 ```
 
-### Modals
+### 弹窗
 
 ```css
 .modal-overlay {
@@ -151,53 +151,53 @@
 
 ---
 
-## Style Guidelines
+## 风格指南
 
-**Style:** Vibrant & Block-based
+**视觉风格：** 鲜明、块面化
 
-**Keywords:** Bold, energetic, playful, block layout, geometric shapes, high color contrast, duotone, modern, energetic
+**关键词：** 大胆、活力、趣味、块状布局、几何形态、高对比、双色调、现代
 
-**Best For:** Startups, creative agencies, gaming, social media, youth-focused, entertainment, consumer
+**适用场景：** 创业产品、创意机构、游戏、社交媒体、年轻用户产品、娱乐与消费类
 
-**Key Effects:** Large sections (48px+ gaps), animated patterns, bold hover (color shift), scroll-snap, large type (32px+), 200-300ms
+**关键效果：** 大区块间距（48px+）、动态背景图案、明显 hover（颜色变化）、scroll-snap、大字号（32px+）、200-300ms 过渡
 
-### Page Pattern
+### 页面模式
 
-**Pattern Name:** FAQ/Documentation Landing
+**模式名：** FAQ / 文档落地页
 
-- **Conversion Strategy:** Reduce support tickets. Track search analytics. Show related articles. Contact escalation path.
-- **CTA Placement:** Search bar prominent + Contact CTA for unresolved questions
-- **Section Order:** 1. Hero with search bar, 2. Popular categories, 3. FAQ accordion, 4. Contact/support CTA
-
----
-
-## Anti-Patterns (Do NOT Use)
-
-- ❌ Flat design without depth
-- ❌ Text-heavy pages
-
-### Additional Forbidden Patterns
-
-- ❌ **Emojis as icons** — Use SVG icons (Heroicons, Lucide, Simple Icons)
-- ❌ **Missing cursor:pointer** — All clickable elements must have cursor:pointer
-- ❌ **Layout-shifting hovers** — Avoid scale transforms that shift layout
-- ❌ **Low contrast text** — Maintain 4.5:1 minimum contrast ratio
-- ❌ **Instant state changes** — Always use transitions (150-300ms)
-- ❌ **Invisible focus states** — Focus states must be visible for a11y
+- **转化策略：** 降低支持工单；跟踪搜索行为；展示相关文章；提供升级联系路径。
+- **CTA 布局：** 强化搜索框 + 对“未解决问题”的联系入口。
+- **区块顺序：** 1. 带搜索框的 Hero，2. 热门分类，3. FAQ 折叠列表，4. 联系/支持 CTA。
 
 ---
 
-## Pre-Delivery Checklist
+## 反模式（禁止）
 
-Before delivering any UI code, verify:
+- 扁平但无层次的视觉设计
+- 文本堆叠过重的页面
 
-- [ ] No emojis used as icons (use SVG instead)
-- [ ] All icons from consistent icon set (Heroicons/Lucide)
-- [ ] `cursor-pointer` on all clickable elements
-- [ ] Hover states with smooth transitions (150-300ms)
-- [ ] Light mode: text contrast 4.5:1 minimum
-- [ ] Focus states visible for keyboard navigation
-- [ ] `prefers-reduced-motion` respected
-- [ ] Responsive: 375px, 768px, 1024px, 1440px
-- [ ] No content hidden behind fixed navbars
-- [ ] No horizontal scroll on mobile
+### 额外禁用项
+
+- **用 Emoji 当图标**：请使用 SVG 图标（Heroicons、Lucide、Simple Icons）
+- **缺少 `cursor:pointer`**：所有可点击元素必须设置 `cursor:pointer`
+- **导致布局抖动的 hover**：避免使用会影响布局的缩放变换
+- **低对比文本**：文本对比度至少 4.5:1
+- **瞬时状态变化**：统一使用 150-300ms 过渡
+- **不可见焦点态**：必须提供可见焦点样式，保证可访问性
+
+---
+
+## 交付前检查清单
+
+交付 UI 代码前，请确认：
+
+- [ ] 图标不使用 Emoji（改用 SVG）
+- [ ] 图标来自同一套图标系统（Heroicons/Lucide）
+- [ ] 所有可点击元素都设置 `cursor-pointer`
+- [ ] Hover 具备平滑过渡（150-300ms）
+- [ ] 浅色模式文本对比度至少 4.5:1
+- [ ] 焦点态对键盘导航可见
+- [ ] 遵循 `prefers-reduced-motion`
+- [ ] 响应式断点覆盖：375px、768px、1024px、1440px
+- [ ] 固定导航不遮挡内容
+- [ ] 移动端不出现横向滚动

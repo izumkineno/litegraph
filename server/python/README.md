@@ -1,45 +1,45 @@
-# Python Server
+﻿# Python 服务端
 
-- Entry: [`server.py`](server.py)
-- Runtime: Python 3.10+
+- 入口：[`server.py`](server.py)
+- 运行环境：Python 3.10+
 
-Run:
+运行：
 
 ```bash
 cd server/python
 python server.py
 ```
 
-Custom port:
+自定义端口：
 
-PowerShell:
+PowerShell：
 
 ```powershell
 $env:PORT=8001
 python server.py
 ```
 
-POSIX:
+POSIX：
 
 ```bash
 cd server/python
 PORT=8001 python server.py
 ```
 
-Open:
+访问：
 
-- Editor home: `http://127.0.0.1:8000/editor/`
-- Server nodes demo: `http://127.0.0.1:8000/editor/server_nodes_from_server.html`
+- 编辑器首页：`http://127.0.0.1:8000/editor/`
+- 服务端节点示例：`http://127.0.0.1:8000/editor/server_nodes_from_server.html`
 
-## Server Nodes API (v1)
+## Server Nodes API（v1）
 
-Provided endpoints:
+提供以下接口：
 
-1. Manifest API: `GET /api/v1/editor/server-nodes/manifest`
-2. Node modules static route: `/api/v1/editor/server-nodes/modules/*`
-3. Graph JSON static route: `/api/v1/editor/server-nodes/graphs/*`
+1. Manifest 接口：`GET /api/v1/editor/server-nodes/manifest`
+2. 节点模块静态路由：`/api/v1/editor/server-nodes/modules/*`
+3. 图 JSON 静态路由：`/api/v1/editor/server-nodes/graphs/*`
 
-### Manifest response envelope
+### Manifest 响应包
 
 ```json
 {
@@ -59,7 +59,7 @@ Provided endpoints:
 }
 ```
 
-### API error envelope
+### API 错误包
 
 ```json
 {
@@ -78,12 +78,12 @@ Provided endpoints:
 }
 ```
 
-Legacy path `/api/editor/server-nodes/*` has been removed.
+旧路径 `/api/editor/server-nodes/*` 已移除。
 
-Files used by the demo:
+示例相关文件：
 
-- Manifest response and static routes: [`server.py`](server.py)
-- Server node module: [`examples/nodes/server-demo-nodes.js`](examples/nodes/server-demo-nodes.js)
-- Preset graph JSON: [`examples/graphs/server-demo.json`](examples/graphs/server-demo.json)
-- Shared demo page: [`../shared/editor/server_nodes_from_server.html`](../shared/editor/server_nodes_from_server.html)
-- Shared frontend loader: [`../shared/editor/js/server_nodes_from_server.js`](../shared/editor/js/server_nodes_from_server.js)
+- Manifest 与静态路由实现：[`server.py`](server.py)
+- 服务端节点模块：[`examples/nodes/server-demo-nodes.js`](examples/nodes/server-demo-nodes.js)
+- 预置图 JSON：[`examples/graphs/server-demo.json`](examples/graphs/server-demo.json)
+- 共享示例页面：[`../shared/editor/server_nodes_from_server.html`](../shared/editor/server_nodes_from_server.html)
+- 共享前端加载器：[`../shared/editor/js/server_nodes_from_server.js`](../shared/editor/js/server_nodes_from_server.js)

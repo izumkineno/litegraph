@@ -1,9 +1,9 @@
-# JS Server
+﻿# JS 服务端
 
-- Entry: [`server.js`](server.js)
-- Package config: [`package.json`](package.json)
+- 入口：[`server.js`](server.js)
+- 包配置：[`package.json`](package.json)
 
-Run:
+运行：
 
 ```bash
 cd server/js
@@ -11,20 +11,20 @@ npm install
 npm start
 ```
 
-Open:
+访问：
 
-- Editor home: `http://127.0.0.1:8000/editor/`
-- Server nodes demo: `http://127.0.0.1:8000/editor/server_nodes_from_server.html`
+- 编辑器首页：`http://127.0.0.1:8000/editor/`
+- 服务端节点示例：`http://127.0.0.1:8000/editor/server_nodes_from_server.html`
 
-## Server Nodes API (v1)
+## Server Nodes API（v1）
 
-The server now includes a complete end-to-end example for loading custom nodes in the editor:
+该服务端包含一个完整闭环示例：编辑器从服务端加载自定义节点。
 
-1. Manifest API: `GET /api/v1/editor/server-nodes/manifest`
-2. Node modules static route: `/api/v1/editor/server-nodes/modules/*`
-3. Graph JSON static route: `/api/v1/editor/server-nodes/graphs/*`
+1. Manifest 接口：`GET /api/v1/editor/server-nodes/manifest`
+2. 节点模块静态路由：`/api/v1/editor/server-nodes/modules/*`
+3. 图 JSON 静态路由：`/api/v1/editor/server-nodes/graphs/*`
 
-### Manifest response envelope
+### Manifest 响应包
 
 ```json
 {
@@ -44,7 +44,7 @@ The server now includes a complete end-to-end example for loading custom nodes i
 }
 ```
 
-### API error envelope
+### API 错误包
 
 ```json
 {
@@ -63,12 +63,12 @@ The server now includes a complete end-to-end example for loading custom nodes i
 }
 ```
 
-Legacy path `/api/editor/server-nodes/*` has been removed.
+旧路径 `/api/editor/server-nodes/*` 已移除。
 
-Files used by the demo:
+示例相关文件：
 
-- Manifest response is generated in [`server.js`](server.js)
-- Server node module: [`examples/nodes/server-demo-nodes.js`](examples/nodes/server-demo-nodes.js)
-- Preset graph JSON: [`examples/graphs/server-demo.json`](examples/graphs/server-demo.json)
-- Demo page: [`../shared/editor/server_nodes_from_server.html`](../shared/editor/server_nodes_from_server.html)
-- Frontend loader: [`../shared/editor/js/server_nodes_from_server.js`](../shared/editor/js/server_nodes_from_server.js)
+- Manifest 响应生成位置：[`server.js`](server.js)
+- 服务端节点模块：[`examples/nodes/server-demo-nodes.js`](examples/nodes/server-demo-nodes.js)
+- 预置图 JSON：[`examples/graphs/server-demo.json`](examples/graphs/server-demo.json)
+- 示例页面：[`../shared/editor/server_nodes_from_server.html`](../shared/editor/server_nodes_from_server.html)
+- 前端加载器：[`../shared/editor/js/server_nodes_from_server.js`](../shared/editor/js/server_nodes_from_server.js)

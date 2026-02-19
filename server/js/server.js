@@ -230,7 +230,6 @@ app.use(/^\/api\/v1(?:\/.*)?$/, (req, res) => {
 app.use("/css", express.static(path.join(repoRoot, "css")));
 app.use("/src", express.static(path.join(repoRoot, "src")));
 app.use("/build", express.static(path.join(repoRoot, "build")));
-app.use("/external", express.static(path.join(repoRoot, "external")));
 app.use("/editor", express.static(path.join(repoRoot, "editor")));
 app.use("/", express.static(path.join(repoRoot, "editor")));
 

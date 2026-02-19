@@ -357,7 +357,6 @@ async fn main() {
         .nest_service("/css", ServeDir::new(root.join("css")))
         .nest_service("/src", ServeDir::new(root.join("src")))
         .nest_service("/build", ServeDir::new(root.join("build")))
-        .nest_service("/external", ServeDir::new(root.join("external")))
         .nest_service("/editor", ServeDir::new(root.join("editor")))
         .fallback_service(ServeDir::new(root.join("editor")).append_index_html_on_directories(true))
         .with_state(app_state);
