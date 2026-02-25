@@ -126,11 +126,11 @@ LiteGraph.registerNodeType("basic/sum", MyAddNode);
 - TODO/BUG 清理：
   - `src/`、`editor/`、`server/`、`test/` 范围内历史 `TODO/BUG/FIXME/XXX` 注释已完成收口，详情见 `TODO.md`。
 - 覆盖率：
-  - 当前 Hard Scope 覆盖率基线（2026-02-19）：
-    - `lines: 14.81%`
-    - `statements: 14.80%`
-    - `branches: 11.10%`
-    - `functions: 14.56%`
+  - 当前 Hard Scope 覆盖率基线（2026-02-25）：
+    - `lines: 20.48%`
+    - `statements: 20.50%`
+    - `branches: 15.75%`
+    - `functions: 17.69%`
   - 已建立分阶段门槛校验：`phase1 -> phase4`（最终目标 `90/90/80/85`）。
   - 平台强耦合节点（WebAudio/WebMIDI/WebGL）从 Hard Scope 排除，改为 Soft Scope 冒烟与趋势统计。
 - Lint 基线：

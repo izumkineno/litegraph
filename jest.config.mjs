@@ -10,6 +10,7 @@ const hardScopeExcludes = [
 
 export default {
     testEnvironment: "node",
+    workerThreads: true,
     collectCoverageFrom: ["src/**/*.js", ...hardScopeExcludes],
     coveragePathIgnorePatterns: [
         "/node_modules/",

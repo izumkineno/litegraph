@@ -9,6 +9,7 @@ const softScopeFiles = [
 
 export default {
     testEnvironment: "node",
+    workerThreads: true,
     collectCoverageFrom: softScopeFiles,
     coveragePathIgnorePatterns: ["/node_modules/"],
     coverageDirectory: "coverage/soft",
