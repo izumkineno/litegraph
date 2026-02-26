@@ -28,7 +28,7 @@ describe("source-level regressions", () => {
     });
 
     test("contextmenu trigger stores origin in litegraphTarget instead of overriding target", () => {
-        const source = readFileSync(path.join(projectRoot, "src/contextmenu.js"), "utf8");
+        const source = readFileSync(path.join(projectRoot, "src/contextmenu/modules/statics.js"), "utf8");
         expect(source).toContain("Object.defineProperty(evt, \"litegraphTarget\"");
         expect(source).not.toContain("Object.defineProperty(evt, 'target'");
     });
