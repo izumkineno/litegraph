@@ -18,7 +18,10 @@ describe("source-level regressions", () => {
     });
 
     test("lgraphcanvas search box uses modern key and URI encoding APIs", () => {
-        const source = readFileSync(path.join(projectRoot, "src/lgraphcanvas.js"), "utf8");
+        const source = readFileSync(
+            path.join(projectRoot, "src/lgraphcanvas/modules/ui-dialogs-panels-search.js"),
+            "utf8",
+        );
         expect(source).toContain("e.key === \"ArrowUp\"");
         expect(source).toContain("encodeURIComponent(type)");
         expect(source).toContain("decodeURIComponent(this.dataset[\"type\"])");
