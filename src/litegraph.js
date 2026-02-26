@@ -1,5 +1,5 @@
 import { LLink } from "./llink.js";
-import { LGraph } from "./lgraph.js";
+import { LGraph, setupLGraphDelegates } from "./lgraph.js";
 import { LGraphNode, setupLGraphNodeDelegates } from "./lgraphnode.js";
 import { LGraphGroup } from "./lgraphgroup.js";
 import { LGraphCanvas } from "./lgraphcanvas.js";
@@ -21,6 +21,7 @@ export var LiteGraph = new class {
         // from OG LiteGraph, just bringing it back for compatibility
         this.LLink = LLink;
         this.LGraph = LGraph;
+        setupLGraphDelegates(this);
         this.LGraphNode = LGraphNode;
         setupLGraphNodeDelegates(this);
         this.LGraphGroup = LGraphGroup;
