@@ -1,6 +1,6 @@
 
-import { LiteGraph } from "../../src/litegraph.js";
-import { Editor } from "../../src/litegraph-editor.js";
+import { LiteGraph } from "../../build/litegraph.core.js";
+import { Editor } from "./litegraph-editor.js";
 
 export var gl = null; // webgl_canvas
 
@@ -11,6 +11,7 @@ if (typeof(window)=="object") window.LiteGraph = LiteGraph;
 LiteGraph.info?.("LiteGraph included");
 
 var webgl_canvas = null;
+let webglNodesPromise = null;
 
 LiteGraph.node_images_path = "../nodes_data/";
 
@@ -133,23 +134,20 @@ function enableWebGL() {
 		return;
 	}
 
-	let libs = [
+	const libs = [
 		"./libs/gl-matrix-min.js",
 		"./libs/litegl.js",
 	];
-	  
-	async function fetchJS(scriptPath) {
-		if (libs.length === 0) {
-		 	return on_ready();
-		}
-	  	try {
-		 	await import(scriptPath);
-		  	console.log?.(`${scriptPath} loaded successfully`);
-		} catch (error) {
-		  	console.error?.(`Error loading ${scriptPath}: ${error}`);
-		}
-	}
-	libs.forEach(lib => fetchJS(lib));
+
+	Promise.all(
+		libs.map(async (scriptPath) => {
+			await import(scriptPath);
+			console.log?.(`${scriptPath} loaded successfully`);
+		}),
+	).then(on_ready)
+		.catch((error) => {
+			console.error?.(`Error loading webgl libs: ${error}`);
+		});
 
 	const on_ready = () => {
 		console.log?.(this.src);
@@ -184,21 +182,25 @@ function enableWebGL() {
 			LiteGraph.warn?.("gl doesn't exist");
 			return;
 		}
-		libs = [
-			"../src/nodes/gltextures.js",
-			"../src/nodes/glfx.js",
-			"../src/nodes/glshaders.js",
-			"../src/nodes/geometry.js"
-		];
-		libs.forEach(lib => fetchJS(lib));
 
-		editor.graph.onBeforeStep = () => {
-			gl.clearColor(0,0,0,0);
-			gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
-			gl.viewport(0,0,gl.canvas.width, gl.canvas.height );
-		}
+		webglNodesPromise ??= import("../../build/litegraph.nodes.webgl.js")
+			.then(() => {
+				console.log?.("webgl nodes loaded successfully");
+			})
+			.catch((error) => {
+				console.error?.(`Error loading webgl nodes: ${error}`);
+				throw error;
+			});
 
-		console.log?.("webgl ready");
+		webglNodesPromise.then(() => {
+			editor.graph.onBeforeStep = () => {
+				gl.clearColor(0,0,0,0);
+				gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+				gl.viewport(0,0,gl.canvas.width, gl.canvas.height );
+			}
+
+			console.log?.("webgl ready");
+		});
 	}
 }
 

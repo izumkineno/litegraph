@@ -9,31 +9,42 @@ const outDir = path.resolve(projectRoot, "build");
 
 const bundles = [
     {
-        entry: "src/entries/litegraph.full.js",
-        fileBase: "litegraph",
-    },
-    {
-        entry: "src/entries/litegraph.mini.js",
-        fileBase: "litegraph.mini",
-    },
-    {
         entry: "src/entries/litegraph.core.js",
         fileBase: "litegraph.core",
+    },
+    {
+        entry: "src/entries/litegraph.nodes.base.js",
+        fileBase: "litegraph.nodes.base",
+        external: [
+            "../litegraph.js",
+        ],
+    },
+    {
+        entry: "src/entries/litegraph.nodes.feature.js",
+        fileBase: "litegraph.nodes.feature",
+        external: [
+            "../litegraph.js",
+        ],
+    },
+    {
+        entry: "src/entries/litegraph.nodes.webgl.js",
+        fileBase: "litegraph.nodes.webgl",
+        external: [
+            "../litegraph.js",
+            "../../editor/js/code.js",
+            "../../editor/js/libs/litegl.js",
+        ],
     },
 ];
 
 const resourcesToCopy = [
     {
-        from: "src/css",
-        to: "resources/css",
-    },
-    {
-        from: "editor/imgs",
-        to: "resources/editor/imgs",
+        from: "src/css/litegraph.css",
+        to: "litegraph.css",
     },
 ];
 
-async function buildBundle({ entry, fileBase }) {
+async function buildBundle({ entry, fileBase, external = [] }) {
     await build({
         configFile: false,
         root: projectRoot,
@@ -49,6 +60,7 @@ async function buildBundle({ entry, fileBase }) {
                 fileName: () => `${fileBase}.js`,
             },
             rollupOptions: {
+                external,
                 output: {
                     exports: "named",
                     hoistTransitiveImports: false,
@@ -56,6 +68,15 @@ async function buildBundle({ entry, fileBase }) {
             },
         },
     });
+}
+
+async function rewriteBuiltImports(relativeFilePath, replacements) {
+    const targetPath = path.resolve(outDir, relativeFilePath);
+    let source = await readFile(targetPath, "utf8");
+    for (const [from, to] of replacements) {
+        source = source.split(from).join(to);
+    }
+    await writeFile(targetPath, source, "utf8");
 }
 
 async function copyBuildResources() {
@@ -105,4 +126,20 @@ for (const bundle of bundles) {
 }
 
 await minifyBuiltJsFiles(outDir);
+await rewriteBuiltImports("litegraph.nodes.base.js", [
+    ["\"../litegraph.js\"", "\"./litegraph.core.js\""],
+    ["'../litegraph.js'", "'./litegraph.core.js'"],
+]);
+await rewriteBuiltImports("litegraph.nodes.feature.js", [
+    ["\"../litegraph.js\"", "\"./litegraph.core.js\""],
+    ["'../litegraph.js'", "'./litegraph.core.js'"],
+]);
+await rewriteBuiltImports("litegraph.nodes.webgl.js", [
+    ["\"../litegraph.js\"", "\"./litegraph.core.js\""],
+    ["\"../../editor/js/code.js\"", "\"../editor/js/code.js\""],
+    ["\"../../editor/js/libs/litegl.js\"", "\"../editor/js/libs/litegl.js\""],
+    ["'../litegraph.js'", "'./litegraph.core.js'"],
+    ["'../../editor/js/code.js'", "'../editor/js/code.js'"],
+    ["'../../editor/js/libs/litegl.js'", "'../editor/js/libs/litegl.js'"],
+]);
 await copyBuildResources();

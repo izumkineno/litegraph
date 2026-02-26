@@ -126,8 +126,13 @@ LiteGraph.registerNodeType("basic/sum", MyAddNode);
 - TODO/BUG 清理：
   - `src/`、`editor/`、`server/`、`test/` 范围内历史 `TODO/BUG/FIXME/XXX` 注释已完成收口，详情见 `TODO.md`。
 - 覆盖率：
-  - 当前覆盖率已较旧基线提升（`lines` 从 `4.49%` 提升到 `10.11%`），但仍低于目标线。
-  - 下一步建议优先为 `lgraphcanvas` 交互逻辑做可测试抽象，继续提升 `branches` 与 `lines`。
+  - 当前 Hard Scope 覆盖率基线（2026-02-25）：
+    - `lines: 20.48%`
+    - `statements: 20.50%`
+    - `branches: 15.75%`
+    - `functions: 17.69%`
+  - 已建立分阶段门槛校验：`phase1 -> phase4`（最终目标 `90/90/80/85`）。
+  - 平台强耦合节点（WebAudio/WebMIDI/WebGL）从 Hard Scope 排除，改为 Soft Scope 冒烟与趋势统计。
 - Lint 基线：
   - 已补齐 `eslint` 配置缺失依赖 `@eslint/js`。
   - 全仓仍存在历史 lint 报错，建议作为独立迭代清理，避免与功能改动耦合。
@@ -138,9 +143,21 @@ LiteGraph.registerNodeType("basic/sum", MyAddNode);
 bun run docs
 bun run build
 bun run test
+node --experimental-vm-modules node_modules/jest-cli/bin/jest.js --coverage --runInBand
+npm run test:coverage
+npm run test:coverage:ci
+npm run test:coverage:soft
 bun run lint
 bun run server
 ```
+
+覆盖率阶段说明：
+
+- 默认执行 `phase1` 校验：
+  - `npm run test:coverage:ci`
+- 切换阶段可设置环境变量 `COVERAGE_PHASE`：
+  - PowerShell: `$env:COVERAGE_PHASE=2; npm run test:coverage:ci`
+  - Bash: `COVERAGE_PHASE=2 npm run test:coverage:ci`
 
 ## 文档索引
 

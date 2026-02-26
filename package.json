@@ -2,7 +2,13 @@
     "name": "@mr_pebble/litegraph",
     "version": "0.10.2",
     "description": "A flow graph node editor on the web.",
-    "main": "build/litegraph.js",
+    "main": "build/litegraph.core.js",
+    "exports": {
+        ".": "./build/litegraph.core.js",
+        "./nodes/base": "./build/litegraph.nodes.base.js",
+        "./nodes/feature": "./build/litegraph.nodes.feature.js",
+        "./nodes/webgl": "./build/litegraph.nodes.webgl.js"
+    },
     "type": "module",
     "types": "src/index.d.ts",
     "private": false,
@@ -11,6 +17,9 @@
         "docs": "jsdoc -c ./docs/.jsdoc.config -d ./docs -r --verbose --debug",
         "server": "nodemon server/js/server.js",
         "test": "node --experimental-vm-modules node_modules/jest-cli/bin/jest.js",
+        "test:coverage": "node --experimental-vm-modules node_modules/jest-cli/bin/jest.js --coverage --runInBand",
+        "test:coverage:ci": "npm run test:coverage && node scripts/check-coverage.mjs",
+        "test:coverage:soft": "node --experimental-vm-modules node_modules/jest-cli/bin/jest.js --coverage --runInBand --runTestsByPath test/platform/audio.smoke.test.js test/platform/midi.smoke.test.js test/platform/gl.smoke.test.js --config=jest.soft.config.mjs",
         "lint": "npx eslint src",
         "lint:fix": "npx eslint --fix src"
     },

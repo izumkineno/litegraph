@@ -1,5 +1,5 @@
 
-import { LiteGraph } from "../../src/litegraph.js";
+import { LiteGraph } from "../../build/litegraph.core.js";
 
 function demo()
 {
