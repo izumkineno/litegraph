@@ -1,6 +1,6 @@
 import { LLink } from "./llink.js";
 import { LGraph } from "./lgraph.js";
-import { LGraphNode } from "./lgraphnode.js";
+import { LGraphNode, setupLGraphNodeDelegates } from "./lgraphnode.js";
 import { LGraphGroup } from "./lgraphgroup.js";
 import { LGraphCanvas } from "./lgraphcanvas.js";
 import { DragAndScale } from "./dragandscale.js";
@@ -22,6 +22,7 @@ export var LiteGraph = new class {
         this.LLink = LLink;
         this.LGraph = LGraph;
         this.LGraphNode = LGraphNode;
+        setupLGraphNodeDelegates(this);
         this.LGraphGroup = LGraphGroup;
         this.LGraphCanvas = LGraphCanvas;
         this.DragAndScale = DragAndScale;
