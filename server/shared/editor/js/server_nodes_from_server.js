@@ -1,5 +1,5 @@
-import { LiteGraph } from "../../../src/litegraph.js";
-import { Editor } from "../../../src/litegraph-editor.js";
+import { LiteGraph } from "../../../build/litegraph.core.js";
+import { Editor } from "../../../editor/js/litegraph-editor.js";
 
 const API_VERSION = "v1";
 const MANIFEST_URL = `/api/${API_VERSION}/editor/server-nodes/manifest`;
