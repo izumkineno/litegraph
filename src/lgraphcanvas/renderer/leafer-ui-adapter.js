@@ -5,7 +5,7 @@ import { Canvas2DSurface, LeaferSurface } from "./surfaces.js";
  * @typedef {{
  *  mode?: "hybrid-back" | "full-leafer",
  *  leaferRuntime?: any,
- *  nodeRenderMode?: "legacy-ctx" | "uiapi-experimental" | "uiapi-parity",
+ *  nodeRenderMode?: "legacy-ctx" | "uiapi-parity" | "uiapi-components",
  *  nodeRenderLogs?: boolean,
  *  enableLogs?: boolean,
  *  logPrefix?: string

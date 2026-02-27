@@ -56,6 +56,46 @@ export interface IRenderEngineAdapter {
     }): void;
 }
 
+export type RenderStyleProfile = "legacy" | "leafer-classic-v1" | "leafer-pragmatic-v1";
+export type RenderStyleEngine = "legacy" | "leafer-components";
+
+export interface RenderStyleTokens {
+    radius: number;
+    borderWidth: number;
+    titleFontSize: number;
+    bodyFontSize: number;
+    smallFontSize: number;
+    titleTextColor: string;
+    titleBg: string;
+    bodyBg: string;
+    bodyBorder: string;
+    slotInputColor: string;
+    slotOutputColor: string;
+    tooltipBg: string;
+    tooltipBorder: string;
+    tooltipText: string;
+    widgetBg: string;
+    widgetBorder: string;
+    widgetText: string;
+    widgetSecondaryText: string;
+    widgetAccent: string;
+    widgetAccentAlt: string;
+    widgetDanger: string;
+    widgetWarning: string;
+    widgetSuccess: string;
+}
+
+export interface LeaferNodeComponent {
+    (env: Record<string, any>): void;
+}
+
+export interface LeaferWidgetComponent {
+    (env: Record<string, any>): {
+        nextY?: number;
+        legacyDraw?: (ctx: IRenderContext2DCompat, node: LGraphNode) => void;
+    } | void;
+}
+
 /** https://github.com/jagenjo/litegraph.js/tree/master/guides#node-slots */
 export interface INodeSlot {
     name: string;
@@ -1154,7 +1194,7 @@ export declare class Canvas2DRendererAdapter implements IRenderEngineAdapter {
 export interface LeaferUIRendererAdapterOptions {
     mode?: "hybrid-back" | "full-leafer";
     leaferRuntime?: any;
-    nodeRenderMode?: "legacy-ctx" | "uiapi-experimental" | "uiapi-parity";
+    nodeRenderMode?: "legacy-ctx" | "uiapi-parity" | "uiapi-components";
     nodeRenderLogs?: boolean;
     enableLogs?: boolean;
     logPrefix?: string;
@@ -1246,6 +1286,8 @@ export declare class LGraphCanvas {
             free_resize?: boolean;
             skip_events?: boolean;
             viewport?: Vector4 | null;
+            renderStyleProfile?: RenderStyleProfile;
+            renderStyleEngine?: RenderStyleEngine;
             rendererAdapter?:
                 | IRenderEngineAdapter
                 | (new () => IRenderEngineAdapter)
@@ -1371,6 +1413,8 @@ export declare class LGraphCanvas {
     render_shadows: boolean;
     render_title_colored: boolean;
     rendererAdapter: IRenderEngineAdapter | null;
+    renderStyleProfile: RenderStyleProfile;
+    renderStyleEngine: RenderStyleEngine;
     round_radius: number;
     selected_group: null | LGraphGroup;
     selected_group_resizing: boolean;

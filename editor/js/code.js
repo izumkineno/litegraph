@@ -110,6 +110,124 @@ function addDemo( name, url ) {
 	select.appendChild( option );
 }
 
+function ensureWidgetComponentsDemoNodeType() {
+	if (LiteGraph.registered_node_types["features/widget_components_demo"]) {
+		return;
+	}
+
+	function WidgetComponentsDemoNode() {
+		this.addInput("in", "number");
+		this.addOutput("out", "number");
+		this.properties = {
+			value: 0.5,
+		};
+
+		var that = this;
+		this.addWidget("slider", "Amount", 0.5, function(v) {
+			that.properties.value = v;
+		}, { min: 0, max: 1, precision: 3 });
+		this.addWidget("number", "Step", 0.1, function(v) {
+			that.properties.value = Number(v);
+		}, { min: 0, max: 1, step: 0.1, precision: 2 });
+		this.addWidget("combo", "Mode", "mix", function() {}, { values: ["mix", "add", "mul"] });
+		this.addWidget("text", "Label", "custom draw", function() {}, { multiline: false });
+		this.addWidget("toggle", "Enabled", true, function(v) {
+			that.properties.enabled = v;
+		}, { on: "on", off: "off" });
+		this.addWidget("button", "Pulse", null, function() {
+			that.boxcolor = "#6AA";
+			setTimeout(function() { that.boxcolor = "#446"; }, 120);
+		}, {});
+
+		var customWidget = this.addWidget("custom", "Preview", null, null, {});
+		customWidget.draw = function(ctx, node, widget_width, y, H) {
+			var ratio = Number(node.properties.value || 0);
+			if (ratio < 0) ratio = 0;
+			if (ratio > 1) ratio = 1;
+			ctx.save();
+			ctx.fillStyle = "#1E293B";
+			ctx.fillRect(15, y, widget_width - 30, H);
+			ctx.fillStyle = "#22D3EE";
+			ctx.fillRect(15, y, (widget_width - 30) * ratio, H);
+			ctx.fillStyle = "#E2E8F0";
+			ctx.textAlign = "center";
+			ctx.fillText("custom " + (ratio * 100).toFixed(0) + "%", widget_width * 0.5, y + H * 0.7);
+			ctx.restore();
+		};
+
+		this.size = this.computeSize();
+		this.serialize_widgets = true;
+	}
+
+	WidgetComponentsDemoNode.title = "Widget Components Demo";
+	WidgetComponentsDemoNode.prototype.onExecute = function() {
+		this.setOutputData(0, Number(this.properties.value || 0));
+	};
+
+	LiteGraph.registerNodeType("features/widget_components_demo", WidgetComponentsDemoNode);
+}
+
+function loadWidgetComponentsTestDemo() {
+	ensureWidgetComponentsDemoNodeType();
+	graph.clear();
+
+	var node_widgets = LiteGraph.createNode("features/widgets");
+	node_widgets.pos = [60, 250];
+	graph.add(node_widgets);
+
+	var node_custom_widgets = LiteGraph.createNode("features/widget_components_demo");
+	node_custom_widgets.pos = [350, 250];
+	graph.add(node_custom_widgets);
+
+	var node_shape = LiteGraph.createNode("features/shape");
+	node_shape.pos = [660, 230];
+	graph.add(node_shape);
+
+	var node_slots = LiteGraph.createNode("features/slots");
+	node_slots.pos = [900, 250];
+	graph.add(node_slots);
+
+	var node_const_a = LiteGraph.createNode("basic/const");
+	node_const_a.pos = [60, 50];
+	node_const_a.setValue(4.5);
+	graph.add(node_const_a);
+
+	var node_const_b = LiteGraph.createNode("basic/const");
+	node_const_b.pos = [60, 130];
+	node_const_b.setValue(10);
+	graph.add(node_const_b);
+
+	var node_math = LiteGraph.createNode("math/operation");
+	node_math.pos = [300, 85];
+	graph.add(node_math);
+
+	var node_watch = LiteGraph.createNode("basic/watch");
+	node_watch.pos = [560, 85];
+	graph.add(node_watch);
+
+	var node_button = LiteGraph.createNode("widget/button");
+	node_button.pos = [650, 70];
+	node_button.properties.text = "Trigger";
+	graph.add(node_button);
+
+	var node_console = LiteGraph.createNode("basic/console");
+	node_console.pos = [880, 70];
+	graph.add(node_console);
+
+	node_const_a.connect(0, node_math, 0);
+	node_const_b.connect(0, node_math, 1);
+	node_math.connect(0, node_watch, 0);
+
+	node_math.connect(0, node_custom_widgets, 0);
+	node_custom_widgets.connect(0, node_shape, 0);
+	node_shape.connect(0, node_slots, 0);
+
+	node_button.connect(0, node_console, 0);
+
+	graphcanvas.ds.offset = [40, 40];
+	graphcanvas.setDirty(true, true);
+}
+
 //some examples
 addDemo("Features", "examples/features.json");
 addDemo("Benchmark", "examples/benchmark.json");
@@ -119,6 +237,7 @@ addDemo("Audio Delay", "examples/audio_delay.json");
 addDemo("Audio Reverb", "examples/audio_reverb.json");
 addDemo("MIDI Generation", "examples/midi_generation.json");
 addDemo("Copy Paste", "examples/copypaste.json");
+addDemo("Widget Components Test", loadWidgetComponentsTestDemo);
 addDemo("autobackup", function(){
 	var data = localStorage.getItem("litegraphg demo backup");
 	if(!data)

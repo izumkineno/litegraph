@@ -72,8 +72,15 @@ function getTitleGradientForContext(ctx, titleColor) {
 function shouldUseLeaferNodeUiMode(host) {
     const adapter = host?.rendererAdapter;
     const nodeRenderMode = adapter?.options?.nodeRenderMode;
-    if (!adapter || (nodeRenderMode !== "uiapi-experimental" && nodeRenderMode !== "uiapi-parity")) {
+    if (!adapter || (nodeRenderMode !== "uiapi-parity" && nodeRenderMode !== "uiapi-components")) {
         return false;
+    }
+    if (nodeRenderMode === "uiapi-components") {
+        const profile = host?.renderStyleProfile;
+        const validProfile = profile === "leafer-pragmatic-v1" || profile === "leafer-classic-v1";
+        if (host?.renderStyleEngine !== "leafer-components" || !validProfile) {
+            return false;
+        }
     }
     if (adapter.isLayerNative?.("front") !== true) {
         return false;
@@ -88,12 +95,26 @@ function isLeaferNodeUiParityMode(host) {
     return host?.rendererAdapter?.options?.nodeRenderMode === "uiapi-parity";
 }
 
+function isLeaferNodeUiComponentsMode(host) {
+    return host?.rendererAdapter?.options?.nodeRenderMode === "uiapi-components";
+}
+
 function warnLeaferNodeUiFallback(host, message, meta) {
     if (host?._leaferNodeUiWarned) {
         return;
     }
     host._leaferNodeUiWarned = true;
     LiteGraph.warn?.(`[LeaferNodeUI] ${message}`, meta);
+}
+
+function decayTriggerCounters(node) {
+    // Keep the same semantics as legacy drawNodeShape counters.
+    if (node?.execute_triggered > 0) {
+        node.execute_triggered -= 1;
+    }
+    if (node?.action_triggered > 0) {
+        node.action_triggered -= 1;
+    }
 }
 
 function ensureLeaferNodeUiLayer(host, ctx) {
@@ -145,8 +166,11 @@ export function beginNodeFrameLeafer(ctx, _visibleNodes) {
         this._leaferNodeUiFrameActive = false;
         return false;
     }
-    const nodeRenderMode = this?.rendererAdapter?.options?.nodeRenderMode || "uiapi-experimental";
-    layer.beginFrame({ nodeRenderMode });
+    const nodeRenderMode = this?.rendererAdapter?.options?.nodeRenderMode || "uiapi-parity";
+    layer.beginFrame({
+        nodeRenderMode,
+        renderStyleProfile: this?.renderStyleProfile || "legacy",
+    });
     this._leaferNodeUiFrameActive = true;
     return true;
 }
@@ -179,10 +203,27 @@ export function drawNode(node, ctx) {
             } finally {
                 this._leaferNodeUiFrameActive = frameActive;
             }
+            decayTriggerCounters(node);
+            return;
+        }
+        if (isLeaferNodeUiComponentsMode(this)) {
+            this.current_node = node;
+            const rendered = this._leaferNodeUiLayer.upsertNode(node, this) !== false;
+            if (!rendered) {
+                const frameActive = this._leaferNodeUiFrameActive;
+                this._leaferNodeUiFrameActive = false;
+                try {
+                    drawNode.call(this, node, ctx);
+                } finally {
+                    this._leaferNodeUiFrameActive = frameActive;
+                }
+            }
+            decayTriggerCounters(node);
             return;
         }
         this.current_node = node;
         this._leaferNodeUiLayer.upsertNode(node, this);
+        decayTriggerCounters(node);
         return;
     }
 
@@ -1395,6 +1436,7 @@ export function processNodeWidgets(node, pos, event, active_widget) {
                     setTimeout(function() {
                         inner_value_change(w, w.value);
                     }, 20);
+                    this.dirty_canvas = true;
                 }
                 break;
             case "string":

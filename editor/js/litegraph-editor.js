@@ -1,13 +1,222 @@
 import { LGraphCanvas, LGraph, LiteGraph } from "../../build/litegraph.core.js";
 
 const RENDERER_PROFILE_STORAGE_KEY = "litegraph:renderer-profile";
+const THEME_STORAGE_KEY = "litegraph:editor-theme";
+const GRAPH_THEME_STORAGE_KEY = "litegraph:graph-theme";
 const DEFAULT_RENDERER_PROFILE = "leafer-parity";
+const DEFAULT_THEME = "neogrid";
+const DEFAULT_GRAPH_THEME = "pragmatic-slate";
 const RENDERER_PROFILE_OPTIONS = [
     { value: "legacy-canvas", label: "Legacy Canvas2D" },
     { value: "leafer-hybrid", label: "Leafer Hybrid (Back)" },
-    { value: "leafer-uiapi", label: "Leafer UIAPI (Experimental)" },
     { value: "leafer-parity", label: "Leafer UIAPI (Parity)" },
 ];
+const THEME_OPTIONS = [
+    { value: "classic", label: "Classic Dark" },
+    { value: "neogrid", label: "NeoGrid Orange" },
+];
+const GRAPH_THEME_OPTIONS = [
+    { value: "classic", label: "Classic Graph" },
+    { value: "leafer-cobalt", label: "Leafer Cobalt" },
+    { value: "pragmatic-slate", label: "Pragmatic Slate" },
+];
+
+const GRAPH_THEME_PRESETS = {
+    classic: {
+        nodeTitleColor: "#999",
+        nodeSelectedTitleColor: "#FFF",
+        nodeTextColor: "#AAA",
+        nodeDefaultColor: "#333",
+        nodeDefaultBgColor: "#353535",
+        nodeDefaultBoxColor: "#666",
+        nodeOutlineColor: "#FFF",
+        defaultShadowColor: "rgba(0,0,0,0.5)",
+        widgetBgColor: "#222",
+        widgetOutlineColor: "#666",
+        widgetTextColor: "#DDD",
+        widgetSecondaryTextColor: "#999",
+        linkColor: "#9A9",
+        eventLinkColor: "#A86",
+        connectingLinkColor: "#AFA",
+        clearBackgroundColor: "#222",
+        defaultConnectionColor: {
+            input_off: "#778",
+            input_on: "#7F7",
+            output_off: "#778",
+            output_on: "#7F7",
+        },
+        defaultConnectionColorByType: {
+            number: "#7F7",
+            string: "#77F",
+            boolean: "#F77",
+            node: "#DCA",
+            "-1": "#A86",
+        },
+        defaultConnectionColorByTypeOff: {
+            number: "#474",
+            string: "#447",
+            boolean: "#744",
+            node: "#564",
+            "-1": "#744",
+        },
+        linkTypeColors: {
+            "-1": "#A86",
+            number: "#AAA",
+            node: "#DCA",
+            string: "#77F",
+            boolean: "#F77",
+        },
+        nodeColors: {
+            red: { color: "#322", bgcolor: "#533", groupcolor: "#A88" },
+            brown: { color: "#332922", bgcolor: "#593930", groupcolor: "#b06634" },
+            green: { color: "#232", bgcolor: "#353", groupcolor: "#8A8" },
+            blue: { color: "#223", bgcolor: "#335", groupcolor: "#88A" },
+            pale_blue: { color: "#2a363b", bgcolor: "#3f5159", groupcolor: "#3f789e" },
+            cyan: { color: "#233", bgcolor: "#355", groupcolor: "#8AA" },
+            purple: { color: "#323", bgcolor: "#535", groupcolor: "#a1309b" },
+            yellow: { color: "#432", bgcolor: "#653", groupcolor: "#b58b2a" },
+            black: { color: "#222", bgcolor: "#000", groupcolor: "#444" },
+        },
+    },
+    "leafer-cobalt": {
+        nodeTitleColor: "#E7F4FF",
+        nodeSelectedTitleColor: "#FFF8E6",
+        nodeTextColor: "#CDE0EE",
+        nodeDefaultColor: "#2D7AA5",
+        nodeDefaultBgColor: "#1A2633",
+        nodeDefaultBoxColor: "#4A8FBD",
+        nodeOutlineColor: "#C7E7FF",
+        defaultShadowColor: "rgba(2, 8, 16, 0.62)",
+        widgetBgColor: "#10202D",
+        widgetOutlineColor: "#2C6E93",
+        widgetTextColor: "#EAF7FF",
+        widgetSecondaryTextColor: "#8DAFC6",
+        linkColor: "#6BC6FF",
+        eventLinkColor: "#F2B56D",
+        connectingLinkColor: "#74F0B6",
+        clearBackgroundColor: "#0C131C",
+        defaultConnectionColor: {
+            input_off: "#5E7890",
+            input_on: "#6DE1FF",
+            output_off: "#5E7890",
+            output_on: "#FFC97C",
+        },
+        defaultConnectionColorByType: {
+            number: "#62D1FF",
+            string: "#8FB4FF",
+            boolean: "#FF8E80",
+            node: "#9FE7B1",
+            "-1": "#F2B56D",
+        },
+        defaultConnectionColorByTypeOff: {
+            number: "#2E5872",
+            string: "#374C72",
+            boolean: "#6B4342",
+            node: "#335A4A",
+            "-1": "#73563D",
+        },
+        linkTypeColors: {
+            "-1": "#F2B56D",
+            number: "#62D1FF",
+            node: "#9FE7B1",
+            string: "#8FB4FF",
+            boolean: "#FF8E80",
+        },
+        nodeColors: {
+            red: { color: "#7F3F3B", bgcolor: "#3A2223", groupcolor: "#9A5750" },
+            brown: { color: "#805C36", bgcolor: "#35281D", groupcolor: "#B37E45" },
+            green: { color: "#2E7358", bgcolor: "#193126", groupcolor: "#2F9871" },
+            blue: { color: "#2D7AA5", bgcolor: "#1A2633", groupcolor: "#2A7AA8" },
+            pale_blue: { color: "#2B637D", bgcolor: "#17232C", groupcolor: "#3D8DB0" },
+            cyan: { color: "#1E7A82", bgcolor: "#132A2D", groupcolor: "#37A6AF" },
+            purple: { color: "#5B4E8C", bgcolor: "#26213D", groupcolor: "#7A6CB7" },
+            yellow: { color: "#8A7331", bgcolor: "#332D1D", groupcolor: "#C3A248" },
+            black: { color: "#2E3C4A", bgcolor: "#10161C", groupcolor: "#4E6174" },
+        },
+        canvas: {
+            roundRadius: 8,
+            connectionsWidth: 3,
+            renderShadows: true,
+            renderConnectionsShadows: false,
+            titleTextFont: "600 14px 'Segoe UI', 'Inter', sans-serif",
+            innerTextFont: "500 12px 'Open Sans', 'Segoe UI', sans-serif",
+        },
+    },
+    "pragmatic-slate": {
+        nodeTitleColor: "#F1F5F9",
+        nodeSelectedTitleColor: "#FFFFFF",
+        nodeTextColor: "#D1D9E6",
+        nodeDefaultColor: "#334155",
+        nodeDefaultBgColor: "#1E293B",
+        nodeDefaultBoxColor: "#475569",
+        nodeOutlineColor: "#CBD5E1",
+        defaultShadowColor: "rgba(0,0,0,0)",
+        widgetBgColor: "#0F172A",
+        widgetOutlineColor: "#334155",
+        widgetTextColor: "#E2E8F0",
+        widgetSecondaryTextColor: "#94A3B8",
+        linkColor: "#38BDF8",
+        eventLinkColor: "#F59E0B",
+        connectingLinkColor: "#22D3EE",
+        clearBackgroundColor: "#0B1220",
+        defaultConnectionColor: {
+            input_off: "#64748B",
+            input_on: "#22D3EE",
+            output_off: "#64748B",
+            output_on: "#38BDF8",
+        },
+        defaultConnectionColorByType: {
+            number: "#38BDF8",
+            string: "#A78BFA",
+            boolean: "#FB7185",
+            node: "#34D399",
+            "-1": "#F59E0B",
+        },
+        defaultConnectionColorByTypeOff: {
+            number: "#1E3A5F",
+            string: "#3B2F61",
+            boolean: "#5A2B37",
+            node: "#1F4A3C",
+            "-1": "#5C4A1E",
+        },
+        linkTypeColors: {
+            "-1": "#F59E0B",
+            number: "#38BDF8",
+            node: "#34D399",
+            string: "#A78BFA",
+            boolean: "#FB7185",
+        },
+        nodeColors: {
+            red: { color: "#7F1D1D", bgcolor: "#450A0A", groupcolor: "#9F1239" },
+            brown: { color: "#7C2D12", bgcolor: "#431407", groupcolor: "#B45309" },
+            green: { color: "#166534", bgcolor: "#052E16", groupcolor: "#15803D" },
+            blue: { color: "#1D4ED8", bgcolor: "#172554", groupcolor: "#2563EB" },
+            pale_blue: { color: "#0E7490", bgcolor: "#083344", groupcolor: "#0891B2" },
+            cyan: { color: "#0F766E", bgcolor: "#042F2E", groupcolor: "#14B8A6" },
+            purple: { color: "#6D28D9", bgcolor: "#2E1065", groupcolor: "#7C3AED" },
+            yellow: { color: "#A16207", bgcolor: "#422006", groupcolor: "#CA8A04" },
+            black: { color: "#334155", bgcolor: "#0F172A", groupcolor: "#475569" },
+        },
+        canvas: {
+            roundRadius: 6,
+            connectionsWidth: 2,
+            renderShadows: false,
+            renderConnectionsShadows: false,
+            titleTextFont: "600 14px 'Segoe UI', 'Inter', sans-serif",
+            innerTextFont: "500 12px 'Open Sans', 'Segoe UI', sans-serif",
+        },
+    },
+};
+
+function cloneNodeColors(nodeColors) {
+    return Object.fromEntries(
+        Object.entries(nodeColors || {}).map(([key, value]) => [key, { ...value }]),
+    );
+}
+
+function cloneFlatRecord(record) {
+    return { ...(record || {}) };
+}
 
 function normalizeRendererProfile(profile) {
     if (!profile) {
@@ -18,10 +227,46 @@ function normalizeRendererProfile(profile) {
         : null;
 }
 
+function normalizeTheme(theme) {
+    if (!theme) {
+        return null;
+    }
+    return THEME_OPTIONS.some((item) => item.value === theme)
+        ? theme
+        : null;
+}
+
+function normalizeGraphTheme(theme) {
+    if (!theme) {
+        return null;
+    }
+    return GRAPH_THEME_OPTIONS.some((item) => item.value === theme)
+        ? theme
+        : null;
+}
+
 function getRendererProfileFromQuery() {
     try {
         const params = new URLSearchParams(globalThis.location?.search || "");
         return params.get("renderer");
+    } catch (_error) {
+        return null;
+    }
+}
+
+function getThemeFromQuery() {
+    try {
+        const params = new URLSearchParams(globalThis.location?.search || "");
+        return params.get("theme");
+    } catch (_error) {
+        return null;
+    }
+}
+
+function getGraphThemeFromQuery() {
+    try {
+        const params = new URLSearchParams(globalThis.location?.search || "");
+        return params.get("graphTheme");
     } catch (_error) {
         return null;
     }
@@ -54,10 +299,140 @@ function setRendererProfile(profile) {
     return normalized;
 }
 
+function getEditorTheme() {
+    const fromQuery = normalizeTheme(getThemeFromQuery());
+    if (fromQuery) {
+        return fromQuery;
+    }
+    try {
+        const stored = globalThis.localStorage?.getItem(THEME_STORAGE_KEY);
+        const normalizedStored = normalizeTheme(stored);
+        if (normalizedStored) {
+            return normalizedStored;
+        }
+    } catch (_error) {
+        // ignore localStorage read errors
+    }
+    return DEFAULT_THEME;
+}
+
+function setEditorTheme(theme) {
+    const normalized = normalizeTheme(theme) || DEFAULT_THEME;
+    try {
+        globalThis.localStorage?.setItem(THEME_STORAGE_KEY, normalized);
+    } catch (_error) {
+        // ignore localStorage write errors
+    }
+    return normalized;
+}
+
+function getGraphTheme() {
+    const fromQuery = normalizeGraphTheme(getGraphThemeFromQuery());
+    if (fromQuery) {
+        return fromQuery;
+    }
+    try {
+        const stored = globalThis.localStorage?.getItem(GRAPH_THEME_STORAGE_KEY);
+        const normalizedStored = normalizeGraphTheme(stored);
+        if (normalizedStored) {
+            return normalizedStored;
+        }
+    } catch (_error) {
+        // ignore localStorage read errors
+    }
+    return DEFAULT_GRAPH_THEME;
+}
+
+function setGraphTheme(theme) {
+    const normalized = normalizeGraphTheme(theme) || DEFAULT_GRAPH_THEME;
+    try {
+        globalThis.localStorage?.setItem(GRAPH_THEME_STORAGE_KEY, normalized);
+    } catch (_error) {
+        // ignore localStorage write errors
+    }
+    return normalized;
+}
+
+function resolveGraphThemePreset(theme) {
+    const resolvedTheme = normalizeGraphTheme(theme) || DEFAULT_GRAPH_THEME;
+    return GRAPH_THEME_PRESETS[resolvedTheme] || GRAPH_THEME_PRESETS.classic;
+}
+
+function applyGraphThemeStatics(theme) {
+    const preset = resolveGraphThemePreset(theme);
+
+    LiteGraph.NODE_TITLE_COLOR = preset.nodeTitleColor;
+    LiteGraph.NODE_SELECTED_TITLE_COLOR = preset.nodeSelectedTitleColor;
+    LiteGraph.NODE_TEXT_COLOR = preset.nodeTextColor;
+    LiteGraph.NODE_DEFAULT_COLOR = preset.nodeDefaultColor;
+    LiteGraph.NODE_DEFAULT_BGCOLOR = preset.nodeDefaultBgColor;
+    LiteGraph.NODE_DEFAULT_BOXCOLOR = preset.nodeDefaultBoxColor;
+    LiteGraph.NODE_BOX_OUTLINE_COLOR = preset.nodeOutlineColor;
+    LiteGraph.DEFAULT_SHADOW_COLOR = preset.defaultShadowColor;
+    LiteGraph.WIDGET_BGCOLOR = preset.widgetBgColor;
+    LiteGraph.WIDGET_OUTLINE_COLOR = preset.widgetOutlineColor;
+    LiteGraph.WIDGET_TEXT_COLOR = preset.widgetTextColor;
+    LiteGraph.WIDGET_SECONDARY_TEXT_COLOR = preset.widgetSecondaryTextColor;
+    LiteGraph.LINK_COLOR = preset.linkColor;
+    LiteGraph.EVENT_LINK_COLOR = preset.eventLinkColor;
+    LiteGraph.CONNECTING_LINK_COLOR = preset.connectingLinkColor;
+    LGraphCanvas.link_type_colors = cloneFlatRecord(preset.linkTypeColors);
+    LGraphCanvas.node_colors = cloneNodeColors(preset.nodeColors);
+}
+
+function applyGraphThemeToCanvas(graphcanvas, theme) {
+    if (!graphcanvas) {
+        return;
+    }
+    const preset = resolveGraphThemePreset(theme);
+
+    graphcanvas.node_title_color = preset.nodeTitleColor;
+    graphcanvas.default_link_color = preset.linkColor;
+    graphcanvas.clear_background_color = preset.clearBackgroundColor;
+    graphcanvas.default_connection_color = cloneFlatRecord(preset.defaultConnectionColor);
+    graphcanvas.default_connection_color_byType = cloneFlatRecord(preset.defaultConnectionColorByType);
+    graphcanvas.default_connection_color_byTypeOff = cloneFlatRecord(preset.defaultConnectionColorByTypeOff);
+    if (preset.canvas) {
+        graphcanvas.round_radius = preset.canvas.roundRadius ?? graphcanvas.round_radius;
+        graphcanvas.connections_width = preset.canvas.connectionsWidth ?? graphcanvas.connections_width;
+        graphcanvas.render_shadows = preset.canvas.renderShadows ?? graphcanvas.render_shadows;
+        graphcanvas.render_connections_shadows = preset.canvas.renderConnectionsShadows
+            ?? graphcanvas.render_connections_shadows;
+        graphcanvas.title_text_font = preset.canvas.titleTextFont ?? graphcanvas.title_text_font;
+        graphcanvas.inner_text_font = preset.canvas.innerTextFont ?? graphcanvas.inner_text_font;
+    }
+    graphcanvas.setDirty?.(true, true);
+}
+
+function applyGraphTheme(theme = getGraphTheme(), graphcanvas = null) {
+    const resolvedTheme = normalizeGraphTheme(theme) || DEFAULT_GRAPH_THEME;
+    applyGraphThemeStatics(resolvedTheme);
+    applyGraphThemeToCanvas(graphcanvas, resolvedTheme);
+    return resolvedTheme;
+}
+
+function applyEditorTheme(theme = getEditorTheme()) {
+    const resolved = normalizeTheme(theme) || DEFAULT_THEME;
+    globalThis.document?.documentElement?.setAttribute("data-lg-theme", resolved);
+    return resolved;
+}
+
 if (typeof window !== "undefined") {
+    applyEditorTheme();
+    applyGraphTheme();
     window.__litegraphGetRendererProfile = getRendererProfile;
     window.__litegraphSetRendererProfile = (profile) => {
         setRendererProfile(profile);
+        window.location.reload();
+    };
+    window.__litegraphGetTheme = getEditorTheme;
+    window.__litegraphSetTheme = (theme) => {
+        setEditorTheme(theme);
+        window.location.reload();
+    };
+    window.__litegraphGetGraphTheme = getGraphTheme;
+    window.__litegraphSetGraphTheme = (theme) => {
+        setGraphTheme(theme);
         window.location.reload();
     };
 }
@@ -73,6 +448,8 @@ function createDefaultRendererAdapter() {
     }
 
     if (LeaferAdapter && leaferRuntime) {
+        const graphTheme = getGraphTheme();
+        const useLeaferComponents = graphTheme === "pragmatic-slate" || graphTheme === "classic";
         if (profile === "leafer-hybrid") {
             return new LeaferAdapter({
                 mode: "hybrid-back",
@@ -81,18 +458,9 @@ function createDefaultRendererAdapter() {
             });
         }
 
-        if (profile === "leafer-uiapi") {
-            return new LeaferAdapter({
-                mode: "full-leafer",
-                nodeRenderMode: "uiapi-experimental",
-                nodeRenderLogs: true,
-                leaferRuntime,
-            });
-        }
-
         return new LeaferAdapter({
             mode: "full-leafer",
-            nodeRenderMode: "uiapi-parity",
+            nodeRenderMode: useLeaferComponents ? "uiapi-components" : "uiapi-parity",
             nodeRenderLogs: true,
             leaferRuntime,
         });
@@ -107,15 +475,32 @@ function createDefaultRendererAdapter() {
 }
 
 function createGraphCanvas(canvas, graph) {
+    applyGraphTheme(getGraphTheme());
+    const graphTheme = getGraphTheme();
     const rendererAdapter = createDefaultRendererAdapter();
-    const options = rendererAdapter ? { rendererAdapter } : undefined;
-    return new LGraphCanvas(canvas, graph, options);
+    const options = rendererAdapter
+        ? {
+            rendererAdapter,
+            renderStyleProfile: graphTheme === "pragmatic-slate"
+                ? "leafer-pragmatic-v1"
+                : graphTheme === "classic"
+                    ? "leafer-classic-v1"
+                    : "legacy",
+            renderStyleEngine: graphTheme === "pragmatic-slate" || graphTheme === "classic"
+                ? "leafer-components"
+                : "legacy",
+        }
+        : undefined;
+    const graphcanvas = new LGraphCanvas(canvas, graph, options);
+    applyGraphThemeToCanvas(graphcanvas, getGraphTheme());
+    return graphcanvas;
 }
 
 // Creates an interface to access extra features from a graph (like play, stop, live, etc)
 export class Editor {
 
     constructor(container_id, options = {}) {
+        applyEditorTheme(getEditorTheme());
 
         const root = this.root = document.createElement("div");
         root.className = "litegraph litegraph-editor";
@@ -153,6 +538,8 @@ export class Editor {
         // this.addToolsButton("loadsession_button","Load","imgs/icon-load.png", this.onLoadButton.bind(this), ".tools-left" );
         // this.addToolsButton("savesession_button","Save","imgs/icon-save.png", this.onSaveButton.bind(this), ".tools-left" );
         this.addLoadCounter();
+        this.addThemeSwitcher();
+        this.addGraphThemeSwitcher();
         this.addRendererSwitcher();
         this.addToolsButton(
             "playnode_button",
@@ -255,13 +642,7 @@ export class Editor {
         wrapper.textContent = "Renderer";
 
         const select = document.createElement("select");
-        select.style.fontSize = "12px";
-        select.style.height = "22px";
-        select.style.background = "#2e2e2e";
-        select.style.color = "#ddd";
-        select.style.border = "1px solid #555";
-        select.style.borderRadius = "4px";
-        select.style.padding = "0 6px";
+        select.className = "toolbar-select";
 
         for (const option of RENDERER_PROFILE_OPTIONS) {
             const item = document.createElement("option");
@@ -273,6 +654,66 @@ export class Editor {
 
         select.addEventListener("change", () => {
             setRendererProfile(select.value);
+            globalThis.location?.reload?.();
+        });
+
+        wrapper.appendChild(select);
+        this.root.querySelector(".header .tools-left")?.appendChild(wrapper);
+    }
+
+    addThemeSwitcher() {
+        const wrapper = document.createElement("label");
+        wrapper.className = "toolbar-widget theme-switcher";
+        wrapper.style.display = "inline-flex";
+        wrapper.style.alignItems = "center";
+        wrapper.style.gap = "6px";
+        wrapper.style.marginLeft = "8px";
+        wrapper.style.fontSize = "12px";
+        wrapper.textContent = "Theme";
+
+        const select = document.createElement("select");
+        select.className = "toolbar-select";
+
+        for (const option of THEME_OPTIONS) {
+            const item = document.createElement("option");
+            item.value = option.value;
+            item.textContent = option.label;
+            select.appendChild(item);
+        }
+        select.value = getEditorTheme();
+
+        select.addEventListener("change", () => {
+            setEditorTheme(select.value);
+            globalThis.location?.reload?.();
+        });
+
+        wrapper.appendChild(select);
+        this.root.querySelector(".header .tools-left")?.appendChild(wrapper);
+    }
+
+    addGraphThemeSwitcher() {
+        const wrapper = document.createElement("label");
+        wrapper.className = "toolbar-widget graph-theme-switcher";
+        wrapper.style.display = "inline-flex";
+        wrapper.style.alignItems = "center";
+        wrapper.style.gap = "6px";
+        wrapper.style.marginLeft = "8px";
+        wrapper.style.fontSize = "12px";
+        wrapper.textContent = "Graph";
+
+        const select = document.createElement("select");
+        select.className = "toolbar-select";
+
+        for (const option of GRAPH_THEME_OPTIONS) {
+            const item = document.createElement("option");
+            item.value = option.value;
+            item.textContent = option.label;
+            select.appendChild(item);
+        }
+        select.value = getGraphTheme();
+
+        select.addEventListener("change", () => {
+            setGraphTheme(select.value);
             globalThis.location?.reload?.();
         });
 

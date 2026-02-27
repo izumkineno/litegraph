@@ -126,6 +126,11 @@ export function getCurrentGraph() {
 
 export function setCanvas(canvas, skip_events) {
 
+    this.renderStyleProfile = this.options?.renderStyleProfile || this.renderStyleProfile || "legacy";
+    this.renderStyleEngine = this.options?.renderStyleEngine
+        || this.renderStyleEngine
+        || (this.renderStyleProfile === "legacy" ? "legacy" : "leafer-components");
+
     if (canvas) {
         if (canvas.constructor === String) {
             canvas = document.getElementById(canvas);

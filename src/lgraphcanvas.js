@@ -10,6 +10,8 @@ export class LGraphCanvas {
             skip_render: false,
             autoresize: false,
             clip_all_nodes: false,
+            renderStyleProfile: "legacy",
+            renderStyleEngine: "legacy",
             rendererAdapter: null,
         };
         this.options = options;
@@ -125,6 +127,9 @@ export class LGraphCanvas {
 
         this.controllers = createLGraphCanvasControllers(this);
         this.rendererAdapter = options.rendererAdapter || new Canvas2DRendererAdapter();
+        this.renderStyleProfile = options.renderStyleProfile || "legacy";
+        this.renderStyleEngine = options.renderStyleEngine
+            || (this.renderStyleProfile === "legacy" ? "legacy" : "leafer-components");
         this.frontSurface = null;
         this.backSurface = null;
         this.processMouseWheel = this.processMouseWheel.bind(this);

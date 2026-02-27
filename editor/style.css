@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+
 html,body {
 	width: 100%;
 	height: 100%;
@@ -6,15 +8,15 @@ html,body {
 }
 
 body {
-	background-color: #333;
-	color: #EEE;
-	font: 14px Tahoma, sans-serif;
+	background-color: var(--lg-editor-bg, #333);
+	color: var(--lg-text, #EEE);
+	font: 14px var(--lg-font-ui, Tahoma, sans-serif);
 }
 
 #main {
 	width: 100%;
 	height: 100%;
-	background-color: #222;
+	background-color: var(--lg-content-bg, #222);
 }
 
 
@@ -102,7 +104,7 @@ body {
 
 label {
 	font-weight: bold;
-	color: #AAF;
+	color: var(--lg-text, #AAF);
 }
 
 .header input { 
@@ -151,10 +153,10 @@ textarea {
 ::-webkit-scrollbar {
     height: 12px;
 	width: 6px;
-	background: #222;
+	background: var(--lg-content-bg, #222);
 }
 ::-webkit-scrollbar-thumb {
-    background: rgba(200,200,200,0.4);
+    background: rgba(200,200,200,0.35);
 }
 ::-webkit-scrollbar-corner {
     background: #766;
@@ -172,7 +174,7 @@ textarea {
 #editor .toolsbar {
 	width: 100%;
 	height: 30px;
-	background-color: #262626;
+	background-color: var(--lg-panel-bg, #262626);
 	margin: 0;
 	padding: 0;
 }
@@ -237,4 +239,16 @@ textarea {
 
 .graphcanvas{
 	touch-action: pinch-zoom;
+}
+
+:root[data-lg-theme="neogrid"] .litegraph-editor .content::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background-image:
+		linear-gradient(rgba(249,115,22,0.06) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(100,116,139,0.06) 1px, transparent 1px);
+	background-size: 16px 16px, 16px 16px;
+	mix-blend-mode: screen;
 }

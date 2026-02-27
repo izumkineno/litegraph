@@ -46,7 +46,7 @@ function createHost(runtime, ctx) {
     return {
         rendererAdapter: {
             options: {
-                nodeRenderMode: "uiapi-experimental",
+                nodeRenderMode: "uiapi-parity",
                 nodeRenderLogs: false,
             },
             isLayerNative(layer) {
@@ -60,10 +60,26 @@ function createHost(runtime, ctx) {
         canvas: frontCanvas,
         ds: { scale: 1, offset: [0, 0] },
         round_radius: 8,
+        editor_alpha: 1,
+        live_mode: false,
+        render_shadows: false,
+        render_collapsed_slots: true,
+        inner_text_font: "12px sans-serif",
+        title_text_font: "14px sans-serif",
         node_title_color: "#DDD",
         default_connection_color: {
             input_off: "#777",
             output_off: "#777",
+        },
+        lowQualityRenderingRequired() {
+            return false;
+        },
+        drawNodeShape() {
+        },
+        drawNodeWidgets() {
+            return 0;
+        },
+        drawNodeTooltip() {
         },
         graph_mouse: [0, 0],
     };
@@ -80,7 +96,7 @@ describe("render-nodes leafer uiapi mode", () => {
         restoreDom?.();
     });
 
-    test("uiapi mode initializes layer and renders through bridge canvas", () => {
+    test("uiapi parity mode renders through bridge canvas", () => {
         const runtime = createMockLeaferUiRuntime();
         const ctx = createMockCanvasContext();
         const host = createHost(runtime, ctx);
@@ -91,7 +107,7 @@ describe("render-nodes leafer uiapi mode", () => {
 
         drawNode.call(host, node, ctx);
         expect(host._leaferNodeUiLayer).toBeTruthy();
-        expect(host._leaferNodeUiLayer._nodeViews.size).toBe(1);
+        expect(host._leaferNodeUiLayer._nodeViews.size).toBe(0);
 
         endNodeFrameLeafer.call(host, ctx, [node]);
         const drawImageCalls = ctx.calls.filter((call) => call.name === "drawImage");
@@ -105,7 +121,7 @@ describe("render-nodes leafer uiapi mode", () => {
         host.rendererAdapter.options.nodeRenderMode = "legacy-ctx";
         expect(beginNodeFrameLeafer.call(host, ctx, [])).toBe(false);
 
-        host.rendererAdapter.options.nodeRenderMode = "uiapi-experimental";
+        host.rendererAdapter.options.nodeRenderMode = "uiapi-parity";
         host.rendererAdapter.isLayerNative = () => false;
         expect(beginNodeFrameLeafer.call(host, ctx, [])).toBe(false);
     });

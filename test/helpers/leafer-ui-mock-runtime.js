@@ -30,6 +30,9 @@ class MockGroup extends BaseUi {}
 class MockRect extends BaseUi {}
 class MockText extends BaseUi {}
 class MockEllipse extends BaseUi {}
+class MockPolygon extends BaseUi {}
+class MockLine extends BaseUi {}
+class MockPath extends BaseUi {}
 
 class MockCanvas extends BaseUi {
     constructor(data = {}) {
@@ -90,6 +93,9 @@ export function createMockLeaferUiRuntime() {
         Rect: MockRect,
         Text: MockText,
         Ellipse: MockEllipse,
+        Polygon: MockPolygon,
+        Line: MockLine,
+        Path: MockPath,
         Canvas: MockCanvas,
     };
 }

@@ -24,7 +24,7 @@ function createHost(runtime, ctx) {
     return {
         rendererAdapter: {
             options: {
-                nodeRenderMode: "uiapi-experimental",
+                nodeRenderMode: "uiapi-parity",
             },
             isLayerNative(layer) {
                 return layer === "front";
@@ -37,10 +37,26 @@ function createHost(runtime, ctx) {
         canvas: frontCanvas,
         ds: { scale: 1, offset: [0, 0] },
         round_radius: 8,
+        editor_alpha: 1,
+        live_mode: false,
+        render_shadows: false,
+        render_collapsed_slots: true,
+        inner_text_font: "12px sans-serif",
+        title_text_font: "14px sans-serif",
         node_title_color: "#DDD",
         default_connection_color: {
             input_off: "#777",
             output_off: "#777",
+        },
+        lowQualityRenderingRequired() {
+            return false;
+        },
+        drawNodeShape() {
+        },
+        drawNodeWidgets() {
+            return 0;
+        },
+        drawNodeTooltip() {
         },
         graph_mouse: [22, 48],
     };
@@ -61,10 +77,19 @@ describe("render-nodes leafer uiapi widgets and tooltip", () => {
         restoreDom?.();
     });
 
-    test("creates widget and tooltip UI elements in uiapi mode", () => {
+    test("parity mode invokes legacy widgets and tooltip draw hooks", () => {
         const runtime = createMockLeaferUiRuntime();
         const ctx = createMockCanvasContext();
         const host = createHost(runtime, ctx);
+        let widgetCalls = 0;
+        let tooltipCalls = 0;
+        host.drawNodeWidgets = () => {
+            widgetCalls += 1;
+            return 0;
+        };
+        host.drawNodeTooltip = () => {
+            tooltipCalls += 1;
+        };
         const node = {
             id: 777,
             pos: [30, 40],
@@ -93,9 +118,7 @@ describe("render-nodes leafer uiapi widgets and tooltip", () => {
         drawNode.call(host, node, ctx);
         endNodeFrameLeafer.call(host, ctx, [node]);
 
-        const nodeView = host._leaferNodeUiLayer._nodeViews.get(node.id);
-        expect(nodeView).toBeTruthy();
-        expect(nodeView.widgetsGroup.children.length).toBeGreaterThan(0);
-        expect(nodeView.tooltipGroup.children.length).toBeGreaterThan(0);
+        expect(widgetCalls).toBe(1);
+        expect(tooltipCalls).toBe(1);
     });
 });

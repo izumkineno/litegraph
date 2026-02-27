@@ -18,3 +18,5 @@ __pycache__/
 
 # Rust build cache
 target/
+tmp/
+tmp/*

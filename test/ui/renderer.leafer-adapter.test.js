@@ -83,7 +83,7 @@ describe("leafer renderer adapter", () => {
         const adapter = new LeaferUIRendererAdapter({
             mode: "hybrid-back",
             leaferRuntime: runtime,
-            nodeRenderMode: "uiapi-experimental",
+            nodeRenderMode: "uiapi-parity",
             nodeRenderLogs: true,
         }).init({ canvas: frontCanvas, ownerDocument });
 
@@ -93,7 +93,7 @@ describe("leafer renderer adapter", () => {
         expect(adapter.getBackCtx()).toBeTruthy();
         expect(adapter.isLayerNative("front")).toBe(false);
         expect(adapter.isLayerNative("back")).toBe(true);
-        expect(adapter.options.nodeRenderMode).toBe("uiapi-experimental");
+        expect(adapter.options.nodeRenderMode).toBe("uiapi-parity");
         expect(adapter.options.nodeRenderLogs).toBe(true);
         expect(adapter.getLeaferRuntime()).toBe(runtime);
         expect(() => adapter.syncLayer("front")).not.toThrow();

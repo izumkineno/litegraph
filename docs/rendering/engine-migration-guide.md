@@ -7,6 +7,21 @@
 - `IRenderEngineAdapter`
 - 默认实现：`Canvas2DRendererAdapter`
 
+## 0. 当前渲染模式矩阵（2026-02）
+
+- `legacy`（默认）  
+  `renderStyleProfile=legacy` + `renderStyleEngine=legacy`，节点走 `render-nodes.js` 传统 Canvas2D 绘制。
+- `uiapi-parity`（Leafer 对齐模式）  
+  `rendererAdapter=LeaferUIRendererAdapter(mode=full-leafer)` + `nodeRenderMode=uiapi-parity`，节点仍复用 legacy 绘制算法，但渲染目标切到 Leafer bridge canvas。
+- `uiapi-components`（Leafer 组件模式）  
+  需要同时满足：
+  1. `mode=full-leafer`
+  2. `nodeRenderMode=uiapi-components`
+  3. `renderStyleProfile=leafer-pragmatic-v1` 或 `leafer-classic-v1`
+  4. `renderStyleEngine=leafer-components`
+
+不满足条件时自动回退到 legacy 节点绘制，不中断渲染。
+
 ## 1. 当前接入点
 
 - `LGraphCanvas` 构造参数支持注入 `rendererAdapter`（可传实例或构造器）。
@@ -50,3 +65,19 @@
 - 若新引擎不是原生 Canvas2D 语义，需要在适配器层补齐 `roundRect/measureText/createPattern` 等行为。
 - `start/start2D/finish/finish2D` 仅为可选扩展，不应作为渲染成功前提。
 
+## 6. 组件化节点层（Leafer）
+
+- 组件目录：`src/lgraphcanvas/renderer/leafer-components/`
+- 注册表：`registry.js`
+  - 节点组件：`node-shell/node-title/node-slots/node-tooltip`
+  - Widget 组件：`button/toggle/slider/number/combo/text/string/custom`
+- 调度层：`src/lgraphcanvas/renderer/leafer-node-ui-layer.js`
+  - `uiapi-components` 时按注册表渲染
+  - 组件缺失触发逐节点回退到 legacy
+- 双基准 token：
+  - `leafer-classic-v1` -> `tokens-classic.js`
+  - `leafer-pragmatic-v1` -> `tokens-pragmatic-slate.js`
+- 兼容要求保持：
+  - `onDrawBackground/onDrawForeground/onDrawCollapsed/onDrawTitle` 签名与调用时机不变
+  - `w.draw` / `onDraw*` 继续使用 Canvas 回调层（兼容例外，不迁移到 Leafer 事件链）
+  - 交互与命中继续走 LiteGraph 现有 `processMouse*` 和坐标链路

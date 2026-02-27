@@ -1,4 +1,16 @@
 import { LiteGraph } from "../../litegraph.js";
+import {
+    getNodeComponent,
+    getRenderStyleTokens,
+    getWidgetComponent,
+    hasRequiredNodeComponents,
+} from "./leafer-components/registry.js";
+import {
+    canvasBaselineToTextTop,
+    scaledFontSize,
+    snapPixel,
+    widgetTextTop,
+} from "./leafer-components/text-layout.js";
 
 function createCompatGroup(name = "Group") {
     return {
@@ -122,13 +134,90 @@ function getNodeTooltipText(node) {
     return sanitizeText(text).trim();
 }
 
-function hashWidgets(widgets = []) {
+function hashWidgets(widgets = [], activeWidgetIndex = -1) {
     if (!widgets.length) {
-        return "widgets:none";
+        return `widgets:none:active:${activeWidgetIndex}`;
     }
-    return widgets
-        .map((widget) => `${widget?.name ?? ""}:${widget?.type ?? ""}:${widget?.value ?? ""}:${widget?.disabled ? 1 : 0}`)
+    const base = widgets
+        .map((widget) => [
+            widget?.name ?? "",
+            widget?.type ?? "",
+            widget?.value ?? "",
+            widget?.disabled ? 1 : 0,
+            widget?.clicked ? 1 : 0,
+            widget?.marker ?? "",
+            widget?.label ?? "",
+            widget?.y ?? "",
+        ].join(":"))
         .join("|");
+    return `${base}|active:${activeWidgetIndex}`;
+}
+
+function hashNodeSlots(node) {
+    const hashSlots = (slots = []) => slots
+        .map((slot) => [
+            slot?.name ?? "",
+            slot?.label ?? "",
+            slot?.type ?? "",
+            slot?.shape ?? "",
+            slot?.dir ?? "",
+            slot?.link ?? "",
+            Array.isArray(slot?.links) ? slot.links.length : "",
+        ].join(":"))
+        .join("|");
+    return `${hashSlots(node?.inputs)}||${hashSlots(node?.outputs)}`;
+}
+
+function collectLegacyWidgetDraws(widgets = [], defaultWidth, defaultHeight, startY = 2) {
+    const draws = [];
+    let widgetY = startY;
+    for (const widget of widgets) {
+        const widgetHeight = widget.computeSize ? widget.computeSize(defaultWidth)[1] : defaultHeight;
+        const currentY = widget.y != null ? widget.y : widgetY;
+        widget.last_y = currentY;
+        if (typeof widget.draw === "function") {
+            const widgetWidth = widget.width || defaultWidth;
+            draws.push((ctx, node) => {
+                widget.draw(ctx, node, widgetWidth, currentY, widgetHeight);
+            });
+        }
+        widgetY = currentY + widgetHeight + 4;
+    }
+    return draws;
+}
+
+function computeNodeWidgetsStartY(node, LiteGraph) {
+    let widgetsY = 0;
+    const nodePosY = Number(node?.pos?.[1] || 0);
+    const slotPos = new Float32Array(2);
+
+    if (Array.isArray(node?.inputs)) {
+        for (let i = 0; i < node.inputs.length; i += 1) {
+            const pos = node.getConnectionPos?.(true, i, slotPos) || [0, nodePosY];
+            const y = Number(pos[1] || 0) - nodePosY + LiteGraph.NODE_SLOT_HEIGHT * 0.5;
+            if (widgetsY < y) {
+                widgetsY = y;
+            }
+        }
+    }
+
+    if (Array.isArray(node?.outputs)) {
+        for (let i = 0; i < node.outputs.length; i += 1) {
+            const pos = node.getConnectionPos?.(false, i, slotPos) || [0, nodePosY];
+            const y = Number(pos[1] || 0) - nodePosY + LiteGraph.NODE_SLOT_HEIGHT * 0.5;
+            if (widgetsY < y) {
+                widgetsY = y;
+            }
+        }
+    }
+
+    if (node?.horizontal || node?.widgets_up) {
+        widgetsY = 2;
+    }
+    if (node?.widgets_start_y != null) {
+        widgetsY = node.widgets_start_y;
+    }
+    return widgetsY;
 }
 
 function getFallbackCanvas(ownerDocument, width, height) {
@@ -153,7 +242,8 @@ export class LeaferNodeUiLayer {
         this._nodeViews = new Map();
         this._visibleNodeKeys = new Set();
         this._active = false;
-        this._nodeRenderMode = "uiapi-experimental";
+        this._nodeRenderMode = "uiapi-parity";
+        this._renderStyleProfile = "legacy";
         this._parityContext = null;
     }
 
@@ -244,15 +334,16 @@ export class LeaferNodeUiLayer {
         this._log("resize", { width, height });
     }
 
-    beginFrame({ nodeRenderMode = "uiapi-experimental" } = {}) {
+    beginFrame({ nodeRenderMode = "uiapi-parity", renderStyleProfile = "legacy" } = {}) {
         this._nodeRenderMode = nodeRenderMode;
+        this._renderStyleProfile = renderStyleProfile || "legacy";
         this._active = true;
         this._visibleNodeKeys.clear();
-        if (nodeRenderMode === "uiapi-parity" && this._bridgeCanvas) {
+        if ((nodeRenderMode === "uiapi-parity" || nodeRenderMode === "uiapi-components") && this._bridgeCanvas) {
             if (!this._parityContext) {
                 this._parityContext = this._bridgeCanvas.getContext("2d");
             }
-            if (this._parityContext) {
+            if (this._parityContext && nodeRenderMode === "uiapi-parity") {
                 this._parityContext.setTransform?.(1, 0, 0, 1, 0, 0);
                 this._parityContext.clearRect?.(0, 0, this._bridgeCanvas.width, this._bridgeCanvas.height);
             }
@@ -376,12 +467,26 @@ export class LeaferNodeUiLayer {
         const size = node?.size || [0, 0];
         const title = getTitleText(node);
         const tooltip = getNodeTooltipText(node);
+        const lowQuality = Boolean(host?.lowQualityRenderingRequired?.(0.5));
+        const renderText = !Boolean(host?.lowQualityRenderingRequired?.(0.6));
+        const activeWidget = host?.node_widget?.[0] === node ? host?.node_widget?.[1] : null;
+        const activeWidgetIndex = activeWidget && Array.isArray(node?.widgets)
+            ? node.widgets.indexOf(activeWidget)
+            : -1;
         return {
             styleHash: [
                 node?.color || node?.constructor?.color || LiteGraph.NODE_DEFAULT_COLOR,
                 node?.bgcolor || node?.constructor?.bgcolor || LiteGraph.NODE_DEFAULT_BGCOLOR,
+                node?.boxcolor || "",
+                node?.mode ?? "",
+                node?.execute_triggered ?? 0,
+                node?.action_triggered ?? 0,
                 node?.is_selected ? 1 : 0,
                 node?.mouseOver ? 1 : 0,
+                lowQuality ? 1 : 0,
+                renderText ? 1 : 0,
+                host?.connecting_output?.type ?? "",
+                host?.connecting_input?.type ?? "",
             ].join("|"),
             layoutHash: [
                 node?.pos?.[0] || 0,
@@ -394,8 +499,10 @@ export class LeaferNodeUiLayer {
                 node?.flags?.collapsed ? 1 : 0,
                 node?.horizontal ? 1 : 0,
                 title,
+                host?.renderStyleProfile || "legacy",
             ].join("|"),
-            widgetHash: hashWidgets(node?.widgets || []),
+            slotHash: hashNodeSlots(node),
+            widgetHash: hashWidgets(node?.widgets || [], activeWidgetIndex),
             tooltipHash: `${tooltip}|${node?.mouseOver ? 1 : 0}|${node?.is_selected ? 1 : 0}`,
             title,
             tooltip,
@@ -431,9 +538,36 @@ export class LeaferNodeUiLayer {
             layoutHash: "",
             widgetHash: "",
             tooltipHash: "",
+            slotHash: "",
+            hasLegacyWidgetDraw: false,
+            legacyWidgetDrawFns: [],
         };
         this._nodeViews.set(key, view);
         return view;
+    }
+
+    _syncViewStackOrder(view) {
+        if (!this._rootGroup || !view?.group) {
+            return;
+        }
+        // Keep visual stacking aligned with render traversal order.
+        // remove+add guarantees the child is at the end (topmost) for current frame order.
+        removeChild(this._rootGroup, view.group);
+        addChildren(this._rootGroup, view.group);
+    }
+
+    _isComponentMode(host) {
+        if (this._nodeRenderMode !== "uiapi-components") {
+            return false;
+        }
+        if (!hasRequiredNodeComponents()) {
+            return false;
+        }
+        if (host?.renderStyleEngine !== "leafer-components") {
+            return false;
+        }
+        return host?.renderStyleProfile === "leafer-pragmatic-v1"
+            || host?.renderStyleProfile === "leafer-classic-v1";
     }
 
     _updateNodeVisuals(node, host, view, hashes) {
@@ -441,30 +575,146 @@ export class LeaferNodeUiLayer {
         const offset = host?.ds?.offset || [0, 0];
         const titleHeight = LiteGraph.NODE_TITLE_HEIGHT;
         const size = node?.size || [0, 0];
-        const width = Math.max(1, size[0] * scale);
+        const shape = node?._shape || node?.constructor?.shape || LiteGraph.ROUND_SHAPE;
+        const titleMode = node?.constructor?.title_mode;
+        const lowQuality = Boolean(host?.lowQualityRenderingRequired?.(0.5));
+        const renderText = !Boolean(host?.lowQualityRenderingRequired?.(0.6));
+        let renderTitle = !(
+            titleMode === LiteGraph.TRANSPARENT_TITLE
+            || titleMode === LiteGraph.NO_TITLE
+        );
+        if (titleMode === LiteGraph.AUTOHIDE_TITLE) {
+            renderTitle = Boolean(node?.mouseOver);
+        }
+        const showCollapsed = Boolean(node?.flags?.collapsed);
+        if (showCollapsed) {
+            const estimatedTextWidth = (hashes.title || "").length * (LiteGraph.NODE_TEXT_SIZE || 14) * 0.6;
+            node._collapsed_width = Math.min(size[0], estimatedTextWidth + LiteGraph.NODE_TITLE_HEIGHT * 2);
+        }
+        const collapsedWidth = showCollapsed
+            ? Math.max(1, node?._collapsed_width || size[0])
+            : Math.max(1, size[0]);
+        const width = Math.max(1, collapsedWidth * scale);
         const height = Math.max(1, size[1] * scale);
         const titleHeightScaled = titleHeight * scale;
         const x = (node?.pos?.[0] + offset[0]) * scale;
         const y = (node?.pos?.[1] + offset[1]) * scale;
+        const widgetsStartY = computeNodeWidgetsStartY(node, LiteGraph);
 
         setUiData(view.group, { x, y });
 
-        const showCollapsed = Boolean(node?.flags?.collapsed);
-        const hasBgCallback = typeof node?.onDrawBackground === "function";
-        const hasFgCallback = typeof node?.onDrawForeground === "function"
-            || typeof node?.onDrawTitle === "function"
-            || typeof node?.onDrawCollapsed === "function";
-        const callbackCanvasWidth = Math.max(1, Math.ceil(width + 4));
-        const callbackCanvasHeight = Math.max(1, Math.ceil(height + titleHeightScaled + 4));
+        let legacyWidgetDrawFns = null;
+        let nodeComponents = null;
+        let componentEnv = null;
+        if (this._isComponentMode(host)) {
+            nodeComponents = {
+                shell: getNodeComponent("node-shell"),
+                title: getNodeComponent("node-title"),
+                slots: getNodeComponent("node-slots"),
+                tooltip: getNodeComponent("node-tooltip"),
+            };
+            if (!nodeComponents.shell || !nodeComponents.title || !nodeComponents.slots || !nodeComponents.tooltip) {
+                return false;
+            }
 
-        const bgLayer = this._ensureCallbackLayer(view, "bg", hasBgCallback, callbackCanvasWidth, callbackCanvasHeight, titleHeightScaled);
-        const fgLayer = this._ensureCallbackLayer(view, "fg", hasFgCallback, callbackCanvasWidth, callbackCanvasHeight, titleHeightScaled);
+            const nodeColor = node?.color || node?.constructor?.color || LiteGraph.NODE_DEFAULT_COLOR;
+            const bgColor = node?.bgcolor || node?.constructor?.bgcolor || LiteGraph.NODE_DEFAULT_BGCOLOR;
+            const tokens = getRenderStyleTokens(host?.renderStyleProfile || this._renderStyleProfile);
+            componentEnv = {
+                view,
+                node,
+                host,
+                LiteGraph,
+                createUi: this._createUi.bind(this),
+                addChildren,
+                clearChildren,
+                setUiData,
+                width,
+                height,
+                titleHeightScaled,
+                scale,
+                showCollapsed,
+                renderTitle,
+                shape,
+                titleMode,
+                lowQuality,
+                renderText,
+                selected: Boolean(node?.is_selected),
+                mouseOver: Boolean(node?.mouseOver),
+                title: hashes.title,
+                tooltip: hashes.tooltip,
+                nodeColor,
+                bgColor,
+                tokens,
+            };
 
-        const collapsedConsumed = showCollapsed
-            ? this._runCallbackLayer(fgLayer, node?.onDrawCollapsed, node, [fgLayer?.context, host], scale, titleHeight) === true
-            : false;
+            if (
+                hashes.styleHash !== view.styleHash
+                || hashes.layoutHash !== view.layoutHash
+                || hashes.slotHash !== view.slotHash
+            ) {
+                nodeComponents.shell(componentEnv);
+                nodeComponents.title(componentEnv);
+                nodeComponents.slots(componentEnv);
+            }
 
-        if (!collapsedConsumed) {
+            const widgetActive = host?.node_widget?.[0] === node;
+            if (
+                hashes.widgetHash !== view.widgetHash
+                || hashes.layoutHash !== view.layoutHash
+                || hashes.styleHash !== view.styleHash
+                || showCollapsed
+                || widgetActive
+            ) {
+                clearChildren(view.widgetsGroup);
+                legacyWidgetDrawFns = [];
+                if (!showCollapsed) {
+                    const widgets = node?.widgets || [];
+                    const widgetHeight = LiteGraph.NODE_WIDGET_HEIGHT;
+                    let widgetY = widgetsStartY;
+                    for (const widget of widgets) {
+                        const currentY = widget.y != null ? widget.y : widgetY;
+                        widget.last_y = currentY;
+                        const widgetComponent = getWidgetComponent(widget);
+                        if (!widgetComponent) {
+                            return false;
+                        }
+                        const result = widgetComponent({
+                            view,
+                            node,
+                            host,
+                            widget,
+                            y: currentY,
+                            width: collapsedWidth,
+                            scale,
+                            widgetHeight,
+                            tokens,
+                            showText: renderText,
+                            active: host?.node_widget?.[0] === node && host?.node_widget?.[1] === widget,
+                            createUi: this._createUi.bind(this),
+                            addChildren,
+                        }) || { nextY: currentY + widgetHeight + 4 };
+                        if (typeof result.legacyDraw === "function") {
+                            legacyWidgetDrawFns.push(result.legacyDraw);
+                        }
+                        widgetY = result.nextY ?? (currentY + widgetHeight + 4);
+                    }
+                }
+            }
+
+            if (!showCollapsed && legacyWidgetDrawFns == null && view.hasLegacyWidgetDraw) {
+                legacyWidgetDrawFns = collectLegacyWidgetDraws(
+                    node?.widgets || [],
+                    collapsedWidth,
+                    LiteGraph.NODE_WIDGET_HEIGHT,
+                    widgetsStartY,
+                );
+            }
+
+            if (hashes.tooltipHash !== view.tooltipHash) {
+                nodeComponents.tooltip(componentEnv);
+            }
+        } else {
             if (hashes.styleHash !== view.styleHash || hashes.layoutHash !== view.layoutHash) {
                 clearChildren(view.bodyGroup);
                 clearChildren(view.titleGroup);
@@ -496,11 +746,11 @@ export class LeaferNodeUiLayer {
                         hittable: false,
                     });
                     const titleText = this._createUi("Text", {
-                        x: titleHeightScaled,
-                        y: -titleHeightScaled + (titleHeightScaled - 14 * scale) * 0.5,
+                        x: snapPixel(titleHeightScaled),
+                        y: snapPixel(canvasBaselineToTextTop((LiteGraph.NODE_TITLE_TEXT_Y * scale) - titleHeightScaled, scaledFontSize(14, scale))),
                         text: hashes.title,
                         fill: node?.is_selected ? LiteGraph.NODE_SELECTED_TITLE_COLOR : (node?.constructor?.title_text_color || host?.node_title_color || LiteGraph.NODE_TEXT_COLOR),
-                        fontSize: Math.max(10, 14 * scale),
+                        fontSize: scaledFontSize(14, scale),
                         hittable: false,
                     });
                     addChildren(view.titleGroup, titleRect, titleText);
@@ -543,11 +793,17 @@ export class LeaferNodeUiLayer {
                 }
             }
 
-            if (hashes.widgetHash !== view.widgetHash) {
+            const widgetActive = host?.node_widget?.[0] === node;
+            if (
+                hashes.widgetHash !== view.widgetHash
+                || hashes.layoutHash !== view.layoutHash
+                || hashes.styleHash !== view.styleHash
+                || widgetActive
+            ) {
                 clearChildren(view.widgetsGroup);
                 const widgets = node?.widgets || [];
                 const widgetHeight = LiteGraph.NODE_WIDGET_HEIGHT;
-                let widgetY = 2;
+                let widgetY = widgetsStartY;
                 for (const widget of widgets) {
                     const currentY = widget.y != null ? widget.y : widgetY;
                     widget.last_y = currentY;
@@ -565,10 +821,10 @@ export class LeaferNodeUiLayer {
                         hittable: false,
                     });
                     const widgetText = this._createUi("Text", {
-                        x: 18 * scale,
-                        y: sy + sh * 0.2,
+                        x: snapPixel(18 * scale),
+                        y: snapPixel(widgetTextTop(sy, sh, scaledFontSize(12, scale))),
                         text: `${widget.label || widget.name || "widget"}: ${widget.value ?? ""}`,
-                        fontSize: Math.max(10, 12 * scale),
+                        fontSize: scaledFontSize(12, scale),
                         fill: LiteGraph.WIDGET_TEXT_COLOR || LiteGraph.NODE_TEXT_COLOR,
                         hittable: false,
                     });
@@ -598,46 +854,102 @@ export class LeaferNodeUiLayer {
                         hittable: false,
                     });
                     const tooltipText = this._createUi("Text", {
-                        x: width * 0.5,
-                        y: tooltipRect.y + tooltipHeight * 0.22,
+                        x: snapPixel(width * 0.5),
+                        y: snapPixel(widgetTextTop(tooltipRect.y, tooltipHeight, scaledFontSize(12, scale))),
                         text: hashes.tooltip.slice(0, 120),
                         fill: "#CEC",
-                        fontSize: Math.max(10, 12 * scale),
+                        fontSize: scaledFontSize(12, scale),
                         textAlign: "center",
                         hittable: false,
                     });
                     addChildren(view.tooltipGroup, tooltipRect, tooltipText);
                 }
             }
-        } else {
-            clearChildren(view.bodyGroup);
-            clearChildren(view.titleGroup);
-            clearChildren(view.slotsGroup);
-            clearChildren(view.widgetsGroup);
-            clearChildren(view.tooltipGroup);
         }
 
-        this._runCallbackLayer(bgLayer, node?.onDrawBackground, node, [bgLayer?.context, host, host?.canvas, host?.graph_mouse], scale, titleHeight);
+        const hasBgCallback = typeof node?.onDrawBackground === "function";
+        const hasFgCallbackBase = typeof node?.onDrawForeground === "function"
+            || typeof node?.onDrawTitle === "function"
+            || typeof node?.onDrawCollapsed === "function";
+        const effectiveLegacyWidgetDrawFns = legacyWidgetDrawFns ?? view.legacyWidgetDrawFns ?? [];
+        const effectiveHasLegacyDraw = !showCollapsed && effectiveLegacyWidgetDrawFns.length > 0;
+        view.hasLegacyWidgetDraw = effectiveHasLegacyDraw;
+        view.legacyWidgetDrawFns = effectiveLegacyWidgetDrawFns;
+
+        const hasFgCallback = hasFgCallbackBase || effectiveHasLegacyDraw;
+        const callbackCanvasWidth = Math.max(1, Math.ceil(width + 4));
+        const callbackCanvasHeight = Math.max(1, Math.ceil(height + titleHeightScaled + 4));
+        const bgLayer = this._ensureCallbackLayer(view, "bg", hasBgCallback, callbackCanvasWidth, callbackCanvasHeight, titleHeightScaled);
+        const fgLayer = this._ensureCallbackLayer(view, "fg", hasFgCallback, callbackCanvasWidth, callbackCanvasHeight, titleHeightScaled);
+
+        const collapsedConsumed = showCollapsed
+            ? this._runCallbackLayer(fgLayer, node?.onDrawCollapsed, node, [fgLayer?.context, host], scale, titleHeight) === true
+            : false;
+
+        const slotHashBeforeBg = hashes.slotHash;
+        this._runCallbackLayer(
+            bgLayer,
+            node?.onDrawBackground,
+            node,
+            [bgLayer?.context, host, host?.canvas, host?.graph_mouse],
+            scale,
+            titleHeight,
+        );
+        const slotHashAfterBg = hashNodeSlots(node);
+        if (slotHashAfterBg !== slotHashBeforeBg) {
+            hashes.slotHash = slotHashAfterBg;
+            if (componentEnv && nodeComponents?.slots) {
+                nodeComponents.slots(componentEnv);
+            }
+        }
         if (!collapsedConsumed) {
             this._runCallbackLayer(fgLayer, node?.onDrawTitle, node, [fgLayer?.context], scale, titleHeight);
             this._runCallbackLayer(fgLayer, node?.onDrawForeground, node, [fgLayer?.context, host, host?.canvas], scale, titleHeight);
         }
 
+        if (effectiveHasLegacyDraw) {
+            const fgCtx = fgLayer?.context;
+            if (fgCtx) {
+                ensureRoundRectCompat(fgCtx);
+                fgCtx.save?.();
+                fgCtx.scale?.(scale, scale);
+                fgCtx.translate?.(0, titleHeight);
+                for (const drawLegacy of effectiveLegacyWidgetDrawFns) {
+                    drawLegacy(fgCtx, node);
+                }
+                fgCtx.restore?.();
+                fgLayer.paint?.();
+            }
+        }
+
+        if (collapsedConsumed) {
+            clearChildren(view.bodyGroup);
+            clearChildren(view.titleGroup);
+            clearChildren(view.slotsGroup);
+            clearChildren(view.widgetsGroup);
+            clearChildren(view.tooltipGroup);
+            view.hasLegacyWidgetDraw = false;
+            view.legacyWidgetDrawFns = [];
+        }
+
         view.styleHash = hashes.styleHash;
         view.layoutHash = hashes.layoutHash;
+        view.slotHash = hashes.slotHash;
         view.widgetHash = hashes.widgetHash;
         view.tooltipHash = hashes.tooltipHash;
+        return true;
     }
 
     upsertNode(node, host) {
         if (!this._rootGroup || !node || !host) {
-            return;
+            return false;
         }
         const key = this._getNodeKey(node);
         this._visibleNodeKeys.add(key);
 
         const view = this._getOrCreateView(key);
+        this._syncViewStackOrder(view);
         const hashes = this._computeHashes(node, host);
-        this._updateNodeVisuals(node, host, view, hashes);
+        return this._updateNodeVisuals(node, host, view, hashes) !== false;
     }
 }

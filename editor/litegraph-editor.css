@@ -1,12 +1,52 @@
+:root {
+    --lg-font-ui: Tahoma, sans-serif;
+    --lg-font-code: "Courier New", monospace;
+    --lg-editor-bg: #333;
+    --lg-content-bg: #1a1a1a;
+    --lg-panel-bg: #333;
+    --lg-text: #eee;
+    --lg-text-muted: #aaa;
+    --lg-border-strong: #111;
+    --lg-btn-bg: #3f3f3f;
+    --lg-btn-text: #ccc;
+    --lg-btn-hover-bg: #999;
+    --lg-btn-hover-text: #fff;
+    --lg-code-bg: #000;
+    --lg-code-text: #ddd;
+    --lg-select-bg: #2e2e2e;
+    --lg-select-border: #555;
+    --lg-load-empty: url("../editor/imgs/load-progress-empty.png");
+    --lg-load-full: url("../editor/imgs/load-progress-full.png");
+}
+
+:root[data-lg-theme="neogrid"] {
+    --lg-font-ui: "Fira Sans", "Segoe UI", sans-serif;
+    --lg-font-code: "Fira Code", Consolas, monospace;
+    --lg-editor-bg: #141922;
+    --lg-content-bg: #0f141d;
+    --lg-panel-bg: #1b2330;
+    --lg-text: #d7deea;
+    --lg-text-muted: #97a4bb;
+    --lg-border-strong: #2a3448;
+    --lg-btn-bg: #232e41;
+    --lg-btn-text: #d7deea;
+    --lg-btn-hover-bg: #f97316;
+    --lg-btn-hover-text: #0c1118;
+    --lg-code-bg: #0d121a;
+    --lg-code-text: #e2e9f7;
+    --lg-select-bg: #1b2433;
+    --lg-select-border: #34435d;
+}
+
 .litegraph-editor {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
 
-    background-color: #333;
-    color: #eee;
-    font: 14px Tahoma, sans-serif;
+    background-color: var(--lg-editor-bg);
+    color: var(--lg-text);
+    font: 14px var(--lg-font-ui);
 
     position: relative;
 }
@@ -19,14 +59,15 @@
     position: relative;
     width: 100%;
     height: calc(100% - 80px);
-    background-color: #1a1a1a;
+    background-color: var(--lg-content-bg);
 }
 
 .litegraph-editor .header,
 .litegraph-editor .footer {
     position: relative;
     height: 40px;
-    background-color: #333;
+    background-color: var(--lg-panel-bg);
+    border-bottom: 1px solid var(--lg-border-strong);
 }
 
 .litegraph-editor .tools,
@@ -50,36 +91,36 @@
 }
 
 .litegraph-editor .miniwindow {
-    background-color: #333;
-    border: 1px solid #111;
+    background-color: var(--lg-panel-bg);
+    border: 1px solid var(--lg-border-strong);
 }
 
 .litegraph-editor .miniwindow .corner-button {
     position: absolute;
     top: 2px;
     right: 2px;
-    font-family: "Tahoma", sans-serif;
+    font-family: var(--lg-font-ui);
     font-size: 14px;
-    color: #aaa;
+    color: var(--lg-text-muted);
     cursor: pointer;
 }
 
 /* BUTTONS **********************/
 
 .litegraph-editor .btn {
-    color: #ccc;
+    color: var(--lg-btn-text);
     font-size: 20px;
     min-width: 30px;
     border: 0 solid #666;
-    background-color: #3f3f3f;
+    background-color: var(--lg-btn-bg);
     padding: 4px 10px;
     cursor: pointer;
     transition: all 1s;
 }
 
 .litegraph-editor button:hover {
-    background-color: #999;
-    color: #fff;
+    background-color: var(--lg-btn-hover-bg);
+    color: var(--lg-btn-hover-text);
     transition: all 1s;
 }
 
@@ -122,8 +163,8 @@
 /* METER *********************/
 
 .litegraph-editor .loadmeter {
-    font-family: "Tahoma", sans-serif;
-    color: #aaa;
+    font-family: var(--lg-font-ui);
+    color: var(--lg-text-muted);
     font-size: 12px;
     border-radius: 2px;
     width: 130px;
@@ -143,7 +184,7 @@
     display: inline-block;
     width: 90px;
     height: 15px;
-    background-image: url("../editor/imgs/load-progress-empty.png");
+    background-image: var(--lg-load-empty);
 }
 
 .litegraph-editor .cpuload .fgload,
@@ -152,26 +193,36 @@
     width: 4px;
     height: 15px;
     max-width: 90px;
-    background-image: url("../editor/imgs/load-progress-full.png");
+    background-image: var(--lg-load-full);
 }
 
 .litegraph-editor textarea.code,
 .litegraph-editor div.code {
     height: 100%;
     width: 100%;
-    background-color: black;
+    background-color: var(--lg-code-bg);
     padding: 4px;
-    font: 16px monospace;
+    font: 16px var(--lg-font-code);
     overflow: auto;
     resize: none;
     outline: none;
-    color: #ddd;
+    color: var(--lg-code-text);
 }
 
 .litegraph-editor .codeflask {
-    background-color: #2a2a2a;
+    background-color: var(--lg-content-bg);
 }
 
 .litegraph-editor .codeflask textarea {
     opacity: 0;
+}
+
+.litegraph-editor .toolbar-select {
+    font-size: 12px;
+    height: 22px;
+    background: var(--lg-select-bg);
+    color: var(--lg-text);
+    border: 1px solid var(--lg-select-border);
+    border-radius: 4px;
+    padding: 0 6px;
 }
