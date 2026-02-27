@@ -55,5 +55,8 @@
         "graph",
         "editor",
         "web"
-    ]
+    ],
+    "dependencies": {
+        "leafer-ui": "^2.0.2"
+    }
 }

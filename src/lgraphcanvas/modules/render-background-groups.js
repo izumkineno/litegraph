@@ -82,7 +82,7 @@ export function drawSubgraphPanelLeft(subgraph, subnode, ctx) {
 
 export function drawSubgraphPanelRight(subgraph, subnode, ctx) {
     var num = subnode.outputs ? subnode.outputs.length : 0;
-    var canvas_w = this.bgcanvas.width;
+    var canvas_w = (this.backSurface?.canvas || this.bgcanvas).width;
     var w = 200;
     var h = Math.floor(LiteGraph.NODE_SLOT_HEIGHT * 1.6);
 
@@ -220,15 +220,14 @@ export function renderInfo(ctx, x, y) {
 }
 
 export function drawBackCanvas() {
-    var canvas = this.bgcanvas;
+    var canvas = this.backSurface?.canvas || this.bgcanvas;
 
     if (!this.bgctx) {
-        this.bgctx = this.bgcanvas.getContext("2d");
+        this.bgctx = this.rendererAdapter?.getBackCtx?.() ?? this.backSurface?.getContextCompat?.() ?? this.bgcanvas.getContext("2d");
     }
     var ctx = this.bgctx;
-    if (ctx.start) {
-        ctx.start();
-    }
+    this.rendererAdapter?.beginFrame?.("back");
+    ctx.start?.();
 
     var viewport = this.viewport || [0,0,ctx.canvas.width,ctx.canvas.height];
 
@@ -379,6 +378,7 @@ export function drawBackCanvas() {
     }
 
     ctx.finish?.();
+    this.rendererAdapter?.endFrame?.("back");
     this.dirty_bgcanvas = false;
     this.dirty_canvas = true; // to force to repaint the front canvas with the bgcanvas
 }

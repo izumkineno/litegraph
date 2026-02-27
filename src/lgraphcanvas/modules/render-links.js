@@ -1,6 +1,13 @@
 import { LiteGraph } from "../../litegraph.js";
 import { LGraphCanvas } from "../../lgraphcanvas.js";
 import { margin_area, link_bounding, tempA, tempB } from "../shared/scratch.js";
+
+/** @typedef {import("../renderer/contracts.js").IRenderContext2DCompat} IRenderContext2DCompat */
+
+/**
+ * @param {IRenderContext2DCompat} ctx
+ * @param {any} link
+ */
 export function drawLinkTooltip(ctx, link) {
     var pos = link._pos;
     ctx.fillStyle = "black";
@@ -53,6 +60,9 @@ export function drawLinkTooltip(ctx, link) {
     ctx.fillText(text, pos[0], pos[1] - 15 - h * 0.3);
 }
 
+/**
+ * @param {IRenderContext2DCompat} ctx
+ */
 export function drawConnections(ctx) {
     var now = LiteGraph.getTime();
     var visible_area = this.visible_area;
@@ -174,6 +184,9 @@ export function drawConnections(ctx) {
     ctx.globalAlpha = 1;
 }
 
+/**
+ * @param {IRenderContext2DCompat} ctx
+ */
 export function renderLink(
     ctx,
     a,

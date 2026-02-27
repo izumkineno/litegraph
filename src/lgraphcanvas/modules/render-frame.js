@@ -1,6 +1,7 @@
 import { LiteGraph } from "../../litegraph.js";
 export function draw(force_canvas, force_bgcanvas) {
-    if (!this.canvas || this.canvas.width == 0 || this.canvas.height == 0) {
+    const canvas = this.frontSurface?.canvas || this.canvas;
+    if (!canvas || canvas.width == 0 || canvas.height == 0) {
         return;
     }
 
@@ -57,7 +58,7 @@ export function drawFrontCanvas() {
     this.dirty_canvas = false;
 
     if (!this.ctx) {
-        this.ctx = this.bgcanvas.getContext("2d");
+        this.ctx = this.rendererAdapter?.getFrontCtx?.() ?? this.frontSurface?.getContextCompat?.() ?? this.canvas?.getContext?.("2d");
     }
     var ctx = this.ctx;
     if (!ctx) {
@@ -65,7 +66,8 @@ export function drawFrontCanvas() {
         return;
     }
 
-    var canvas = this.canvas;
+    this.rendererAdapter?.beginFrame?.("front");
+    var canvas = this.frontSurface?.canvas || this.canvas;
     if ( ctx.start2D && !this.viewport ) {
         ctx.start2D();
         ctx.restore();
@@ -91,10 +93,15 @@ export function drawFrontCanvas() {
     }
 
     // draw bg canvas
-    if (this.bgcanvas == this.canvas) {
+    const backCanvas = this.backSurface?.canvas || this.bgcanvas;
+    if (backCanvas == canvas) {
         this.drawBackCanvas();
-    } else {
-        ctx.drawImage( this.bgcanvas, 0, 0 );
+    } else if (backCanvas) {
+        if (this.rendererAdapter?.blitBackToFront) {
+            this.rendererAdapter.blitBackToFront(ctx);
+        } else {
+            ctx.drawImage(backCanvas, 0, 0);
+        }
     }
 
     // rendering
@@ -296,6 +303,7 @@ export function drawFrontCanvas() {
         ctx.restore();
     }
     ctx.finish2D?.();
+    this.rendererAdapter?.endFrame?.("front");
 }
 
 export function lowQualityRenderingRequired(activation_scale) {

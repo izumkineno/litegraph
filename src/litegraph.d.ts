@@ -18,6 +18,42 @@ export type SlotShape =
     | typeof LiteGraph.SQUARE_SHAPE
     | number; // For custom shapes
 
+export interface IRenderContext2DCompat extends CanvasRenderingContext2D {
+    start?: () => void;
+    finish?: () => void;
+    start2D?: () => void;
+    finish2D?: () => void;
+    mozImageSmoothingEnabled?: boolean;
+}
+
+export interface IRenderSurface {
+    canvas: HTMLCanvasElement;
+    getContextCompat(): IRenderContext2DCompat | null;
+    resize(width: number, height: number): void;
+}
+
+export interface IRenderEngineAdapter {
+    init(options: {
+        canvas: HTMLCanvasElement;
+        ownerDocument?: Document;
+    }): this;
+    destroy?(): void;
+    resize(width: number, height: number): void;
+    beginFrame?(layer: "front" | "back"): void;
+    endFrame?(layer: "front" | "back"): void;
+    getFrontCtx(): IRenderContext2DCompat | null;
+    getBackCtx(): IRenderContext2DCompat | null;
+    getFrontSurface(): IRenderSurface | null;
+    getBackSurface(): IRenderSurface | null;
+    blitBackToFront?(targetCtx?: IRenderContext2DCompat | null): void;
+    adoptExternalContexts?(options: {
+        frontCanvas: HTMLCanvasElement;
+        backCanvas: HTMLCanvasElement;
+        frontContext: IRenderContext2DCompat;
+        backContext: IRenderContext2DCompat;
+    }): void;
+}
+
 /** https://github.com/jagenjo/litegraph.js/tree/master/guides#node-slots */
 export interface INodeSlot {
     name: string;
@@ -64,7 +100,7 @@ export interface IWidget<TValue = any, TOptions = any> {
     callback?: WidgetCallback<this>;
     /** Called by `LGraphCanvas.drawNodeWidgets` */
     draw?(
-        ctx: CanvasRenderingContext2D,
+        ctx: IRenderContext2DCompat,
         node: LGraphNode,
         width: number,
         posY: number,
@@ -309,6 +345,10 @@ export const LiteGraph: {
     getTime(): number;
     LLink: typeof LLink;
     LGraph: typeof LGraph;
+    LGraphNode: typeof LGraphNode;
+    LGraphGroup: typeof LGraphGroup;
+    LGraphCanvas: typeof LGraphCanvas;
+    Canvas2DRendererAdapter: typeof Canvas2DRendererAdapter;
     DragAndScale: typeof DragAndScale;
     compareObjects(a: object, b: object): boolean;
     distance(a: Vector2, b: Vector2): number;
@@ -915,11 +955,11 @@ export declare class LGraphNode {
 
     // https://github.com/jagenjo/litegraph.js/blob/master/guides/README.md#custom-node-appearance
     onDrawBackground?(
-        ctx: CanvasRenderingContext2D,
+        ctx: IRenderContext2DCompat,
         canvas: HTMLCanvasElement
     ): void;
     onDrawForeground?(
-        ctx: CanvasRenderingContext2D,
+        ctx: IRenderContext2DCompat,
         canvas: HTMLCanvasElement
     ): void;
 
@@ -1076,13 +1116,36 @@ export declare class DragAndScale {
     bindEvents(element: HTMLElement): void;
     computeVisibleArea(): void;
     onMouse(e: MouseEvent): void;
-    toCanvasContext(ctx: CanvasRenderingContext2D): void;
+    toCanvasContext(ctx: IRenderContext2DCompat): void;
     convertOffsetToCanvas(pos: Vector2): Vector2;
     convertCanvasToOffset(pos: Vector2): Vector2;
     mouseDrag(x: number, y: number): void;
     changeScale(value: number, zooming_center?: Vector2): void;
     changeDeltaScale(value: number, zooming_center?: Vector2): void;
     reset(): void;
+}
+
+export declare class Canvas2DRendererAdapter implements IRenderEngineAdapter {
+    constructor();
+    init(options: {
+        canvas: HTMLCanvasElement;
+        ownerDocument?: Document;
+    }): this;
+    destroy(): void;
+    resize(width: number, height: number): void;
+    beginFrame(layer: "front" | "back"): void;
+    endFrame(layer: "front" | "back"): void;
+    getFrontCtx(): IRenderContext2DCompat | null;
+    getBackCtx(): IRenderContext2DCompat | null;
+    getFrontSurface(): IRenderSurface | null;
+    getBackSurface(): IRenderSurface | null;
+    blitBackToFront(targetCtx?: IRenderContext2DCompat | null): void;
+    adoptExternalContexts(options: {
+        frontCanvas: HTMLCanvasElement;
+        backCanvas: HTMLCanvasElement;
+        frontContext: IRenderContext2DCompat;
+        backContext: IRenderContext2DCompat;
+    }): void;
 }
 
 /**
@@ -1140,6 +1203,14 @@ export declare class LGraphCanvas {
         options?: {
             skip_render?: boolean;
             autoresize?: boolean;
+            clip_all_nodes?: boolean;
+            free_resize?: boolean;
+            skip_events?: boolean;
+            viewport?: Vector4 | null;
+            rendererAdapter?:
+                | IRenderEngineAdapter
+                | (new () => IRenderEngineAdapter)
+                | null;
         }
     );
 
@@ -1159,13 +1230,14 @@ export declare class LGraphCanvas {
     autoresize?: boolean;
     background_image: string;
     bgcanvas: HTMLCanvasElement;
-    bgctx: CanvasRenderingContext2D;
+    bgctx: IRenderContext2DCompat;
+    backSurface: IRenderSurface | null;
     canvas: HTMLCanvasElement;
     canvas_mouse: Vector2;
     clear_background: boolean;
     connecting_node: LGraphNode | null;
     connections_width: number;
-    ctx: CanvasRenderingContext2D;
+    ctx: IRenderContext2DCompat;
     current_node: LGraphNode | null;
     default_connection_color: {
         input_off: string;
@@ -1186,6 +1258,7 @@ export declare class LGraphCanvas {
     filter: any;
     fps: number;
     frame: number;
+    frontSurface: IRenderSurface | null;
     graph: LGraph;
     highlighted_links: Record<number, boolean>;
     highquality_render: boolean;
@@ -1213,17 +1286,17 @@ export declare class LGraphCanvas {
     node_widget: [LGraphNode, IWidget] | null;
     /** Called by `LGraphCanvas.drawBackCanvas` */
     onDrawBackground:
-        | ((ctx: CanvasRenderingContext2D, visibleArea: Vector4) => void)
+        | ((ctx: IRenderContext2DCompat, visibleArea: Vector4) => void)
         | null;
     /** Called by `LGraphCanvas.drawFrontCanvas` */
     onDrawForeground:
-        | ((ctx: CanvasRenderingContext2D, visibleArea: Vector4) => void)
+        | ((ctx: IRenderContext2DCompat, visibleArea: Vector4) => void)
         | null;
-    onDrawOverlay: ((ctx: CanvasRenderingContext2D) => void) | null;
+    onDrawOverlay: ((ctx: IRenderContext2DCompat) => void) | null;
     /** Called by `LGraphCanvas.processMouseDown` */
     onMouse: ((event: MouseEvent) => boolean) | null;
     /** Called by `LGraphCanvas.drawFrontCanvas` and `LGraphCanvas.drawLinkTooltip` */
-    onDrawLinkTooltip: ((ctx: CanvasRenderingContext2D, link: LLink, _this: this) => void) | null;
+    onDrawLinkTooltip: ((ctx: IRenderContext2DCompat, link: LLink, _this: this) => void) | null;
     /** Called by `LGraphCanvas.selectNodes` */
     onNodeMoved: ((node: LGraphNode) => void) | null;
     /** Called by `LGraphCanvas.processNodeSelected` */
@@ -1258,6 +1331,7 @@ export declare class LGraphCanvas {
     render_only_selected: boolean;
     render_shadows: boolean;
     render_title_colored: boolean;
+    rendererAdapter: IRenderEngineAdapter | null;
     round_radius: number;
     selected_group: null | LGraphGroup;
     selected_group_resizing: boolean;
@@ -1280,7 +1354,7 @@ export declare class LGraphCanvas {
     /** closes a subgraph contained inside a node */
     closeSubgraph(): void;
     /** assigns a canvas */
-    setCanvas(canvas: HTMLCanvasElement, skipEvents?: boolean): void;
+    setCanvas(canvas: HTMLCanvasElement | string | null, skipEvents?: boolean): void;
     /** binds mouse, keyboard, touch and drag events to the canvas */
     bindEvents(): void;
     /** unbinds mouse events from the canvas */
@@ -1361,17 +1435,17 @@ export declare class LGraphCanvas {
     /** draws the front canvas (the one containing all the nodes) */
     drawFrontCanvas(): void;
     /** draws some useful stats in the corner of the canvas */
-    renderInfo(ctx: CanvasRenderingContext2D, x: number, y: number): void;
+    renderInfo(ctx: IRenderContext2DCompat, x: number, y: number): void;
     /** draws the back canvas (the one containing the background and the connections) */
     drawBackCanvas(): void;
     /** draws the given node inside the canvas */
-    drawNode(node: LGraphNode, ctx: CanvasRenderingContext2D): void;
+    drawNode(node: LGraphNode, ctx: IRenderContext2DCompat): void;
     /** draws graphic for node's slot */
-    drawSlotGraphic(ctx: CanvasRenderingContext2D, pos: number[], shape: SlotShape, horizontal: boolean): void;
+    drawSlotGraphic(ctx: IRenderContext2DCompat, pos: number[], shape: SlotShape, horizontal: boolean): void;
     /** draws the shape of the given node in the canvas */
     drawNodeShape(
         node: LGraphNode,
-        ctx: CanvasRenderingContext2D,
+        ctx: IRenderContext2DCompat,
         size: [number, number],
         fgColor: string,
         bgColor: string,
@@ -1379,7 +1453,7 @@ export declare class LGraphCanvas {
         mouseOver: boolean
     ): void;
     /** draws every connection visible in the canvas */
-    drawConnections(ctx: CanvasRenderingContext2D): void;
+    drawConnections(ctx: IRenderContext2DCompat): void;
     /**
      * draws a link between two points
      * @param a start pos
@@ -1412,12 +1486,12 @@ export declare class LGraphCanvas {
         endDir?: number
     ): void;
 
-    drawExecutionOrder(ctx: CanvasRenderingContext2D): void;
+    drawExecutionOrder(ctx: IRenderContext2DCompat): void;
     /** draws the widgets stored inside a node */
     drawNodeWidgets(
         node: LGraphNode,
         posY: number,
-        ctx: CanvasRenderingContext2D,
+        ctx: IRenderContext2DCompat,
         activeWidget: object
     ): void;
     /** process an event on widgets */
@@ -1428,7 +1502,7 @@ export declare class LGraphCanvas {
         activeWidget: object
     ): void;
     /** draws every group area in the background */
-    drawGroups(canvas: any, ctx: CanvasRenderingContext2D): void;
+    drawGroups(canvas: any, ctx: IRenderContext2DCompat): void;
     adjustNodesSize(): void;
     /** resizes the canvas to a given size, if no size is passed, then it tries to fill the parentNode */
     resize(width?: number, height?: number): void;
@@ -1497,3 +1571,4 @@ declare class ContextMenu {
 }
 
 declare function clamp(v: number, min: number, max: number): number;
+

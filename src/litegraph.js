@@ -5,6 +5,7 @@ import { LGraphGroup } from "./lgraphgroup.js";
 import { LGraphCanvas } from "./lgraphcanvas.js";
 import { DragAndScale } from "./dragandscale.js";
 import { ContextMenu } from "./contextmenu.js";
+import { Canvas2DRendererAdapter } from "./lgraphcanvas/renderer/canvas2d-adapter.js";
 import { installLiteGraphDelegates } from "./litegraph/install-delegates.js";
 import { applyCoreDefaults } from "./litegraph/shared/defaults-core.js";
 import { applyUiDefaults } from "./litegraph/shared/defaults-ui.js";
@@ -28,6 +29,7 @@ export var LiteGraph = new class {
         setupLGraphNodeDelegates(this);
         this.LGraphGroup = LGraphGroup;
         this.LGraphCanvas = LGraphCanvas;
+        this.Canvas2DRendererAdapter = Canvas2DRendererAdapter;
         this.DragAndScale = DragAndScale;
         this.ContextMenu = ContextMenu;
 

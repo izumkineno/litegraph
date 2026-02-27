@@ -1,5 +1,18 @@
 import { LiteGraph } from "../../litegraph.js";
 import { LGraphCanvas } from "../../lgraphcanvas.js";
+import { Canvas2DRendererAdapter } from "../renderer/canvas2d-adapter.js";
+
+function resolveRendererAdapter(instance) {
+    const candidate = instance.options?.rendererAdapter ?? instance.rendererAdapter;
+    if (!candidate) {
+        return new Canvas2DRendererAdapter();
+    }
+    if (typeof candidate === "function") {
+        return new candidate();
+    }
+    return candidate;
+}
+
 export function clear() {
     this.frame = 0;
     this.last_draw_time = 0;
@@ -133,10 +146,19 @@ export function setCanvas(canvas, skip_events) {
         }
     }
 
+    if (this.rendererAdapter && this.canvas && canvas !== this.canvas) {
+        this.rendererAdapter.destroy?.();
+    }
+
     this.canvas = canvas;
     this.ds.element = canvas;
 
     if (!canvas) {
+        this.ctx = null;
+        this.bgctx = null;
+        this.bgcanvas = null;
+        this.frontSurface = null;
+        this.backSurface = null;
         return;
     }
 
@@ -145,11 +167,6 @@ export function setCanvas(canvas, skip_events) {
     canvas.data = this;
     canvas.tabindex = "1"; // to allow key events
 
-    // bg canvas: used for non changing stuff
-    this.bgcanvas = document.createElement("canvas");
-    this.bgcanvas.width = this.canvas.width;
-    this.bgcanvas.height = this.canvas.height;
-
     if (canvas.getContext == null) {
         if (canvas.localName != "canvas") {
             throw new Error("Element supplied for LGraphCanvas must be a <canvas> element, you passed a "+canvas.localName);
@@ -157,7 +174,19 @@ export function setCanvas(canvas, skip_events) {
         throw new Error("This browser doesn't support Canvas");
     }
 
-    var ctx = this.ctx = canvas.getContext("2d");
+    this.rendererAdapter = resolveRendererAdapter(this);
+    this.rendererAdapter.init?.({
+        canvas,
+        ownerDocument: canvas.ownerDocument,
+    });
+
+    this.frontSurface = this.rendererAdapter.getFrontSurface?.() ?? null;
+    this.backSurface = this.rendererAdapter.getBackSurface?.() ?? null;
+    this.canvas = this.frontSurface?.canvas || canvas;
+    this.bgcanvas = this.backSurface?.canvas || canvas;
+
+    var ctx = this.ctx = this.rendererAdapter.getFrontCtx?.() ?? canvas.getContext("2d");
+    this.bgctx = this.rendererAdapter.getBackCtx?.() ?? this.bgcanvas.getContext?.("2d");
     if (ctx == null) {
         if (!canvas.webgl_enabled) {
             LiteGraph.info?.("This canvas seems to be WebGL, enabling WebGL renderer");
@@ -259,6 +288,21 @@ export function enableWebGL() {
     this.ctx.webgl = true;
     this.bgcanvas = this.canvas;
     this.bgctx = this.gl;
+    this.frontSurface = {
+        canvas: this.canvas,
+        getContextCompat: () => this.ctx,
+        resize: (width, height) => {
+            this.canvas.width = width;
+            this.canvas.height = height;
+        },
+    };
+    this.backSurface = this.frontSurface;
+    this.rendererAdapter?.adoptExternalContexts?.({
+        frontCanvas: this.canvas,
+        backCanvas: this.canvas,
+        frontContext: this.ctx,
+        backContext: this.bgctx,
+    });
     this.canvas.webgl_enabled = true;
 
     /*
@@ -323,14 +367,23 @@ export function resize(width, height) {
         height = parent.offsetHeight;
     }
 
-    if (this.canvas.width == width && this.canvas.height == height) {
+    const frontCanvas = this.frontSurface?.canvas || this.canvas;
+    if (frontCanvas.width == width && frontCanvas.height == height) {
         return;
     }
 
-    this.canvas.width = width;
-    this.canvas.height = height;
-    this.bgcanvas.width = this.canvas.width;
-    this.bgcanvas.height = this.canvas.height;
+    if (this.rendererAdapter?.resize) {
+        this.rendererAdapter.resize(width, height);
+        this.frontSurface = this.rendererAdapter.getFrontSurface?.() ?? this.frontSurface;
+        this.backSurface = this.rendererAdapter.getBackSurface?.() ?? this.backSurface;
+        this.canvas = this.frontSurface?.canvas || this.canvas;
+        this.bgcanvas = this.backSurface?.canvas || this.bgcanvas;
+    } else {
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.bgcanvas.width = this.canvas.width;
+        this.bgcanvas.height = this.canvas.height;
+    }
     this.setDirty(true, true);
 }
 

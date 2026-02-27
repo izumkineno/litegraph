@@ -2,6 +2,7 @@ import { LiteGraph } from "./litegraph.js";
 import { createLGraphCanvasControllers } from "./lgraphcanvas/controllers/index.js";
 import { installLGraphCanvasDelegates } from "./lgraphcanvas/install-delegates.js";
 import { applyLGraphCanvasStatics } from "./lgraphcanvas/modules/static-actions.js";
+import { Canvas2DRendererAdapter } from "./lgraphcanvas/renderer/canvas2d-adapter.js";
 
 export class LGraphCanvas {
     constructor(canvas, graph, options) {
@@ -9,6 +10,7 @@ export class LGraphCanvas {
             skip_render: false,
             autoresize: false,
             clip_all_nodes: false,
+            rendererAdapter: null,
         };
         this.options = options;
 
@@ -122,6 +124,9 @@ export class LGraphCanvas {
         this.low_quality_rendering_threshold = 5; // amount of slow fps to switch to low quality rendering
 
         this.controllers = createLGraphCanvasControllers(this);
+        this.rendererAdapter = options.rendererAdapter || new Canvas2DRendererAdapter();
+        this.frontSurface = null;
+        this.backSurface = null;
         this.processMouseWheel = this.processMouseWheel.bind(this);
         this.processKey = this.processKey.bind(this);
         this.processDrop = this.processDrop.bind(this);

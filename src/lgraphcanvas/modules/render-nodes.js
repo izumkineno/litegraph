@@ -1,6 +1,13 @@
 import { LiteGraph } from "../../litegraph.js";
 import { LGraphCanvas } from "../../lgraphcanvas.js";
 import { temp_vec2, tmp_area } from "../shared/scratch.js";
+
+/** @typedef {import("../renderer/contracts.js").IRenderContext2DCompat} IRenderContext2DCompat */
+
+/**
+ * @param {any} node
+ * @param {IRenderContext2DCompat} ctx
+ */
 export function drawNode(node, ctx) {
 
     this.current_node = node;
@@ -433,6 +440,10 @@ export function drawNode(node, ctx) {
     ctx.globalAlpha = 1.0;
 }
 
+/**
+ * @param {IRenderContext2DCompat} ctx
+ * @param {any} node
+ */
 export function drawNodeTooltip( ctx, node ) {
     if(!node || !ctx) {
         LiteGraph.warn?.("drawNodeTooltip: invalid node or ctx",node,ctx);
@@ -491,6 +502,10 @@ export function drawNodeTooltip( ctx, node ) {
     ctx.closePath();
 }
 
+/**
+ * @param {any} node
+ * @param {IRenderContext2DCompat} ctx
+ */
 export function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouse_over) {
     // bg rect
     ctx.strokeStyle = fgcolor;
@@ -797,6 +812,9 @@ export function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouse
     if (node.action_triggered>0) node.action_triggered--;
 }
 
+/**
+ * @param {IRenderContext2DCompat} ctx
+ */
 export function drawExecutionOrder(ctx) {
     ctx.shadowColor = "transparent";
     ctx.globalAlpha = 0.25;
@@ -833,6 +851,12 @@ export function drawExecutionOrder(ctx) {
     ctx.globalAlpha = 1;
 }
 
+/**
+ * @param {any} node
+ * @param {number} posY
+ * @param {IRenderContext2DCompat} ctx
+ * @param {any} active_widget
+ */
 export function drawNodeWidgets(node, posY, ctx, active_widget) {
     if (!node.widgets || !node.widgets.length) {
         return 0;
