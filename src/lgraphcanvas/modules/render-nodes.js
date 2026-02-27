@@ -1,14 +1,79 @@
 import { LiteGraph } from "../../litegraph.js";
-import { LGraphCanvas } from "../../lgraphcanvas.js";
 import { temp_vec2, tmp_area } from "../shared/scratch.js";
 
 /** @typedef {import("../renderer/contracts.js").IRenderContext2DCompat} IRenderContext2DCompat */
+
+const titleGradientCacheByContext = new WeakMap();
+
+/**
+ * Leafer and other compat contexts may not expose roundRect.
+ * Fallback to rect so draw pipelines remain functional.
+ * @param {IRenderContext2DCompat | any} ctx
+ */
+function ensureRoundRectCompat(ctx) {
+    if (!ctx || typeof ctx.roundRect === "function") {
+        return;
+    }
+
+    const fallback = typeof ctx.rect === "function"
+        ? function roundRectFallback(x, y, width, height) {
+            this.rect(x, y, width, height);
+        }
+        : function roundRectNoop() {
+        };
+
+    try {
+        ctx.roundRect = fallback;
+    } catch (_error) {
+        // Some context wrappers may lock properties; in that case keep going.
+    }
+}
+
+/**
+ * @param {IRenderContext2DCompat} ctx
+ * @returns {Map<string, CanvasGradient | string>}
+ */
+function getTitleGradientCache(ctx) {
+    let cache = titleGradientCacheByContext.get(ctx);
+    if (!cache) {
+        cache = new Map();
+        titleGradientCacheByContext.set(ctx, cache);
+    }
+    return cache;
+}
+
+/**
+ * @param {IRenderContext2DCompat} ctx
+ * @param {string} titleColor
+ * @returns {CanvasGradient | string}
+ */
+function getTitleGradientForContext(ctx, titleColor) {
+    const color = titleColor || LiteGraph.NODE_DEFAULT_COLOR;
+    if (!ctx || typeof ctx.createLinearGradient !== "function") {
+        return color;
+    }
+
+    const cache = getTitleGradientCache(ctx);
+    let gradient = cache.get(color);
+    if (!gradient) {
+        gradient = ctx.createLinearGradient(0, 0, 400, 0);
+        try {
+            gradient.addColorStop(0, color);
+        } catch (_error) {
+            gradient.addColorStop(0, LiteGraph.NODE_DEFAULT_COLOR);
+        }
+        gradient.addColorStop(1, "#000");
+        cache.set(color, gradient);
+    }
+    return gradient;
+}
 
 /**
  * @param {any} node
  * @param {IRenderContext2DCompat} ctx
  */
 export function drawNode(node, ctx) {
+    ensureRoundRectCompat(ctx);
 
     this.current_node = node;
 
@@ -449,6 +514,7 @@ export function drawNodeTooltip( ctx, node ) {
         LiteGraph.warn?.("drawNodeTooltip: invalid node or ctx",node,ctx);
         return;
     }
+    ensureRoundRectCompat(ctx);
     var text = node.properties.tooltip!=undefined?node.properties.tooltip:"";
     if (!text || text=="") {
         if (LiteGraph.show_node_tooltip_use_descr_property && node.constructor.desc) {
@@ -507,6 +573,8 @@ export function drawNodeTooltip( ctx, node ) {
  * @param {IRenderContext2DCompat} ctx
  */
 export function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouse_over) {
+    ensureRoundRectCompat(ctx);
+
     // bg rect
     ctx.strokeStyle = fgcolor;
     ctx.fillStyle = bgcolor;
@@ -589,17 +657,7 @@ export function drawNodeShape(node, ctx, size, fgcolor, bgcolor, selected, mouse
 
             //* gradient test
             if (this.use_gradients) {
-                var grad = LGraphCanvas.gradients[title_color];
-                if (!grad) {
-                    grad = LGraphCanvas.gradients[title_color] = ctx.createLinearGradient(0, 0, 400, 0);
-                    try {
-                        grad.addColorStop(0, title_color);
-                    } catch (_error) {
-                        grad.addColorStop(0, LiteGraph.NODE_DEFAULT_COLOR);
-                    }
-                    grad.addColorStop(1, "#000");
-                }
-                ctx.fillStyle = grad;
+                ctx.fillStyle = getTitleGradientForContext(ctx, title_color);
             } else {
                 ctx.fillStyle = title_color;
             }
@@ -861,6 +919,7 @@ export function drawNodeWidgets(node, posY, ctx, active_widget) {
     if (!node.widgets || !node.widgets.length) {
         return 0;
     }
+    ensureRoundRectCompat(ctx);
     var width = node.size[0];
     var widgets = node.widgets;
     posY += 2;

@@ -1,4 +1,29 @@
-import { LGraphCanvas, LGraph } from "../../build/litegraph.core.js";
+import { LGraphCanvas, LGraph, LiteGraph } from "../../build/litegraph.core.js";
+
+function createDefaultRendererAdapter() {
+    const LeaferAdapter = LiteGraph?.LeaferUIRendererAdapter;
+    const Canvas2DAdapter = LiteGraph?.Canvas2DRendererAdapter;
+    const leaferRuntime = globalThis.LeaferUI;
+
+    if (LeaferAdapter && leaferRuntime) {
+        return new LeaferAdapter({
+            mode: "hybrid-back",
+            leaferRuntime,
+        });
+    }
+
+    if (LeaferAdapter && !leaferRuntime) {
+        console.warn("[LiteGraph] LeaferUI runtime missing, fallback to Canvas2DRendererAdapter.");
+    }
+
+    return Canvas2DAdapter ? new Canvas2DAdapter() : null;
+}
+
+function createGraphCanvas(canvas, graph) {
+    const rendererAdapter = createDefaultRendererAdapter();
+    const options = rendererAdapter ? { rendererAdapter } : undefined;
+    return new LGraphCanvas(canvas, graph, options);
+}
 
 // Creates an interface to access extra features from a graph (like play, stop, live, etc)
 export class Editor {
@@ -28,7 +53,7 @@ export class Editor {
 
         const canvas = this.canvas = root.querySelector(".graphcanvas");
         const graph = this.graph = new LGraph();
-        const graphcanvas = this.graphcanvas = new LGraphCanvas(canvas, graph);
+        const graphcanvas = this.graphcanvas = createGraphCanvas(canvas, graph);
 
         graphcanvas.background_image = "imgs/grid.png";
         graph.onAfterExecute = () => {
@@ -266,7 +291,7 @@ export class Editor {
         var canvas = miniwindow.querySelector("canvas");
         var that = this;
 
-        var graphcanvas = new LGraphCanvas( canvas, this.graph );
+        var graphcanvas = createGraphCanvas(canvas, this.graph);
         graphcanvas.show_info = false;
         graphcanvas.background_image = "imgs/grid.png";
         graphcanvas.scale = 0.25;
@@ -325,7 +350,7 @@ export class Editor {
             this.graphcanvas.viewport = null;
             this.graphcanvas.setGraph(null, true);
             this.graphcanvas = null;
-            graphcanvas = new LGraphCanvas( canvas, this.graph );
+            graphcanvas = createGraphCanvas(canvas, this.graph);
             graphcanvas.background_image = "imgs/grid.png";
             this.graphcanvas = graphcanvas;
             window.graphcanvas = this.graphcanvas;
@@ -336,7 +361,7 @@ export class Editor {
         this.graphcanvas.ctx.fillRect(0,0,canvas.width,canvas.height);
         this.graphcanvas.viewport = [0,0,canvas.width*0.5-2,canvas.height];
 
-        graphcanvas = new LGraphCanvas( canvas, this.graph );
+        graphcanvas = createGraphCanvas(canvas, this.graph);
         graphcanvas.background_image = "imgs/grid.png";
         this.graphcanvas2 = graphcanvas;
         this.graphcanvas2.viewport = [canvas.width*0.5,0,canvas.width*0.5,canvas.height];

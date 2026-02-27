@@ -56,9 +56,12 @@ export function draw(force_canvas, force_bgcanvas) {
 
 export function drawFrontCanvas() {
     this.dirty_canvas = false;
+    const rendererAdapter = this.rendererAdapter ?? null;
+    const frontLayerNative = rendererAdapter?.isLayerNative?.("front") === true;
+    const backLayerNative = rendererAdapter?.isLayerNative?.("back") === true;
 
     if (!this.ctx) {
-        this.ctx = this.rendererAdapter?.getFrontCtx?.() ?? this.frontSurface?.getContextCompat?.() ?? this.canvas?.getContext?.("2d");
+        this.ctx = rendererAdapter?.getFrontCtx?.() ?? this.frontSurface?.getContextCompat?.() ?? null;
     }
     var ctx = this.ctx;
     if (!ctx) {
@@ -66,7 +69,7 @@ export function drawFrontCanvas() {
         return;
     }
 
-    this.rendererAdapter?.beginFrame?.("front");
+    rendererAdapter?.beginFrame?.("front");
     var canvas = this.frontSurface?.canvas || this.canvas;
     if ( ctx.start2D && !this.viewport ) {
         ctx.start2D();
@@ -97,8 +100,8 @@ export function drawFrontCanvas() {
     if (backCanvas == canvas) {
         this.drawBackCanvas();
     } else if (backCanvas) {
-        if (this.rendererAdapter?.blitBackToFront) {
-            this.rendererAdapter.blitBackToFront(ctx);
+        if ((frontLayerNative || backLayerNative) && rendererAdapter?.blitBackToFront) {
+            rendererAdapter.blitBackToFront(ctx);
         } else {
             ctx.drawImage(backCanvas, 0, 0);
         }
@@ -303,7 +306,8 @@ export function drawFrontCanvas() {
         ctx.restore();
     }
     ctx.finish2D?.();
-    this.rendererAdapter?.endFrame?.("front");
+    rendererAdapter?.syncLayer?.("front");
+    rendererAdapter?.endFrame?.("front");
 }
 
 export function lowQualityRenderingRequired(activation_scale) {

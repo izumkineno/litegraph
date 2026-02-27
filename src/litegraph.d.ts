@@ -41,6 +41,8 @@ export interface IRenderEngineAdapter {
     resize(width: number, height: number): void;
     beginFrame?(layer: "front" | "back"): void;
     endFrame?(layer: "front" | "back"): void;
+    isLayerNative?(layer: "front" | "back"): boolean;
+    syncLayer?(layer: "front" | "back"): void;
     getFrontCtx(): IRenderContext2DCompat | null;
     getBackCtx(): IRenderContext2DCompat | null;
     getFrontSurface(): IRenderSurface | null;
@@ -349,6 +351,7 @@ export const LiteGraph: {
     LGraphGroup: typeof LGraphGroup;
     LGraphCanvas: typeof LGraphCanvas;
     Canvas2DRendererAdapter: typeof Canvas2DRendererAdapter;
+    LeaferUIRendererAdapter: typeof LeaferUIRendererAdapter;
     DragAndScale: typeof DragAndScale;
     compareObjects(a: object, b: object): boolean;
     distance(a: Vector2, b: Vector2): number;
@@ -1135,6 +1138,39 @@ export declare class Canvas2DRendererAdapter implements IRenderEngineAdapter {
     resize(width: number, height: number): void;
     beginFrame(layer: "front" | "back"): void;
     endFrame(layer: "front" | "back"): void;
+    getFrontCtx(): IRenderContext2DCompat | null;
+    getBackCtx(): IRenderContext2DCompat | null;
+    getFrontSurface(): IRenderSurface | null;
+    getBackSurface(): IRenderSurface | null;
+    blitBackToFront(targetCtx?: IRenderContext2DCompat | null): void;
+    adoptExternalContexts(options: {
+        frontCanvas: HTMLCanvasElement;
+        backCanvas: HTMLCanvasElement;
+        frontContext: IRenderContext2DCompat;
+        backContext: IRenderContext2DCompat;
+    }): void;
+}
+
+export interface LeaferUIRendererAdapterOptions {
+    mode?: "hybrid-back" | "full-leafer";
+    leaferRuntime?: any;
+    enableLogs?: boolean;
+    logPrefix?: string;
+}
+
+export declare class LeaferUIRendererAdapter implements IRenderEngineAdapter {
+    constructor(options?: LeaferUIRendererAdapterOptions);
+    options: LeaferUIRendererAdapterOptions;
+    init(options: {
+        canvas: HTMLCanvasElement;
+        ownerDocument?: Document;
+    }): this;
+    destroy(): void;
+    resize(width: number, height: number): void;
+    beginFrame(layer: "front" | "back"): void;
+    endFrame(layer: "front" | "back"): void;
+    isLayerNative(layer: "front" | "back"): boolean;
+    syncLayer(layer: "front" | "back"): void;
     getFrontCtx(): IRenderContext2DCompat | null;
     getBackCtx(): IRenderContext2DCompat | null;
     getFrontSurface(): IRenderSurface | null;

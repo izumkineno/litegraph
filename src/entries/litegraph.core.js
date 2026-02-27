@@ -1,3 +1,9 @@
+import * as LeaferUIRuntime from "leafer-ui";
+
+if (typeof globalThis !== "undefined" && !globalThis.LeaferUI) {
+    globalThis.LeaferUI = LeaferUIRuntime;
+}
+
 export { LiteGraph } from "../litegraph.js";
 export { LGraph } from "../lgraph.js";
 export { LGraphCanvas } from "../lgraphcanvas.js";

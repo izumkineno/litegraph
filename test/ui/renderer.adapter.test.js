@@ -6,6 +6,7 @@ const { describe, test, expect, beforeEach, afterEach } = testRuntime;
 import { draw } from "../../src/lgraphcanvas/modules/render-frame.js";
 import { setCanvas } from "../../src/lgraphcanvas/modules/lifecycle.js";
 import { Canvas2DRendererAdapter } from "../../src/lgraphcanvas/renderer/canvas2d-adapter.js";
+import { LeaferUIRendererAdapter } from "../../src/lgraphcanvas/renderer/leafer-ui-adapter.js";
 import { LiteGraph } from "../../src/litegraph.js";
 import {
     RENDER_CONTEXT_COMPAT_METHODS,
@@ -64,6 +65,10 @@ describe("renderer adapter and contracts", () => {
 
     test("LiteGraph exposes Canvas2DRendererAdapter for adapter injection", () => {
         expect(LiteGraph.Canvas2DRendererAdapter).toBe(Canvas2DRendererAdapter);
+    });
+
+    test("LiteGraph exposes LeaferUIRendererAdapter for adapter injection", () => {
+        expect(LiteGraph.LeaferUIRendererAdapter).toBe(LeaferUIRendererAdapter);
     });
 
     test("compat alias maps mozImageSmoothingEnabled to imageSmoothingEnabled", () => {

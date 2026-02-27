@@ -151,7 +151,6 @@ export function setCanvas(canvas, skip_events) {
     }
 
     this.canvas = canvas;
-    this.ds.element = canvas;
 
     if (!canvas) {
         this.ctx = null;
@@ -159,6 +158,7 @@ export function setCanvas(canvas, skip_events) {
         this.bgcanvas = null;
         this.frontSurface = null;
         this.backSurface = null;
+        this.ds.element = null;
         return;
     }
 
@@ -183,10 +183,11 @@ export function setCanvas(canvas, skip_events) {
     this.frontSurface = this.rendererAdapter.getFrontSurface?.() ?? null;
     this.backSurface = this.rendererAdapter.getBackSurface?.() ?? null;
     this.canvas = this.frontSurface?.canvas || canvas;
-    this.bgcanvas = this.backSurface?.canvas || canvas;
+    this.bgcanvas = this.backSurface?.canvas || this.canvas;
+    this.ds.element = this.canvas;
 
-    var ctx = this.ctx = this.rendererAdapter.getFrontCtx?.() ?? canvas.getContext("2d");
-    this.bgctx = this.rendererAdapter.getBackCtx?.() ?? this.bgcanvas.getContext?.("2d");
+    var ctx = this.ctx = this.rendererAdapter.getFrontCtx?.() ?? this.frontSurface?.getContextCompat?.() ?? null;
+    this.bgctx = this.rendererAdapter.getBackCtx?.() ?? this.backSurface?.getContextCompat?.() ?? ctx;
     if (ctx == null) {
         if (!canvas.webgl_enabled) {
             LiteGraph.info?.("This canvas seems to be WebGL, enabling WebGL renderer");
@@ -378,6 +379,9 @@ export function resize(width, height) {
         this.backSurface = this.rendererAdapter.getBackSurface?.() ?? this.backSurface;
         this.canvas = this.frontSurface?.canvas || this.canvas;
         this.bgcanvas = this.backSurface?.canvas || this.bgcanvas;
+        this.ctx = this.rendererAdapter.getFrontCtx?.() ?? this.frontSurface?.getContextCompat?.() ?? this.ctx;
+        this.bgctx = this.rendererAdapter.getBackCtx?.() ?? this.backSurface?.getContextCompat?.() ?? this.bgctx;
+        this.ds.element = this.canvas;
     } else {
         this.canvas.width = width;
         this.canvas.height = height;

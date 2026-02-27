@@ -223,9 +223,12 @@ export function drawBackCanvas() {
     var canvas = this.backSurface?.canvas || this.bgcanvas;
 
     if (!this.bgctx) {
-        this.bgctx = this.rendererAdapter?.getBackCtx?.() ?? this.backSurface?.getContextCompat?.() ?? this.bgcanvas.getContext("2d");
+        this.bgctx = this.rendererAdapter?.getBackCtx?.() ?? this.backSurface?.getContextCompat?.() ?? null;
     }
     var ctx = this.bgctx;
+    if (!ctx) {
+        return;
+    }
     this.rendererAdapter?.beginFrame?.("back");
     ctx.start?.();
 
