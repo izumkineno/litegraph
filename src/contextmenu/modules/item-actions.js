@@ -78,7 +78,7 @@ export function createContextMenuItem(contextMenu, name, value, options = {}, Li
                 }
             }
             if (entryValue.submenu) {
-                LiteGraph.debug?.("ContextMenu SUBMENU", this, entryValue, entryValue.submenu.options, e, that, options);
+                LiteGraph.debug?.("ContextMenu SUBMENU", this, entryValue, entryValue.submenu.options, event, that, options);
 
                 if (!entryValue.submenu.options) {
                     throw new Error("ContextMenu submenu needs options");

@@ -563,9 +563,9 @@ export function onShowPropertyEditor(item, options, e, menu, node) {
         offsety -= rect.top;
     }
 
-    if (event) {
-        dialog.style.left = event.clientX + offsetx + "px";
-        dialog.style.top = event.clientY + offsety + "px";
+    if (e) {
+        dialog.style.left = e.clientX + offsetx + "px";
+        dialog.style.top = e.clientY + offsety + "px";
     } else {
         dialog.style.left = canvas.width * 0.5 + offsetx + "px";
         dialog.style.top = canvas.height * 0.5 + offsety + "px";
