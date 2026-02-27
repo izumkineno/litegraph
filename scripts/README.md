@@ -9,6 +9,8 @@
 
 ```bash
 npm run build
+npm run docs
+npm run docs:check
 npm run server
 npm run test:coverage
 npm run test:coverage:ci
