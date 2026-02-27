@@ -15,7 +15,7 @@ export type SlotShape =
     | typeof LiteGraph.BOX_SHAPE
     | typeof LiteGraph.CIRCLE_SHAPE
     | typeof LiteGraph.ARROW_SHAPE
-    | typeof LiteGraph.SQUARE_SHAPE
+    | typeof LiteGraph.GRID_SHAPE
     | number; // For custom shapes
 
 export interface IRenderContext2DCompat extends CanvasRenderingContext2D {
@@ -1154,6 +1154,8 @@ export declare class Canvas2DRendererAdapter implements IRenderEngineAdapter {
 export interface LeaferUIRendererAdapterOptions {
     mode?: "hybrid-back" | "full-leafer";
     leaferRuntime?: any;
+    nodeRenderMode?: "legacy-ctx" | "uiapi-experimental" | "uiapi-parity";
+    nodeRenderLogs?: boolean;
     enableLogs?: boolean;
     logPrefix?: string;
 }
@@ -1171,6 +1173,7 @@ export declare class LeaferUIRendererAdapter implements IRenderEngineAdapter {
     endFrame(layer: "front" | "back"): void;
     isLayerNative(layer: "front" | "back"): boolean;
     syncLayer(layer: "front" | "back"): void;
+    getLeaferRuntime(): any;
     getFrontCtx(): IRenderContext2DCompat | null;
     getBackCtx(): IRenderContext2DCompat | null;
     getFrontSurface(): IRenderSurface | null;
@@ -1490,6 +1493,8 @@ export declare class LGraphCanvas {
     ): void;
     /** draws every connection visible in the canvas */
     drawConnections(ctx: IRenderContext2DCompat): void;
+    beginNodeFrameLeafer(ctx: IRenderContext2DCompat, visibleNodes: LGraphNode[]): boolean;
+    endNodeFrameLeafer(ctx: IRenderContext2DCompat, visibleNodes: LGraphNode[]): void;
     /**
      * draws a link between two points
      * @param a start pos

@@ -1,19 +1,106 @@
 import { LGraphCanvas, LGraph, LiteGraph } from "../../build/litegraph.core.js";
 
+const RENDERER_PROFILE_STORAGE_KEY = "litegraph:renderer-profile";
+const DEFAULT_RENDERER_PROFILE = "leafer-parity";
+const RENDERER_PROFILE_OPTIONS = [
+    { value: "legacy-canvas", label: "Legacy Canvas2D" },
+    { value: "leafer-hybrid", label: "Leafer Hybrid (Back)" },
+    { value: "leafer-uiapi", label: "Leafer UIAPI (Experimental)" },
+    { value: "leafer-parity", label: "Leafer UIAPI (Parity)" },
+];
+
+function normalizeRendererProfile(profile) {
+    if (!profile) {
+        return null;
+    }
+    return RENDERER_PROFILE_OPTIONS.some((item) => item.value === profile)
+        ? profile
+        : null;
+}
+
+function getRendererProfileFromQuery() {
+    try {
+        const params = new URLSearchParams(globalThis.location?.search || "");
+        return params.get("renderer");
+    } catch (_error) {
+        return null;
+    }
+}
+
+function getRendererProfile() {
+    const fromQuery = normalizeRendererProfile(getRendererProfileFromQuery());
+    if (fromQuery) {
+        return fromQuery;
+    }
+    try {
+        const stored = globalThis.localStorage?.getItem(RENDERER_PROFILE_STORAGE_KEY);
+        const normalizedStored = normalizeRendererProfile(stored);
+        if (normalizedStored) {
+            return normalizedStored;
+        }
+    } catch (_error) {
+        // ignore localStorage read errors
+    }
+    return DEFAULT_RENDERER_PROFILE;
+}
+
+function setRendererProfile(profile) {
+    const normalized = normalizeRendererProfile(profile) || DEFAULT_RENDERER_PROFILE;
+    try {
+        globalThis.localStorage?.setItem(RENDERER_PROFILE_STORAGE_KEY, normalized);
+    } catch (_error) {
+        // ignore localStorage write errors
+    }
+    return normalized;
+}
+
+if (typeof window !== "undefined") {
+    window.__litegraphGetRendererProfile = getRendererProfile;
+    window.__litegraphSetRendererProfile = (profile) => {
+        setRendererProfile(profile);
+        window.location.reload();
+    };
+}
+
 function createDefaultRendererAdapter() {
     const LeaferAdapter = LiteGraph?.LeaferUIRendererAdapter;
     const Canvas2DAdapter = LiteGraph?.Canvas2DRendererAdapter;
     const leaferRuntime = globalThis.LeaferUI;
+    const profile = getRendererProfile();
 
-    if (LeaferAdapter && leaferRuntime) {
-        return new LeaferAdapter({
-            mode: "hybrid-back",
-            leaferRuntime,
-        });
+    if (profile === "legacy-canvas") {
+        return Canvas2DAdapter ? new Canvas2DAdapter() : null;
     }
 
-    if (LeaferAdapter && !leaferRuntime) {
-        console.warn("[LiteGraph] LeaferUI runtime missing, fallback to Canvas2DRendererAdapter.");
+    if (LeaferAdapter && leaferRuntime) {
+        if (profile === "leafer-hybrid") {
+            return new LeaferAdapter({
+                mode: "hybrid-back",
+                nodeRenderMode: "legacy-ctx",
+                leaferRuntime,
+            });
+        }
+
+        if (profile === "leafer-uiapi") {
+            return new LeaferAdapter({
+                mode: "full-leafer",
+                nodeRenderMode: "uiapi-experimental",
+                nodeRenderLogs: true,
+                leaferRuntime,
+            });
+        }
+
+        return new LeaferAdapter({
+            mode: "full-leafer",
+            nodeRenderMode: "uiapi-parity",
+            nodeRenderLogs: true,
+            leaferRuntime,
+        });
+
+    }
+
+    if (LeaferAdapter && !leaferRuntime && profile !== "legacy-canvas") {
+        console.warn(`[LiteGraph] LeaferUI runtime missing for profile "${profile}", fallback to Canvas2DRendererAdapter.`);
     }
 
     return Canvas2DAdapter ? new Canvas2DAdapter() : null;
@@ -66,6 +153,7 @@ export class Editor {
         // this.addToolsButton("loadsession_button","Load","imgs/icon-load.png", this.onLoadButton.bind(this), ".tools-left" );
         // this.addToolsButton("savesession_button","Save","imgs/icon-save.png", this.onSaveButton.bind(this), ".tools-left" );
         this.addLoadCounter();
+        this.addRendererSwitcher();
         this.addToolsButton(
             "playnode_button",
             "Play",
@@ -154,6 +242,42 @@ export class Editor {
                 meter.querySelector(".gpuload .fgload").style.width = `${4}px`;
             }
         }, 200);
+    }
+
+    addRendererSwitcher() {
+        const wrapper = document.createElement("label");
+        wrapper.className = "toolbar-widget renderer-switcher";
+        wrapper.style.display = "inline-flex";
+        wrapper.style.alignItems = "center";
+        wrapper.style.gap = "6px";
+        wrapper.style.marginLeft = "8px";
+        wrapper.style.fontSize = "12px";
+        wrapper.textContent = "Renderer";
+
+        const select = document.createElement("select");
+        select.style.fontSize = "12px";
+        select.style.height = "22px";
+        select.style.background = "#2e2e2e";
+        select.style.color = "#ddd";
+        select.style.border = "1px solid #555";
+        select.style.borderRadius = "4px";
+        select.style.padding = "0 6px";
+
+        for (const option of RENDERER_PROFILE_OPTIONS) {
+            const item = document.createElement("option");
+            item.value = option.value;
+            item.textContent = option.label;
+            select.appendChild(item);
+        }
+        select.value = getRendererProfile();
+
+        select.addEventListener("change", () => {
+            setRendererProfile(select.value);
+            globalThis.location?.reload?.();
+        });
+
+        wrapper.appendChild(select);
+        this.root.querySelector(".header .tools-left")?.appendChild(wrapper);
     }
 
     addToolsButton(id, name, icon_url, callback, container = ".tools") {

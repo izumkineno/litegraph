@@ -20,6 +20,14 @@ export class RenderController {
         return render_frame.lowQualityRenderingRequired.apply(this.host, args);
     }
 
+    beginNodeFrameLeafer(...args) {
+        return render_nodes.beginNodeFrameLeafer.apply(this.host, args);
+    }
+
+    endNodeFrameLeafer(...args) {
+        return render_nodes.endNodeFrameLeafer.apply(this.host, args);
+    }
+
     drawNode(...args) {
         return render_nodes.drawNode.apply(this.host, args);
     }

@@ -1,5 +1,6 @@
 import { LiteGraph } from "../../litegraph.js";
 import { temp_vec2, tmp_area } from "../shared/scratch.js";
+import { LeaferNodeUiLayer } from "../renderer/leafer-node-ui-layer.js";
 
 /** @typedef {import("../renderer/contracts.js").IRenderContext2DCompat} IRenderContext2DCompat */
 
@@ -68,12 +69,122 @@ function getTitleGradientForContext(ctx, titleColor) {
     return gradient;
 }
 
+function shouldUseLeaferNodeUiMode(host) {
+    const adapter = host?.rendererAdapter;
+    const nodeRenderMode = adapter?.options?.nodeRenderMode;
+    if (!adapter || (nodeRenderMode !== "uiapi-experimental" && nodeRenderMode !== "uiapi-parity")) {
+        return false;
+    }
+    if (adapter.isLayerNative?.("front") !== true) {
+        return false;
+    }
+    if (typeof adapter.getLeaferRuntime !== "function") {
+        return false;
+    }
+    return Boolean(adapter.getLeaferRuntime());
+}
+
+function isLeaferNodeUiParityMode(host) {
+    return host?.rendererAdapter?.options?.nodeRenderMode === "uiapi-parity";
+}
+
+function warnLeaferNodeUiFallback(host, message, meta) {
+    if (host?._leaferNodeUiWarned) {
+        return;
+    }
+    host._leaferNodeUiWarned = true;
+    LiteGraph.warn?.(`[LeaferNodeUI] ${message}`, meta);
+}
+
+function ensureLeaferNodeUiLayer(host, ctx) {
+    const adapter = host?.rendererAdapter;
+    const runtime = adapter?.getLeaferRuntime?.();
+    if (!runtime) {
+        warnLeaferNodeUiFallback(host, "runtime unavailable, fallback to legacy Canvas2D node rendering.");
+        return null;
+    }
+
+    const canvas = host?.frontSurface?.canvas || host?.canvas || ctx?.canvas;
+    if (!canvas) {
+        warnLeaferNodeUiFallback(host, "front canvas unavailable, fallback to legacy Canvas2D node rendering.");
+        return null;
+    }
+
+    try {
+        if (!host._leaferNodeUiLayer) {
+            host._leaferNodeUiLayer = new LeaferNodeUiLayer();
+        }
+        if (!host._leaferNodeUiLayer.runtime) {
+            host._leaferNodeUiLayer.init({
+                runtime,
+                ownerDocument: canvas.ownerDocument,
+                width: canvas.width,
+                height: canvas.height,
+                enableLogs: Boolean(adapter?.options?.nodeRenderLogs),
+            });
+        } else if (host._leaferNodeUiLayer._bridgeCanvas?.width !== canvas.width
+            || host._leaferNodeUiLayer._bridgeCanvas?.height !== canvas.height) {
+            host._leaferNodeUiLayer.resize(canvas.width, canvas.height);
+        }
+    } catch (error) {
+        warnLeaferNodeUiFallback(host, "initialization failed, fallback to legacy Canvas2D node rendering.", error);
+        host._leaferNodeUiLayer?.destroy?.();
+        host._leaferNodeUiLayer = null;
+        return null;
+    }
+    return host._leaferNodeUiLayer;
+}
+
+export function beginNodeFrameLeafer(ctx, _visibleNodes) {
+    if (!shouldUseLeaferNodeUiMode(this)) {
+        this._leaferNodeUiFrameActive = false;
+        return false;
+    }
+    const layer = ensureLeaferNodeUiLayer(this, ctx);
+    if (!layer) {
+        this._leaferNodeUiFrameActive = false;
+        return false;
+    }
+    const nodeRenderMode = this?.rendererAdapter?.options?.nodeRenderMode || "uiapi-experimental";
+    layer.beginFrame({ nodeRenderMode });
+    this._leaferNodeUiFrameActive = true;
+    return true;
+}
+
+export function endNodeFrameLeafer(ctx, _visibleNodes) {
+    if (!this._leaferNodeUiFrameActive || !this._leaferNodeUiLayer) {
+        return;
+    }
+    this._leaferNodeUiLayer.endFrame();
+    this._leaferNodeUiLayer.renderTo(ctx);
+    this._leaferNodeUiFrameActive = false;
+}
+
 /**
  * @param {any} node
  * @param {IRenderContext2DCompat} ctx
  */
 export function drawNode(node, ctx) {
     ensureRoundRectCompat(ctx);
+
+    if (shouldUseLeaferNodeUiMode(this) && this._leaferNodeUiFrameActive && this._leaferNodeUiLayer) {
+        if (isLeaferNodeUiParityMode(this)) {
+            const frameActive = this._leaferNodeUiFrameActive;
+            this.current_node = node;
+            this._leaferNodeUiFrameActive = false;
+            try {
+                this._leaferNodeUiLayer.drawLegacyNode(node, this, (legacyCtx) => {
+                    drawNode.call(this, node, legacyCtx);
+                });
+            } finally {
+                this._leaferNodeUiFrameActive = frameActive;
+            }
+            return;
+        }
+        this.current_node = node;
+        this._leaferNodeUiLayer.upsertNode(node, this);
+        return;
+    }
 
     this.current_node = node;
 

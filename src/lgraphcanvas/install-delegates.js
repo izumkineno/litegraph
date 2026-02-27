@@ -49,6 +49,8 @@ const delegateMap = {
     "computeVisibleNodes": "core",
     "draw": "render",
     "drawFrontCanvas": "render",
+    "beginNodeFrameLeafer": "render",
+    "endNodeFrameLeafer": "render",
     "drawSubgraphPanel": "render",
     "drawSubgraphPanelLeft": "render",
     "drawSubgraphPanelRight": "render",

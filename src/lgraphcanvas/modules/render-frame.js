@@ -124,18 +124,32 @@ export function drawFrontCanvas() {
             null,
             this.visible_nodes,
         );
+        const useLeaferNodeUi = this.beginNodeFrameLeafer?.(ctx, visible_nodes) === true;
 
         for (let i = 0; i < visible_nodes.length; ++i) {
             let node = visible_nodes[i];
 
-            // transform coords system
+            if (useLeaferNodeUi) {
+                this.drawNode(node, ctx);
+            } else {
+                // transform coords system
+                ctx.save();
+                ctx.translate(node.pos[0], node.pos[1]);
+
+                // Draw
+                this.drawNode(node, ctx);
+
+                // Restore
+                ctx.restore();
+            }
+        }
+
+        if (useLeaferNodeUi) {
+            // Leafer UIAPI node layer already applies ds transform in its own layout.
+            // Composite with identity transform to avoid double scale/translation.
             ctx.save();
-            ctx.translate(node.pos[0], node.pos[1]);
-
-            // Draw
-            this.drawNode(node, ctx);
-
-            // Restore
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            this.endNodeFrameLeafer?.(ctx, visible_nodes);
             ctx.restore();
         }
 

@@ -5,6 +5,8 @@ import { Canvas2DSurface, LeaferSurface } from "./surfaces.js";
  * @typedef {{
  *  mode?: "hybrid-back" | "full-leafer",
  *  leaferRuntime?: any,
+ *  nodeRenderMode?: "legacy-ctx" | "uiapi-experimental" | "uiapi-parity",
+ *  nodeRenderLogs?: boolean,
  *  enableLogs?: boolean,
  *  logPrefix?: string
  * }} LeaferUIRendererAdapterOptions
@@ -55,6 +57,8 @@ export class LeaferUIRendererAdapter {
     constructor(options = {}) {
         this.options = {
             mode: "hybrid-back",
+            nodeRenderMode: "legacy-ctx",
+            nodeRenderLogs: false,
             enableLogs: true,
             logPrefix: "[LiteGraph][LeaferAdapter]",
             ...options,
@@ -65,6 +69,10 @@ export class LeaferUIRendererAdapter {
         this.backSurface = null;
         this._frontLeaferCanvas = null;
         this._backLeaferCanvas = null;
+    }
+
+    getLeaferRuntime() {
+        return resolveLeaferRuntime(this.options);
     }
 
     _log(level, message, meta) {
@@ -98,7 +106,7 @@ export class LeaferUIRendererAdapter {
         this.ownerDocument = ownerDocument ?? canvas?.ownerDocument ?? null;
         this.mode = this.options.mode || "hybrid-back";
 
-        const runtime = resolveLeaferRuntime(this.options);
+        const runtime = this.getLeaferRuntime();
         const LeaferCanvas = ensureLeaferCanvasRuntime(runtime);
         const width = canvas.width;
         const height = canvas.height;

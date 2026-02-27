@@ -88,6 +88,7 @@ describe("render-frame leafer front mode", () => {
 
         const drawNodeCalls = [];
         const overlayCalls = [];
+        const nodeFrameCalls = [];
         const node = { pos: [10, 20] };
 
         const host = {
@@ -107,6 +108,13 @@ describe("render-frame leafer front mode", () => {
             visible_nodes: [],
             computeVisibleNodes() {
                 return [node];
+            },
+            beginNodeFrameLeafer(frameCtx, visibleNodes) {
+                nodeFrameCalls.push(["begin", frameCtx, visibleNodes.length]);
+                return true;
+            },
+            endNodeFrameLeafer(frameCtx, visibleNodes) {
+                nodeFrameCalls.push(["end", frameCtx, visibleNodes.length]);
             },
             drawNode(item, ctx) {
                 drawNodeCalls.push([item, ctx]);
@@ -132,6 +140,7 @@ describe("render-frame leafer front mode", () => {
         expect(drawNodeCalls).toHaveLength(1);
         expect(drawNodeCalls[0][0]).toBe(node);
         expect(overlayCalls).toHaveLength(1);
+        expect(nodeFrameCalls.map((call) => call[0])).toEqual(["begin", "end"]);
         expect(syncLayers).toEqual(["front"]);
     });
 });
