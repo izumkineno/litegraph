@@ -9,25 +9,25 @@ const outDir = path.resolve(projectRoot, "build");
 
 const bundles = [
     {
-        entry: "src/entries/litegraph.core.js",
+        entry: "src/entries/litegraph.core.ts",
         fileBase: "litegraph.core",
     },
     {
-        entry: "src/entries/litegraph.nodes.base.js",
+        entry: "src/entries/litegraph.nodes.base.ts",
         fileBase: "litegraph.nodes.base",
         external: [
             "../litegraph.js",
         ],
     },
     {
-        entry: "src/entries/litegraph.nodes.feature.js",
+        entry: "src/entries/litegraph.nodes.feature.ts",
         fileBase: "litegraph.nodes.feature",
         external: [
             "../litegraph.js",
         ],
     },
     {
-        entry: "src/entries/litegraph.nodes.webgl.js",
+        entry: "src/entries/litegraph.nodes.webgl.ts",
         fileBase: "litegraph.nodes.webgl",
         external: [
             "../litegraph.js",

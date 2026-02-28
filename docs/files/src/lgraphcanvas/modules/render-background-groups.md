@@ -6,8 +6,8 @@
 - 介绍来源：[AUTO-MODULE] 自动生成
 - 介绍：
 > [AUTO-MODULE] 模块 `src/lgraphcanvas/modules` 的职责为：功能实现层，按职责拆分核心能力并通过委托装配。
-> 规模：包含 13 个文件，导出 115 项（AUTO 115 项），耦合强度 50。
-> 关键耦合：出边 `src`(22)、`src/lgraphcanvas/shared`(3)；入边 `src/lgraphcanvas/controllers`(24)、`src`(1)。
+> 规模：包含 16 个文件，导出 120 项（AUTO 84 项），耦合强度 47。
+> 关键耦合：出边 `src`(21)、`src/lgraphcanvas/shared`(3)、`src/lgraphcanvas/renderer`(2)；入边 `src/lgraphcanvas/controllers`(20)、`src`(1)。
 > 主要导出：`_doNothing`、`_doReturnTrue`、`adjustMouseEvent`、`adjustNodesSize`、`alignNodes`、`applyLGraphCanvasStatics`。
 > 代表文件：`events-keyboard-drop.js`、`events-pointer.js`、`hittest-order.js`。
 
@@ -84,7 +84,7 @@ export function drawSubgraphPanelLeft(subgraph, subnode, ctx) {
 ```js
 export function drawSubgraphPanelRight(subgraph, subnode, ctx) {
     var num = subnode.outputs ? subnode.outputs.length : 0;
-    var canvas_w = this.bgcanvas.width;
+    var canvas_w = (this.backSurface?.canvas || this.bgcanvas).width;
     var w = 200;
     var h = Math.floor(LiteGraph.NODE_SLOT_HEIGHT * 1.6);
 
@@ -197,7 +197,7 @@ export function renderInfo(ctx, x, y) {
 ## 7. `drawBackCanvas`
 
 - 类型：`function`
-- 位置：`src/lgraphcanvas/modules/render-background-groups.js:222-384` (`#L222`)
+- 位置：`src/lgraphcanvas/modules/render-background-groups.js:222-387` (`#L222`)
 - 说明来源：[AUTO] 自动回退
 - 说明：
 > [AUTO] 导出函数 `drawBackCanvas`，定义于 `src/lgraphcanvas/modules/render-background-groups.js`。
@@ -205,15 +205,17 @@ export function renderInfo(ctx, x, y) {
 - 代码片段（L222-L241）：
 ```js
 export function drawBackCanvas() {
-    var canvas = this.bgcanvas;
+    var canvas = this.backSurface?.canvas || this.bgcanvas;
 
     if (!this.bgctx) {
-        this.bgctx = this.bgcanvas.getContext("2d");
+        this.bgctx = this.rendererAdapter?.getBackCtx?.() ?? this.backSurface?.getContextCompat?.() ?? null;
     }
     var ctx = this.bgctx;
-    if (ctx.start) {
-        ctx.start();
+    if (!ctx) {
+        return;
     }
+    this.rendererAdapter?.beginFrame?.("back");
+    ctx.start?.();
 
     var viewport = this.viewport || [0,0,ctx.canvas.width,ctx.canvas.height];
 
@@ -222,8 +224,6 @@ export function drawBackCanvas() {
         ctx.clearRect( viewport[0], viewport[1], viewport[2], viewport[3] );
     }
 
-    // show subgraph stack header
-    if (this._graph_stack && this._graph_stack.length) {
 ```
 
 > 片段已按最大行数裁剪。
@@ -231,12 +231,12 @@ export function drawBackCanvas() {
 ## 8. `drawGroups`
 
 - 类型：`function`
-- 位置：`src/lgraphcanvas/modules/render-background-groups.js:386-428` (`#L386`)
+- 位置：`src/lgraphcanvas/modules/render-background-groups.js:389-431` (`#L389`)
 - 说明来源：[AUTO] 自动回退
 - 说明：
 > [AUTO] 导出函数 `drawGroups`，定义于 `src/lgraphcanvas/modules/render-background-groups.js`。
 
-- 代码片段（L386-L405）：
+- 代码片段（L389-L408）：
 ```js
 export function drawGroups(canvas, ctx) {
     if (!this.graph) {

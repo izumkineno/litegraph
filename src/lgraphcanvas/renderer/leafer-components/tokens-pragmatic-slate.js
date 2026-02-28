@@ -1,26 +1,3 @@
-export const PRAGMATIC_SLATE_TOKENS = Object.freeze({
-    radius: 6,
-    borderWidth: 1,
-    titleFontSize: 14,
-    bodyFontSize: 12,
-    smallFontSize: 11,
-    titleTextColor: "#F1F5F9",
-    titleBg: "#334155",
-    bodyBg: "#1E293B",
-    bodyBorder: "#334155",
-    slotInputColor: "#22D3EE",
-    slotOutputColor: "#38BDF8",
-    slotLabelColor: "#D1D9E6",
-    tooltipBg: "#0F172A",
-    tooltipBorder: "#334155",
-    tooltipText: "#E2E8F0",
-    widgetBg: "#0F172A",
-    widgetBorder: "#334155",
-    widgetText: "#E2E8F0",
-    widgetSecondaryText: "#94A3B8",
-    widgetAccent: "#38BDF8",
-    widgetAccentAlt: "#22D3EE",
-    widgetDanger: "#FB7185",
-    widgetWarning: "#F59E0B",
-    widgetSuccess: "#34D399",
-});
+// Auto-generated TS bridge. Edit the sibling .ts source file.
+export * from './tokens-pragmatic-slate.ts';
+

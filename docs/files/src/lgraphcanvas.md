@@ -14,12 +14,12 @@
 ## 1. `LGraphCanvas`
 
 - 类型：`class`
-- 位置：`src/lgraphcanvas.js:6-137` (`#L6`)
+- 位置：`src/lgraphcanvas.js:7-147` (`#L7`)
 - 说明来源：[AUTO] 自动回退
 - 说明：
 > [AUTO] 导出类 `LGraphCanvas`，定义于 `src/lgraphcanvas.js`。
 
-- 代码片段（L6-L25）：
+- 代码片段（L7-L26）：
 ```js
 export class LGraphCanvas {
     constructor(canvas, graph, options) {
@@ -27,6 +27,9 @@ export class LGraphCanvas {
             skip_render: false,
             autoresize: false,
             clip_all_nodes: false,
+            renderStyleProfile: "legacy",
+            renderStyleEngine: "legacy",
+            rendererAdapter: null,
         };
         this.options = options;
 
@@ -37,9 +40,6 @@ export class LGraphCanvas {
         if (canvas && canvas.constructor === String) {
             canvas = document.querySelector(canvas);
         }
-
-        this.ds = new LiteGraph.DragAndScale();
-        this.zoom_modify_alpha = true; // otherwise it generates ugly patterns when scaling down too much
 
 ```
 

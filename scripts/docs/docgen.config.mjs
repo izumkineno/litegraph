@@ -1,10 +1,10 @@
 export default {
     includeRoot: "src",
-    includeExtensions: [".js"],
+    includeExtensions: [".js", ".ts"],
     excludePrefixes: ["src/nodes/"],
     outputDir: "docs",
     fileDocsDir: "files",
-    cleanKeep: [".jsdoc.config"],
+    cleanKeep: [".jsdoc.config", "rendering"],
     snippet: {
         minLines: 6,
         maxLines: 20,

@@ -14,15 +14,19 @@
     "private": false,
     "scripts": {
         "build": "node scripts/build-vite.mjs",
+        "build:editor": "node scripts/build-editor.mjs",
         "docs": "node scripts/docs/generate-md-docs.mjs",
         "docs:check": "node scripts/docs/generate-md-docs.mjs --check",
         "server": "nodemon server/js/server.js",
         "test": "node --experimental-vm-modules node_modules/jest-cli/bin/jest.js",
         "test:coverage": "node --experimental-vm-modules node_modules/jest-cli/bin/jest.js --coverage --runInBand",
-        "test:coverage:ci": "npm run test:coverage && node scripts/check-coverage.mjs",
+        "test:coverage:ci": "bun run test:coverage && node scripts/check-coverage.mjs",
         "test:coverage:soft": "node --experimental-vm-modules node_modules/jest-cli/bin/jest.js --coverage --runInBand --runTestsByPath test/platform/audio.smoke.test.js test/platform/midi.smoke.test.js test/platform/gl.smoke.test.js --config=jest.soft.config.mjs",
-        "lint": "npx eslint src",
-        "lint:fix": "npx eslint --fix src"
+        "typecheck": "tsc -p tsconfig.src.json --noEmit",
+        "typecheck:test": "tsc -p tsconfig.test.json --noEmit",
+        "typecheck:editor": "tsc -p tsconfig.editor.json --noEmit",
+        "lint": "bunx eslint src",
+        "lint:fix": "bunx eslint --fix src"
     },
     "repository": {
         "type": "git",
@@ -44,10 +48,16 @@
         "@babel/parser": "^7.29.0",
         "@eslint/js": "^10.0.1",
         "@stylistic/eslint-plugin": "^5.8.0",
+        "@types/jest": "^30.0.0",
+        "@types/node": "^24.9.1",
+        "@typescript-eslint/eslint-plugin": "^8.46.2",
+        "@typescript-eslint/parser": "^8.46.2",
         "eslint": "^10.0.0",
         "jest-cli": "^30.2.0",
         "jsdoc": "^4.0.5",
         "nodemon": "^3.1.11",
+        "ts-jest": "^29.4.5",
+        "typescript": "^5.9.3",
         "vite": "^7.3.1"
     },
     "keywords": [

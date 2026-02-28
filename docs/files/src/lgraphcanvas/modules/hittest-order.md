@@ -6,8 +6,8 @@
 - 介绍来源：[AUTO-MODULE] 自动生成
 - 介绍：
 > [AUTO-MODULE] 模块 `src/lgraphcanvas/modules` 的职责为：功能实现层，按职责拆分核心能力并通过委托装配。
-> 规模：包含 13 个文件，导出 115 项（AUTO 115 项），耦合强度 50。
-> 关键耦合：出边 `src`(22)、`src/lgraphcanvas/shared`(3)；入边 `src/lgraphcanvas/controllers`(24)、`src`(1)。
+> 规模：包含 16 个文件，导出 120 项（AUTO 84 项），耦合强度 47。
+> 关键耦合：出边 `src`(21)、`src/lgraphcanvas/shared`(3)、`src/lgraphcanvas/renderer`(2)；入边 `src/lgraphcanvas/controllers`(20)、`src`(1)。
 > 主要导出：`_doNothing`、`_doReturnTrue`、`adjustMouseEvent`、`adjustNodesSize`、`alignNodes`、`applyLGraphCanvasStatics`。
 > 代表文件：`events-keyboard-drop.js`、`events-pointer.js`、`hittest-order.js`。
 

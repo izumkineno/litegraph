@@ -11,40 +11,21 @@
 - 导出项数量：1
 - AUTO 说明数量：0
 
-## 1. `LiteGraph`
+## 1. `*`
 
-- 类型：`variable`
-- 位置：`src/litegraph.js:21-46` (`#L21`)
+- 类型：`export_all`
+- 位置：`src/litegraph.js:2-2` (`#L2`)
+- 转发来源：`./litegraph.ts`
+- 目标文件：`src/litegraph.ts` (未定位)
+- 可解析导出数量：1
 - 说明来源：源码注释
 - 说明：
-> @class LiteGraph
-> 
-> @NOTE:
-> Try to avoid adding things to this class.
-> https://dzone.com/articles/singleton-anti-pattern
+> Auto-generated TS bridge. Edit the sibling .ts source file.
 
-- 代码片段（L21-L40）：
+- 代码片段（L1-L4）：
 ```js
-export var LiteGraph = new class {
-    constructor() {
-        // from OG LiteGraph, just bringing it back for compatibility
-        this.LLink = LLink;
-        this.LGraph = LGraph;
-        setupLGraphDelegates(this);
-        this.LGraphNode = LGraphNode;
-        setupLGraphNodeDelegates(this);
-        this.LGraphGroup = LGraphGroup;
-        this.LGraphCanvas = LGraphCanvas;
-        this.DragAndScale = DragAndScale;
-        this.ContextMenu = ContextMenu;
+// Auto-generated TS bridge. Edit the sibling .ts source file.
+export * from './litegraph.ts';
 
-        installLiteGraphDelegates(this);
-
-        applyCoreDefaults(this);
-        applyUiDefaults(this);
-        applyBehaviorDefaults(this);
-        applySlotsDefaults(this);
 
 ```
-
-> 片段已按最大行数裁剪。

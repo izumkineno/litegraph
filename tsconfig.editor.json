@@ -1,0 +1,13 @@
+{
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "lib": [
+            "ES2019",
+            "DOM"
+        ],
+        "types": []
+    },
+    "include": [
+        "editor/js/litegraph-editor.ts"
+    ]
+}

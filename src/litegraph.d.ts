@@ -71,6 +71,7 @@ export interface RenderStyleTokens {
     bodyBorder: string;
     slotInputColor: string;
     slotOutputColor: string;
+    slotLabelColor: string;
     tooltipBg: string;
     tooltipBorder: string;
     tooltipText: string;
@@ -85,15 +86,74 @@ export interface RenderStyleTokens {
     widgetSuccess: string;
 }
 
+export type NodeRenderMode = "legacy-ctx" | "uiapi-parity" | "uiapi-components";
+
+export interface LeaferWidgetRenderResult {
+    nextY?: number;
+    legacyDraw?: (ctx: IRenderContext2DCompat, node: LGraphNode) => void;
+}
+
+export interface LeaferNodeComponentEnv {
+    view: Record<string, unknown>;
+    node: LGraphNode;
+    host: LGraphCanvas;
+    LiteGraph: typeof LiteGraph;
+    createUi: (name: string, data?: Record<string, unknown>) => Record<string, unknown>;
+    addChildren: (
+        parent: Record<string, unknown>,
+        ...children: Array<Record<string, unknown> | null | undefined>
+    ) => void;
+    clearChildren: (group: Record<string, unknown> | null | undefined) => void;
+    setUiData?: (
+        ui: Record<string, unknown> | null | undefined,
+        data: Record<string, unknown>
+    ) => void;
+    width: number;
+    height: number;
+    titleHeightScaled: number;
+    scale: number;
+    showCollapsed: boolean;
+    renderTitle: boolean;
+    shape: number;
+    titleMode: number;
+    lowQuality: boolean;
+    renderText: boolean;
+    selected: boolean;
+    mouseOver: boolean;
+    title: string;
+    tooltip: string;
+    nodeColor: string;
+    bgColor: string;
+    tokens: RenderStyleTokens;
+    [key: string]: unknown;
+}
+
+export interface LeaferWidgetComponentEnv {
+    view: Record<string, unknown>;
+    node: LGraphNode;
+    host: LGraphCanvas;
+    widget: IWidget;
+    y: number;
+    width: number;
+    scale: number;
+    widgetHeight: number;
+    tokens: RenderStyleTokens;
+    showText: boolean;
+    active: boolean;
+    createUi: (name: string, data?: Record<string, unknown>) => Record<string, unknown>;
+    addChildren: (
+        parent: Record<string, unknown>,
+        ...children: Array<Record<string, unknown> | null | undefined>
+    ) => void;
+    [key: string]: unknown;
+}
+
 export interface LeaferNodeComponent {
-    (env: Record<string, any>): void;
+    (env: LeaferNodeComponentEnv): void;
 }
 
 export interface LeaferWidgetComponent {
-    (env: Record<string, any>): {
-        nextY?: number;
-        legacyDraw?: (ctx: IRenderContext2DCompat, node: LGraphNode) => void;
-    } | void;
+    (env: LeaferWidgetComponentEnv): LeaferWidgetRenderResult | void;
 }
 
 /** https://github.com/jagenjo/litegraph.js/tree/master/guides#node-slots */
@@ -1194,7 +1254,7 @@ export declare class Canvas2DRendererAdapter implements IRenderEngineAdapter {
 export interface LeaferUIRendererAdapterOptions {
     mode?: "hybrid-back" | "full-leafer";
     leaferRuntime?: any;
-    nodeRenderMode?: "legacy-ctx" | "uiapi-parity" | "uiapi-components";
+    nodeRenderMode?: NodeRenderMode;
     nodeRenderLogs?: boolean;
     enableLogs?: boolean;
     logPrefix?: string;

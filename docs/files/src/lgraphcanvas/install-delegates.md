@@ -17,12 +17,12 @@
 ## 1. `installLGraphCanvasDelegates`
 
 - 类型：`function`
-- 位置：`src/lgraphcanvas/install-delegates.js:103-114` (`#L103`)
+- 位置：`src/lgraphcanvas/install-delegates.js:105-116` (`#L105`)
 - 说明来源：[AUTO] 自动回退
 - 说明：
 > [AUTO] 导出函数 `installLGraphCanvasDelegates`，定义于 `src/lgraphcanvas/install-delegates.js`。
 
-- 代码片段（L103-L114）：
+- 代码片段（L105-L116）：
 ```js
 export function installLGraphCanvasDelegates(LGraphCanvasClass) {
     for (const [methodName, controllerName] of Object.entries(delegateMap)) {

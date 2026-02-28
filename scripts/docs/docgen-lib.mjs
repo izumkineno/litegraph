@@ -22,6 +22,7 @@ export const DEFAULT_PARSER_OPTIONS = {
         "logicalAssignment",
         "optionalCatchBinding",
         "topLevelAwait",
+        "typescript",
     ],
 };
 
@@ -218,7 +219,9 @@ function resolveLocalModulePath(importerAbsPath, sourceValue) {
     if (ext) {
         candidates.push(rawResolved);
     } else {
+        candidates.push(`${rawResolved}.ts`);
         candidates.push(`${rawResolved}.js`);
+        candidates.push(path.join(rawResolved, "index.ts"));
         candidates.push(path.join(rawResolved, "index.js"));
     }
 
@@ -779,6 +782,9 @@ export async function listSourceFiles(rootDir, config) {
             if (!includeExtensions.has(ext)) {
                 continue;
             }
+            if (entry.name.endsWith(".d.ts")) {
+                continue;
+            }
             const rel = toPosixPath(path.relative(rootDir, abs));
             if (excludePrefixes.some((prefix) => rel.startsWith(prefix))) {
                 continue;
@@ -1213,6 +1219,14 @@ async function readFilesRecursive(dir, out = []) {
 export async function readExistingOutputs(rootDir, config) {
     const outputDirAbs = path.resolve(rootDir, config.outputDir ?? "docs");
     const keepSet = new Set((config.cleanKeep ?? []).map((entry) => toPosixPath(entry)));
+    const isKept = (relPath) => {
+        for (const keep of keepSet) {
+            if (relPath === keep || relPath.startsWith(`${keep}/`)) {
+                return true;
+            }
+        }
+        return false;
+    };
     const outputs = new Map();
 
     try {
@@ -1227,7 +1241,7 @@ export async function readExistingOutputs(rootDir, config) {
     const files = await readFilesRecursive(outputDirAbs);
     for (const filePath of files) {
         const relToOutput = toPosixPath(path.relative(outputDirAbs, filePath));
-        if (keepSet.has(relToOutput)) {
+        if (isKept(relToOutput)) {
             continue;
         }
         const content = normalizeLineEndings(await fs.readFile(filePath, "utf8"));
@@ -1256,12 +1270,20 @@ export function compareOutputMaps(expectedMap, actualMap) {
 export async function cleanOutputDirectory(rootDir, config) {
     const outputDirAbs = path.resolve(rootDir, config.outputDir ?? "docs");
     const keepSet = new Set((config.cleanKeep ?? []).map((entry) => toPosixPath(entry)));
+    const isKept = (relPath) => {
+        for (const keep of keepSet) {
+            if (relPath === keep || relPath.startsWith(`${keep}/`)) {
+                return true;
+            }
+        }
+        return false;
+    };
 
     await fs.mkdir(outputDirAbs, { recursive: true });
     const entries = await fs.readdir(outputDirAbs, { withFileTypes: true });
     for (const entry of entries) {
         const rel = toPosixPath(entry.name);
-        if (keepSet.has(rel)) {
+        if (isKept(rel)) {
             continue;
         }
         const abs = path.join(outputDirAbs, entry.name);

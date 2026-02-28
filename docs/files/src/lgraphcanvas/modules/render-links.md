@@ -6,23 +6,24 @@
 - 介绍来源：[AUTO-MODULE] 自动生成
 - 介绍：
 > [AUTO-MODULE] 模块 `src/lgraphcanvas/modules` 的职责为：功能实现层，按职责拆分核心能力并通过委托装配。
-> 规模：包含 13 个文件，导出 115 项（AUTO 115 项），耦合强度 50。
-> 关键耦合：出边 `src`(22)、`src/lgraphcanvas/shared`(3)；入边 `src/lgraphcanvas/controllers`(24)、`src`(1)。
+> 规模：包含 16 个文件，导出 120 项（AUTO 84 项），耦合强度 47。
+> 关键耦合：出边 `src`(21)、`src/lgraphcanvas/shared`(3)、`src/lgraphcanvas/renderer`(2)；入边 `src/lgraphcanvas/controllers`(20)、`src`(1)。
 > 主要导出：`_doNothing`、`_doReturnTrue`、`adjustMouseEvent`、`adjustNodesSize`、`alignNodes`、`applyLGraphCanvasStatics`。
 > 代表文件：`events-keyboard-drop.js`、`events-pointer.js`、`hittest-order.js`。
 
 - 导出项数量：4
-- AUTO 说明数量：4
+- AUTO 说明数量：1
 
 ## 1. `drawLinkTooltip`
 
 - 类型：`function`
-- 位置：`src/lgraphcanvas/modules/render-links.js:4-54` (`#L4`)
-- 说明来源：[AUTO] 自动回退
+- 位置：`src/lgraphcanvas/modules/render-links.js:11-61` (`#L11`)
+- 说明来源：源码注释
 - 说明：
-> [AUTO] 导出函数 `drawLinkTooltip`，定义于 `src/lgraphcanvas/modules/render-links.js`。
+> @param {IRenderContext2DCompat} ctx
+> @param {any} link
 
-- 代码片段（L4-L23）：
+- 代码片段（L11-L30）：
 ```js
 export function drawLinkTooltip(ctx, link) {
     var pos = link._pos;
@@ -51,12 +52,12 @@ export function drawLinkTooltip(ctx, link) {
 ## 2. `drawConnections`
 
 - 类型：`function`
-- 位置：`src/lgraphcanvas/modules/render-links.js:56-175` (`#L56`)
-- 说明来源：[AUTO] 自动回退
+- 位置：`src/lgraphcanvas/modules/render-links.js:66-185` (`#L66`)
+- 说明来源：源码注释
 - 说明：
-> [AUTO] 导出函数 `drawConnections`，定义于 `src/lgraphcanvas/modules/render-links.js`。
+> @param {IRenderContext2DCompat} ctx
 
-- 代码片段（L56-L75）：
+- 代码片段（L66-L85）：
 ```js
 export function drawConnections(ctx) {
     var now = LiteGraph.getTime();
@@ -85,12 +86,12 @@ export function drawConnections(ctx) {
 ## 3. `renderLink`
 
 - 类型：`function`
-- 位置：`src/lgraphcanvas/modules/render-links.js:177-448` (`#L177`)
-- 说明来源：[AUTO] 自动回退
+- 位置：`src/lgraphcanvas/modules/render-links.js:190-461` (`#L190`)
+- 说明来源：源码注释
 - 说明：
-> [AUTO] 导出函数 `renderLink`，定义于 `src/lgraphcanvas/modules/render-links.js`。
+> @param {IRenderContext2DCompat} ctx
 
-- 代码片段（L177-L196）：
+- 代码片段（L190-L209）：
 ```js
 export function renderLink(
     ctx,
@@ -119,12 +120,12 @@ export function renderLink(
 ## 4. `computeConnectionPoint`
 
 - 类型：`function`
-- 位置：`src/lgraphcanvas/modules/render-links.js:450-497` (`#L450`)
+- 位置：`src/lgraphcanvas/modules/render-links.js:463-510` (`#L463`)
 - 说明来源：[AUTO] 自动回退
 - 说明：
 > [AUTO] 导出函数 `computeConnectionPoint`，定义于 `src/lgraphcanvas/modules/render-links.js`。
 
-- 代码片段（L450-L469）：
+- 代码片段（L463-L482）：
 ```js
 export function computeConnectionPoint(a, b, t, start_dir, end_dir) {
     start_dir = start_dir || LiteGraph.RIGHT;

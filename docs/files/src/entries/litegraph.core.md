@@ -6,10 +6,10 @@
 - 介绍来源：[AUTO-MODULE] 自动生成
 - 介绍：
 > [AUTO-MODULE] 模块 `src/entries` 的职责为：入口聚合层，对外暴露可消费的模块入口。
-> 规模：包含 4 个文件，导出 8 项（AUTO 8 项），耦合强度 20。
-> 关键耦合：出边 `src/nodes`(20)；入边 低耦合/未发现内部上游依赖。
+> 规模：包含 8 个文件，导出 16 项（AUTO 16 项），耦合强度 40。
+> 关键耦合：出边 `src/nodes`(40)；入边 低耦合/未发现内部上游依赖。
 > 主要导出：`ContextMenu`、`DragAndScale`、`LGraph`、`LGraphCanvas`、`LGraphGroup`、`LGraphNode`。
-> 代表文件：`litegraph.core.js`、`litegraph.nodes.base.js`、`litegraph.nodes.feature.js`。
+> 代表文件：`litegraph.core.js`、`litegraph.core.ts`、`litegraph.nodes.base.js`。
 
 - 导出项数量：8
 - AUTO 说明数量：8
@@ -17,15 +17,15 @@
 ## 1. `LiteGraph`
 
 - 类型：`re_export_named`
-- 位置：`src/entries/litegraph.core.js:1-1` (`#L1`)
+- 位置：`src/entries/litegraph.core.js:7-7` (`#L7`)
 - 转发来源：`../litegraph.js`
-- 目标文件：`src/litegraph.js` (21-46)
-- 可解析导出数量：1
+- 目标文件：`src/litegraph.js` (未定位)
+- 可解析导出数量：0
 - 说明来源：[AUTO] 自动回退
 - 说明：
 > [AUTO] 命名转发导出 `LiteGraph`，来源 `../litegraph.js`。
 
-- 代码片段（L1-L6）：
+- 代码片段（L7-L12）：
 ```js
 export { LiteGraph } from "../litegraph.js";
 export { LGraph } from "../lgraph.js";
@@ -38,7 +38,7 @@ export { LLink } from "../llink.js";
 ## 2. `LGraph`
 
 - 类型：`re_export_named`
-- 位置：`src/entries/litegraph.core.js:2-2` (`#L2`)
+- 位置：`src/entries/litegraph.core.js:8-8` (`#L8`)
 - 转发来源：`../lgraph.js`
 - 目标文件：`src/lgraph.js` (11-32)
 - 可解析导出数量：2
@@ -46,7 +46,7 @@ export { LLink } from "../llink.js";
 - 说明：
 > [AUTO] 命名转发导出 `LGraph`，来源 `../lgraph.js`。
 
-- 代码片段（L2-L7）：
+- 代码片段（L8-L13）：
 ```js
 export { LGraph } from "../lgraph.js";
 export { LGraphCanvas } from "../lgraphcanvas.js";
@@ -59,15 +59,15 @@ export { ContextMenu } from "../contextmenu.js";
 ## 3. `LGraphCanvas`
 
 - 类型：`re_export_named`
-- 位置：`src/entries/litegraph.core.js:3-3` (`#L3`)
+- 位置：`src/entries/litegraph.core.js:9-9` (`#L9`)
 - 转发来源：`../lgraphcanvas.js`
-- 目标文件：`src/lgraphcanvas.js` (6-137)
+- 目标文件：`src/lgraphcanvas.js` (7-147)
 - 可解析导出数量：1
 - 说明来源：[AUTO] 自动回退
 - 说明：
 > [AUTO] 命名转发导出 `LGraphCanvas`，来源 `../lgraphcanvas.js`。
 
-- 代码片段（L3-L8）：
+- 代码片段（L9-L14）：
 ```js
 export { LGraphCanvas } from "../lgraphcanvas.js";
 export { LGraphGroup } from "../lgraphgroup.js";
@@ -80,7 +80,7 @@ export { DragAndScale } from "../dragandscale.js";
 ## 4. `LGraphGroup`
 
 - 类型：`re_export_named`
-- 位置：`src/entries/litegraph.core.js:4-4` (`#L4`)
+- 位置：`src/entries/litegraph.core.js:10-10` (`#L10`)
 - 转发来源：`../lgraphgroup.js`
 - 目标文件：`src/lgraphgroup.js` (3-118)
 - 可解析导出数量：1
@@ -88,7 +88,7 @@ export { DragAndScale } from "../dragandscale.js";
 - 说明：
 > [AUTO] 命名转发导出 `LGraphGroup`，来源 `../lgraphgroup.js`。
 
-- 代码片段（L4-L9）：
+- 代码片段（L10-L15）：
 ```js
 export { LGraphGroup } from "../lgraphgroup.js";
 export { LGraphNode } from "../lgraphnode.js";
@@ -101,7 +101,7 @@ export { DragAndScale } from "../dragandscale.js";
 ## 5. `LGraphNode`
 
 - 类型：`re_export_named`
-- 位置：`src/entries/litegraph.core.js:5-5` (`#L5`)
+- 位置：`src/entries/litegraph.core.js:11-11` (`#L11`)
 - 转发来源：`../lgraphnode.js`
 - 目标文件：`src/lgraphnode.js` (61-102)
 - 可解析导出数量：2
@@ -109,7 +109,7 @@ export { DragAndScale } from "../dragandscale.js";
 - 说明：
 > [AUTO] 命名转发导出 `LGraphNode`，来源 `../lgraphnode.js`。
 
-- 代码片段（L4-L9）：
+- 代码片段（L10-L15）：
 ```js
 export { LGraphGroup } from "../lgraphgroup.js";
 export { LGraphNode } from "../lgraphnode.js";
@@ -122,7 +122,7 @@ export { DragAndScale } from "../dragandscale.js";
 ## 6. `LLink`
 
 - 类型：`re_export_named`
-- 位置：`src/entries/litegraph.core.js:6-6` (`#L6`)
+- 位置：`src/entries/litegraph.core.js:12-12` (`#L12`)
 - 转发来源：`../llink.js`
 - 目标文件：`src/llink.js` (5-64)
 - 可解析导出数量：1
@@ -130,7 +130,7 @@ export { DragAndScale } from "../dragandscale.js";
 - 说明：
 > [AUTO] 命名转发导出 `LLink`，来源 `../llink.js`。
 
-- 代码片段（L4-L9）：
+- 代码片段（L10-L15）：
 ```js
 export { LGraphGroup } from "../lgraphgroup.js";
 export { LGraphNode } from "../lgraphnode.js";
@@ -143,7 +143,7 @@ export { DragAndScale } from "../dragandscale.js";
 ## 7. `ContextMenu`
 
 - 类型：`re_export_named`
-- 位置：`src/entries/litegraph.core.js:7-7` (`#L7`)
+- 位置：`src/entries/litegraph.core.js:13-13` (`#L13`)
 - 转发来源：`../contextmenu.js`
 - 目标文件：`src/contextmenu.js` (22-144)
 - 可解析导出数量：1
@@ -151,7 +151,7 @@ export { DragAndScale } from "../dragandscale.js";
 - 说明：
 > [AUTO] 命名转发导出 `ContextMenu`，来源 `../contextmenu.js`。
 
-- 代码片段（L4-L9）：
+- 代码片段（L10-L15）：
 ```js
 export { LGraphGroup } from "../lgraphgroup.js";
 export { LGraphNode } from "../lgraphnode.js";
@@ -164,7 +164,7 @@ export { DragAndScale } from "../dragandscale.js";
 ## 8. `DragAndScale`
 
 - 类型：`re_export_named`
-- 位置：`src/entries/litegraph.core.js:8-8` (`#L8`)
+- 位置：`src/entries/litegraph.core.js:14-14` (`#L14`)
 - 转发来源：`../dragandscale.js`
 - 目标文件：`src/dragandscale.js` (7-244)
 - 可解析导出数量：1
@@ -172,7 +172,7 @@ export { DragAndScale } from "../dragandscale.js";
 - 说明：
 > [AUTO] 命名转发导出 `DragAndScale`，来源 `../dragandscale.js`。
 
-- 代码片段（L4-L9）：
+- 代码片段（L10-L15）：
 ```js
 export { LGraphGroup } from "../lgraphgroup.js";
 export { LGraphNode } from "../lgraphnode.js";

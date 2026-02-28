@@ -97,4 +97,27 @@ export default [
             "always"
         ],
     }
-}]
+},
+{
+    files: ["**/*.ts"],
+    languageOptions: {
+        parser: (await import("@typescript-eslint/parser")).default,
+        parserOptions: {
+            sourceType: "module",
+            ecmaVersion: "latest",
+            project: false,
+        },
+    },
+    plugins: {
+        "@typescript-eslint": (await import("@typescript-eslint/eslint-plugin")).default,
+    },
+    rules: {
+        "@typescript-eslint/no-explicit-any": 0,
+        "@typescript-eslint/no-unused-vars": [1, {
+            argsIgnorePattern: "^_",
+            varsIgnorePattern: "^_",
+            caughtErrorsIgnorePattern: "^_",
+        }],
+    },
+},
+]
