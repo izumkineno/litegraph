@@ -16,9 +16,7 @@ function resolveRendererAdapter(instance, runtimeMode) {
     };
 
     const hasNewModeFields = instance?.options?.renderForm != null
-        || instance?.options?.renderStrategy != null
-        || instance?.renderForm != null
-        || instance?.renderStrategy != null;
+        || instance?.options?.renderStrategy != null;
     const candidate = instance.options?.rendererAdapter ?? instance.rendererAdapter;
 
     if (hasNewModeFields && runtimeMode?.form === "legacy") {

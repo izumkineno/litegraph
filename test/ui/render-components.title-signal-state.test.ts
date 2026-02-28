@@ -109,6 +109,54 @@ describe("leafer components title signal state", () => {
         expect(titleText?.y).toBe(-LiteGraph.NODE_TITLE_HEIGHT);
         expect(node.execute_triggered).toBe(0);
     });
+
+    test("title signal refreshes in same frame when onDrawBackground mutates boxcolor", () => {
+        const runtime = createMockLeaferUiRuntime();
+        const ctx = createMockCanvasContext();
+        const host = createHost(runtime, ctx);
+        const node = {
+            id: 3002,
+            pos: [40, 60],
+            size: [180, 80],
+            color: "#445",
+            bgcolor: "#222",
+            boxcolor: "#222",
+            mode: 0,
+            execute_triggered: 0,
+            action_triggered: 0,
+            flags: { collapsed: false },
+            inputs: [{ type: "number", name: "in" }],
+            outputs: [{ type: "number", name: "out" }],
+            widgets: [],
+            properties: {},
+            triggered: true,
+            getTitle() {
+                return "TimerLike";
+            },
+            getConnectionPos(isInput) {
+                return isInput ? [this.pos[0], this.pos[1] + 24] : [this.pos[0] + this.size[0], this.pos[1] + 24];
+            },
+            onDrawBackground() {
+                this.boxcolor = this.triggered ? "#AAA" : "#222";
+                this.triggered = false;
+            },
+        };
+
+        expect(beginNodeFrameLeafer.call(host, ctx, [node])).toBe(true);
+        drawNode.call(host, node, ctx);
+        endNodeFrameLeafer.call(host, ctx, [node]);
+
+        let view = host._leaferNodeUiLayer._nodeViews.get(node.id);
+        expect(view?.titleGroup?.children?.[0]?.fill).toBe("#AAA");
+        expect(node.triggered).toBe(false);
+
+        expect(beginNodeFrameLeafer.call(host, ctx, [node])).toBe(true);
+        drawNode.call(host, node, ctx);
+        endNodeFrameLeafer.call(host, ctx, [node]);
+
+        view = host._leaferNodeUiLayer._nodeViews.get(node.id);
+        expect(view?.titleGroup?.children?.[0]?.fill).toBe("#222");
+    });
 });
 
 

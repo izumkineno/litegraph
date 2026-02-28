@@ -1,6 +1,11 @@
 import { LiteGraph } from "../../litegraph.js";
 import { LGraphCanvas } from "../../lgraphcanvas.js";
 import { margin_area, link_bounding, tempA, tempB } from "../shared/scratch.js";
+import {
+    drawConnectionsWithLeaferLayer,
+    drawLinkTooltipWithLeaferLayer,
+    renderLinkWithLeaferLayer,
+} from "../renderer/leafer-link-layer.ts";
 
 /** @typedef {import("../renderer/contracts.js").IRenderContext2DCompat} IRenderContext2DCompat */
 
@@ -8,7 +13,7 @@ import { margin_area, link_bounding, tempA, tempB } from "../shared/scratch.js";
  * @param {IRenderContext2DCompat} ctx
  * @param {any} link
  */
-export function drawLinkTooltip(ctx, link) {
+function drawLinkTooltipLegacy(ctx, link) {
     var pos = link._pos;
     ctx.fillStyle = "black";
     ctx.beginPath();
@@ -60,10 +65,14 @@ export function drawLinkTooltip(ctx, link) {
     ctx.fillText(text, pos[0], pos[1] - 15 - h * 0.3);
 }
 
+export function drawLinkTooltip(ctx, link) {
+    return drawLinkTooltipWithLeaferLayer(this, () => drawLinkTooltipLegacy.call(this, ctx, link));
+}
+
 /**
  * @param {IRenderContext2DCompat} ctx
  */
-export function drawConnections(ctx) {
+function drawConnectionsLegacy(ctx) {
     var now = LiteGraph.getTime();
     var visible_area = this.visible_area;
     margin_area[0] = visible_area[0] - 20;
@@ -184,10 +193,14 @@ export function drawConnections(ctx) {
     ctx.globalAlpha = 1;
 }
 
+export function drawConnections(ctx) {
+    return drawConnectionsWithLeaferLayer(this, () => drawConnectionsLegacy.call(this, ctx));
+}
+
 /**
  * @param {IRenderContext2DCompat} ctx
  */
-export function renderLink(
+function renderLinkLegacy(
     ctx,
     a,
     b,
@@ -458,6 +471,33 @@ export function renderLink(
             ctx.fill();
         }
     }
+}
+
+export function renderLink(
+    ctx,
+    a,
+    b,
+    link,
+    skip_border,
+    flow,
+    color,
+    start_dir,
+    end_dir,
+    num_sublines,
+) {
+    return renderLinkWithLeaferLayer(this, () => renderLinkLegacy.call(
+        this,
+        ctx,
+        a,
+        b,
+        link,
+        skip_border,
+        flow,
+        color,
+        start_dir,
+        end_dir,
+        num_sublines,
+    ));
 }
 
 export function computeConnectionPoint(a, b, t, start_dir, end_dir) {

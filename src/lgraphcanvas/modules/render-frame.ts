@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { LiteGraph } from "../../litegraph.ts";
+import { drawFrontOverlayWithLeaferLayer } from "../renderer/leafer-overlay-layer.ts";
 /** 中文说明：draw 为迁移后的 TS 导出函数，负责 Leafer 渲染流程中的对应步骤。 */
 export function draw(force_canvas, force_bgcanvas) {
     const canvas = this.frontSurface?.canvas || this.canvas;
@@ -161,161 +162,163 @@ export function drawFrontCanvas() {
             ctx.restore();
         }
 
-        // on top (debug)
-        if (this.render_execution_order) {
-            this.drawExecutionOrder(ctx);
-        }
-
-        // connections ontop?
-        if (this.graph.config.links_ontop) {
-            if (!this.live_mode) {
-                this.drawConnections(ctx);
-            }
-        }
-
-        // current connection (the one being dragged by the mouse)
-        if (this.connecting_pos != null) {
-            ctx.lineWidth = this.connections_width;
-            var link_color = null;
-
-            var connInOrOut = this.connecting_output || this.connecting_input;
-
-            var connType = connInOrOut.type;
-            var connDir = connInOrOut.dir;
-            if(connDir == null) {
-                if (this.connecting_output)
-                    connDir = this.connecting_node.horizontal ? LiteGraph.DOWN : LiteGraph.RIGHT;
-                else
-                    connDir = this.connecting_node.horizontal ? LiteGraph.UP : LiteGraph.LEFT;
-            }
-            var connShape = connInOrOut.shape;
-
-            switch (connType) {
-                case LiteGraph.EVENT:
-                case LiteGraph.ACTION:
-                    link_color = LiteGraph.EVENT_LINK_COLOR;
-                    break;
-                default:
-                    link_color = LiteGraph.CONNECTING_LINK_COLOR;
+        drawFrontOverlayWithLeaferLayer(this, () => {
+            // on top (debug)
+            if (this.render_execution_order) {
+                this.drawExecutionOrder(ctx);
             }
 
-            // the connection being dragged by the mouse
-            this.renderLink(
-                ctx,
-                this.connecting_pos,
-                [this.graph_mouse[0], this.graph_mouse[1]],
-                null,
-                false,
-                null,
-                link_color,
-                connDir,
-                LiteGraph.CENTER,
-            );
+            // connections ontop?
+            if (this.graph.config.links_ontop) {
+                if (!this.live_mode) {
+                    this.drawConnections(ctx);
+                }
+            }
 
-            ctx.beginPath();
-            if (
-                connType === LiteGraph.EVENT ||
-                connType === LiteGraph.ACTION ||
-                connShape === LiteGraph.BOX_SHAPE
-            ) {
-                ctx.rect(
-                    this.connecting_pos[0] - 6 + 0.5,
-                    this.connecting_pos[1] - 5 + 0.5,
-                    14,
-                    10,
+            // current connection (the one being dragged by the mouse)
+            if (this.connecting_pos != null) {
+                ctx.lineWidth = this.connections_width;
+                var link_color = null;
+
+                var connInOrOut = this.connecting_output || this.connecting_input;
+
+                var connType = connInOrOut.type;
+                var connDir = connInOrOut.dir;
+                if(connDir == null) {
+                    if (this.connecting_output)
+                        connDir = this.connecting_node.horizontal ? LiteGraph.DOWN : LiteGraph.RIGHT;
+                    else
+                        connDir = this.connecting_node.horizontal ? LiteGraph.UP : LiteGraph.LEFT;
+                }
+                var connShape = connInOrOut.shape;
+
+                switch (connType) {
+                    case LiteGraph.EVENT:
+                    case LiteGraph.ACTION:
+                        link_color = LiteGraph.EVENT_LINK_COLOR;
+                        break;
+                    default:
+                        link_color = LiteGraph.CONNECTING_LINK_COLOR;
+                }
+
+                // the connection being dragged by the mouse
+                this.renderLink(
+                    ctx,
+                    this.connecting_pos,
+                    [this.graph_mouse[0], this.graph_mouse[1]],
+                    null,
+                    false,
+                    null,
+                    link_color,
+                    connDir,
+                    LiteGraph.CENTER,
                 );
-                ctx.fill();
+
                 ctx.beginPath();
-                ctx.rect(
-                    this.graph_mouse[0] - 6 + 0.5,
-                    this.graph_mouse[1] - 5 + 0.5,
-                    14,
-                    10,
-                );
-            } else if (connShape === LiteGraph.ARROW_SHAPE) {
-                ctx.moveTo(this.connecting_pos[0] + 8, this.connecting_pos[1] + 0.5);
-                ctx.lineTo(this.connecting_pos[0] - 4, this.connecting_pos[1] + 6 + 0.5);
-                ctx.lineTo(this.connecting_pos[0] - 4, this.connecting_pos[1] - 6 + 0.5);
-                ctx.closePath();
-            } else {
-                ctx.arc(
-                    this.connecting_pos[0],
-                    this.connecting_pos[1],
-                    4,
-                    0,
-                    Math.PI * 2,
-                );
-                ctx.fill();
-                ctx.beginPath();
-                ctx.arc(
-                    this.graph_mouse[0],
-                    this.graph_mouse[1],
-                    4,
-                    0,
-                    Math.PI * 2,
-                );
-            }
-            ctx.fill();
-
-            ctx.fillStyle = "#ffcc00";
-            if (this._highlight_input) {
-                ctx.beginPath();
-                var shape = this._highlight_input_slot.shape;
-                if (shape === LiteGraph.ARROW_SHAPE) {
-                    ctx.moveTo(this._highlight_input[0] + 8, this._highlight_input[1] + 0.5);
-                    ctx.lineTo(this._highlight_input[0] - 4, this._highlight_input[1] + 6 + 0.5);
-                    ctx.lineTo(this._highlight_input[0] - 4, this._highlight_input[1] - 6 + 0.5);
+                if (
+                    connType === LiteGraph.EVENT ||
+                    connType === LiteGraph.ACTION ||
+                    connShape === LiteGraph.BOX_SHAPE
+                ) {
+                    ctx.rect(
+                        this.connecting_pos[0] - 6 + 0.5,
+                        this.connecting_pos[1] - 5 + 0.5,
+                        14,
+                        10,
+                    );
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.rect(
+                        this.graph_mouse[0] - 6 + 0.5,
+                        this.graph_mouse[1] - 5 + 0.5,
+                        14,
+                        10,
+                    );
+                } else if (connShape === LiteGraph.ARROW_SHAPE) {
+                    ctx.moveTo(this.connecting_pos[0] + 8, this.connecting_pos[1] + 0.5);
+                    ctx.lineTo(this.connecting_pos[0] - 4, this.connecting_pos[1] + 6 + 0.5);
+                    ctx.lineTo(this.connecting_pos[0] - 4, this.connecting_pos[1] - 6 + 0.5);
                     ctx.closePath();
                 } else {
                     ctx.arc(
-                        this._highlight_input[0],
-                        this._highlight_input[1],
-                        6,
+                        this.connecting_pos[0],
+                        this.connecting_pos[1],
+                        4,
+                        0,
+                        Math.PI * 2,
+                    );
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(
+                        this.graph_mouse[0],
+                        this.graph_mouse[1],
+                        4,
                         0,
                         Math.PI * 2,
                     );
                 }
                 ctx.fill();
-            }
-            if (this._highlight_output) {
-                ctx.beginPath();
-                if (shape === LiteGraph.ARROW_SHAPE) {
-                    ctx.moveTo(this._highlight_output[0] + 8, this._highlight_output[1] + 0.5);
-                    ctx.lineTo(this._highlight_output[0] - 4, this._highlight_output[1] + 6 + 0.5);
-                    ctx.lineTo(this._highlight_output[0] - 4, this._highlight_output[1] - 6 + 0.5);
-                    ctx.closePath();
-                } else {
-                    ctx.arc(
-                        this._highlight_output[0],
-                        this._highlight_output[1],
-                        6,
-                        0,
-                        Math.PI * 2,
-                    );
+
+                ctx.fillStyle = "#ffcc00";
+                if (this._highlight_input) {
+                    ctx.beginPath();
+                    var shape = this._highlight_input_slot.shape;
+                    if (shape === LiteGraph.ARROW_SHAPE) {
+                        ctx.moveTo(this._highlight_input[0] + 8, this._highlight_input[1] + 0.5);
+                        ctx.lineTo(this._highlight_input[0] - 4, this._highlight_input[1] + 6 + 0.5);
+                        ctx.lineTo(this._highlight_input[0] - 4, this._highlight_input[1] - 6 + 0.5);
+                        ctx.closePath();
+                    } else {
+                        ctx.arc(
+                            this._highlight_input[0],
+                            this._highlight_input[1],
+                            6,
+                            0,
+                            Math.PI * 2,
+                        );
+                    }
+                    ctx.fill();
                 }
-                ctx.fill();
+                if (this._highlight_output) {
+                    ctx.beginPath();
+                    if (shape === LiteGraph.ARROW_SHAPE) {
+                        ctx.moveTo(this._highlight_output[0] + 8, this._highlight_output[1] + 0.5);
+                        ctx.lineTo(this._highlight_output[0] - 4, this._highlight_output[1] + 6 + 0.5);
+                        ctx.lineTo(this._highlight_output[0] - 4, this._highlight_output[1] - 6 + 0.5);
+                        ctx.closePath();
+                    } else {
+                        ctx.arc(
+                            this._highlight_output[0],
+                            this._highlight_output[1],
+                            6,
+                            0,
+                            Math.PI * 2,
+                        );
+                    }
+                    ctx.fill();
+                }
             }
-        }
 
-        // the selection rectangle
-        if (this.dragging_rectangle) {
-            ctx.strokeStyle = "#FFF";
-            ctx.strokeRect(
-                this.dragging_rectangle[0],
-                this.dragging_rectangle[1],
-                this.dragging_rectangle[2],
-                this.dragging_rectangle[3],
-            );
-        }
+            // the selection rectangle
+            if (this.dragging_rectangle) {
+                ctx.strokeStyle = "#FFF";
+                ctx.strokeRect(
+                    this.dragging_rectangle[0],
+                    this.dragging_rectangle[1],
+                    this.dragging_rectangle[2],
+                    this.dragging_rectangle[3],
+                );
+            }
 
-        // on top of link center
-        if(this.over_link_center && this.render_link_tooltip)
-            this.drawLinkTooltip( ctx, this.over_link_center );
-        else
-            this.onDrawLinkTooltip?.(ctx,null);
+            // on top of link center
+            if(this.over_link_center && this.render_link_tooltip)
+                this.drawLinkTooltip( ctx, this.over_link_center );
+            else
+                this.onDrawLinkTooltip?.(ctx,null);
 
-        // custom info
-        this.onDrawForeground?.(ctx, this.visible_rect);
+            // custom info
+            this.onDrawForeground?.(ctx, this.visible_rect);
+        });
         ctx.restore();
     }
 

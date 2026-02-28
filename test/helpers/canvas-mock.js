@@ -31,6 +31,7 @@ export function createMockCanvasContext() {
         drawImage: track("drawImage"),
         fillText: track("fillText"),
         strokeText: track("strokeText"),
+        globalCompositeOperation: "source-over",
         measureText(text = "") {
             return { width: String(text).length * 8 };
         },

@@ -24,6 +24,7 @@ export interface IRenderContext2DCompat extends CanvasRenderingContext2D {
     start2D?: () => void;
     finish2D?: () => void;
     mozImageSmoothingEnabled?: boolean;
+    globalCompositeOperation?: GlobalCompositeOperation;
 }
 
 export interface IRenderSurface {

@@ -133,6 +133,12 @@ const setUiData: SetUiDataFn = (ui, data) => {
     Object.assign(ui, data);
 };
 
+function nowMs(): number {
+    return typeof performance !== "undefined" && typeof performance.now === "function"
+        ? performance.now()
+        : Date.now();
+}
+
 function ensureRoundRectCompat(ctx: RenderContextLike | null | undefined): void {
     if (!ctx || typeof ctx.roundRect === "function") {
         return;
@@ -283,6 +289,12 @@ export class LeaferNodeUiLayer {
         this._renderStyleProfile = "legacy";
         this._parityContext = null;
         this._legacyFallbackQueue = [];
+        this._frameDirty = false;
+        this._frameMetrics = {
+            renderToCalls: 0,
+            forceRenderCalls: 0,
+            lastRenderMs: 0,
+        };
     }
 
     _log(message, meta) {
@@ -397,6 +409,7 @@ export class LeaferNodeUiLayer {
         this._active = true;
         this._visibleNodeKeys.clear();
         this._legacyFallbackQueue.length = 0;
+        this._frameDirty = false;
         if ((nodeRenderMode === "uiapi-parity" || nodeRenderMode === "uiapi-components") && this._bridgeCanvas) {
             if (!this._parityContext) {
                 this._parityContext = this._bridgeCanvas.getContext("2d");
@@ -429,11 +442,15 @@ export class LeaferNodeUiLayer {
         if (!this._bridgeCanvas || !targetCtx || typeof targetCtx.drawImage !== "function") {
             return;
         }
-        if (this._nodeRenderMode !== "uiapi-parity") {
+        const startedAt = nowMs();
+        this._frameMetrics.renderToCalls += 1;
+        if (this._nodeRenderMode !== "uiapi-parity" && (this._frameDirty || this._legacyFallbackQueue.length > 0)) {
+            this._frameMetrics.forceRenderCalls += 1;
             this._leafer?.forceRender?.(undefined, true);
         }
         this.flushLegacyFallbackQueue();
         targetCtx.drawImage(this._bridgeCanvas, 0, 0);
+        this._frameMetrics.lastRenderMs = nowMs() - startedAt;
     }
 
     queueLegacyNodeFallback(
@@ -512,9 +529,9 @@ export class LeaferNodeUiLayer {
         return node?.id ?? node;
     }
 
-    _createCallbackCanvas(width, height, y) {
+    _createCallbackCanvas(width, height, x, y) {
         const canvasLayer = this._createUi("Canvas", {
-            x: 0,
+            x,
             y,
             width,
             height,
@@ -523,7 +540,7 @@ export class LeaferNodeUiLayer {
         return canvasLayer;
     }
 
-    _ensureCallbackLayer(view, type, enabled, width, height, titleHeightScaled) {
+    _ensureCallbackLayer(view, type, enabled, width, height, x, y) {
         const key = type === "bg" ? "callbackBgCanvas" : "callbackFgCanvas";
         if (!enabled) {
             if (view[key]) {
@@ -534,10 +551,11 @@ export class LeaferNodeUiLayer {
         }
 
         if (!view[key]) {
-            view[key] = this._createCallbackCanvas(width, height, -titleHeightScaled);
+            view[key] = this._createCallbackCanvas(width, height, x, y);
         } else {
             setUiData(view[key], {
-                y: -titleHeightScaled,
+                x,
+                y,
                 width,
                 height,
             });
@@ -551,7 +569,8 @@ export class LeaferNodeUiLayer {
         scope: unknown,
         args: unknown[],
         scale: number,
-        titleHeight: number,
+        translateX: number,
+        translateY: number,
     ): unknown {
         if (!canvasLayer || typeof callback !== "function") {
             return undefined;
@@ -559,7 +578,9 @@ export class LeaferNodeUiLayer {
         const results = runNodeLegacyCallbacks({
             canvasLayer,
             scale,
-            titleHeight,
+            titleHeight: translateY,
+            translateX,
+            translateY,
             callbacks: [
                 {
                     fn: callback,
@@ -569,6 +590,58 @@ export class LeaferNodeUiLayer {
             ],
         });
         return results[0];
+    }
+
+    _computeCallbackExtents(node, baseSize, titleHeight) {
+        const baseWidth = Math.max(1, Number(baseSize?.[0] || 1));
+        const baseHeight = Math.max(1, Number(baseSize?.[1] || 1));
+        let minX = 0;
+        let minY = -titleHeight;
+        let maxX = baseWidth;
+        let maxY = baseHeight;
+
+        if (typeof node?.onBounding === "function") {
+            const area = [0, 0, baseWidth, baseHeight];
+            try {
+                node.onBounding(area);
+                const ax = Number(area[0]);
+                const ay = Number(area[1]);
+                const aw = Number(area[2]);
+                const ah = Number(area[3]);
+                if (
+                    Number.isFinite(ax)
+                    && Number.isFinite(ay)
+                    && Number.isFinite(aw)
+                    && Number.isFinite(ah)
+                ) {
+                    minX = Math.min(minX, ax);
+                    minY = Math.min(minY, ay);
+                    maxX = Math.max(maxX, ax + aw);
+                    maxY = Math.max(maxY, ay + ah);
+                }
+            } catch (_error) {
+                // Ignore node-specific onBounding errors and keep base extents.
+            }
+        }
+
+        const padding = 2;
+        minX -= padding;
+        minY -= padding;
+        maxX += padding;
+        maxY += padding;
+        if (maxX <= minX) {
+            maxX = minX + 1;
+        }
+        if (maxY <= minY) {
+            maxY = minY + 1;
+        }
+
+        return {
+            minX,
+            minY,
+            maxX,
+            maxY,
+        };
     }
 
     _computeHashes(node: LeaferNodeLike, host: LeaferHostLike) {
@@ -730,6 +803,11 @@ export class LeaferNodeUiLayer {
         const x = (node?.pos?.[0] + offset[0]) * scale;
         const y = (node?.pos?.[1] + offset[1]) * scale;
         const widgetsStartY = computeNodeWidgetsStartY(node, LiteGraph);
+        const styleChanged = hashes.styleHash !== view.styleHash;
+        const layoutChanged = hashes.layoutHash !== view.layoutHash;
+        const slotChanged = hashes.slotHash !== view.slotHash;
+        const widgetChanged = hashes.widgetHash !== view.widgetHash;
+        const tooltipChanged = hashes.tooltipHash !== view.tooltipHash;
 
         setUiData(view.group, { x, y });
 
@@ -778,24 +856,14 @@ export class LeaferNodeUiLayer {
                 tokens,
             };
 
-            if (
-                hashes.styleHash !== view.styleHash
-                || hashes.layoutHash !== view.layoutHash
-                || hashes.slotHash !== view.slotHash
-            ) {
+            if (styleChanged || layoutChanged || slotChanged) {
                 nodeComponents.shell(componentEnv);
                 nodeComponents.title(componentEnv);
                 nodeComponents.slots(componentEnv);
             }
 
             const widgetActive = host?.node_widget?.[0] === node;
-            if (
-                hashes.widgetHash !== view.widgetHash
-                || hashes.layoutHash !== view.layoutHash
-                || hashes.styleHash !== view.styleHash
-                || showCollapsed
-                || widgetActive
-            ) {
+            if (widgetChanged || layoutChanged || styleChanged || showCollapsed || widgetActive) {
                 clearChildren(view.widgetsGroup);
                 legacyWidgetDrawFns = [];
                 if (!showCollapsed) {
@@ -841,11 +909,11 @@ export class LeaferNodeUiLayer {
                 );
             }
 
-            if (hashes.tooltipHash !== view.tooltipHash) {
+            if (tooltipChanged) {
                 nodeComponents.tooltip(componentEnv);
             }
         } else {
-            if (hashes.styleHash !== view.styleHash || hashes.layoutHash !== view.layoutHash) {
+            if (styleChanged || layoutChanged) {
                 clearChildren(view.bodyGroup);
                 clearChildren(view.titleGroup);
                 clearChildren(view.slotsGroup);
@@ -924,12 +992,7 @@ export class LeaferNodeUiLayer {
             }
 
             const widgetActive = host?.node_widget?.[0] === node;
-            if (
-                hashes.widgetHash !== view.widgetHash
-                || hashes.layoutHash !== view.layoutHash
-                || hashes.styleHash !== view.styleHash
-                || widgetActive
-            ) {
+            if (widgetChanged || layoutChanged || styleChanged || widgetActive) {
                 clearChildren(view.widgetsGroup);
                 const widgets = node?.widgets || [];
                 const widgetHeight = LiteGraph.NODE_WIDGET_HEIGHT;
@@ -963,7 +1026,7 @@ export class LeaferNodeUiLayer {
                 }
             }
 
-            if (hashes.tooltipHash !== view.tooltipHash) {
+            if (tooltipChanged) {
                 clearChildren(view.tooltipGroup);
                 const showTooltip = LiteGraph.show_node_tooltip
                     && Boolean(node?.mouseOver)
@@ -1007,24 +1070,71 @@ export class LeaferNodeUiLayer {
         view.legacyWidgetDrawFns = effectiveLegacyWidgetDrawFns;
 
         const hasFgCallback = hasFgCallbackBase || effectiveHasLegacyDraw;
-        const callbackCanvasWidth = Math.max(1, Math.ceil(width + 4));
-        const callbackCanvasHeight = Math.max(1, Math.ceil(height + titleHeightScaled + 4));
-        const bgLayer = this._ensureCallbackLayer(view, "bg", hasBgCallback, callbackCanvasWidth, callbackCanvasHeight, titleHeightScaled);
-        const fgLayer = this._ensureCallbackLayer(view, "fg", hasFgCallback, callbackCanvasWidth, callbackCanvasHeight, titleHeightScaled);
+        const needsFrameRender = styleChanged
+            || layoutChanged
+            || slotChanged
+            || widgetChanged
+            || tooltipChanged
+            || hasBgCallback
+            || hasFgCallback;
+        if (needsFrameRender) {
+            this._frameDirty = true;
+        }
+        const callbackBaseSize = [Math.max(collapsedWidth, size[0] || 0), size[1] || 0];
+        const callbackExtents = this._computeCallbackExtents(node, callbackBaseSize, titleHeight);
+        const callbackCanvasWidth = Math.max(1, Math.ceil((callbackExtents.maxX - callbackExtents.minX) * scale));
+        const callbackCanvasHeight = Math.max(1, Math.ceil((callbackExtents.maxY - callbackExtents.minY) * scale));
+        const callbackLayerX = callbackExtents.minX * scale;
+        const callbackLayerY = callbackExtents.minY * scale;
+        const callbackTranslateX = -callbackExtents.minX;
+        const callbackTranslateY = -callbackExtents.minY;
+        const bgLayer = this._ensureCallbackLayer(
+            view,
+            "bg",
+            hasBgCallback,
+            callbackCanvasWidth,
+            callbackCanvasHeight,
+            callbackLayerX,
+            callbackLayerY,
+        );
+        const fgLayer = this._ensureCallbackLayer(
+            view,
+            "fg",
+            hasFgCallback,
+            callbackCanvasWidth,
+            callbackCanvasHeight,
+            callbackLayerX,
+            callbackLayerY,
+        );
         this._syncNodeLayerOrder(view);
 
         const collapsedConsumed = showCollapsed
-            ? this._runCallbackLayer(fgLayer, node?.onDrawCollapsed, node, [fgLayer?.context, host], scale, titleHeight) === true
+            ? this._runCallbackLayer(
+                fgLayer,
+                node?.onDrawCollapsed,
+                node,
+                [fgLayer?.context, host],
+                scale,
+                callbackTranslateX,
+                callbackTranslateY,
+            ) === true
             : false;
 
         const slotHashBeforeBg = hashes.slotHash;
+        const titleSignalStateBeforeBg = [
+            node?.boxcolor || "",
+            node?.execute_triggered ?? 0,
+            node?.action_triggered ?? 0,
+            node?.mode ?? "",
+        ].join("|");
         this._runCallbackLayer(
             bgLayer,
             node?.onDrawBackground,
             node,
             [bgLayer?.context, host, host?.canvas, host?.graph_mouse],
             scale,
-            titleHeight,
+            callbackTranslateX,
+            callbackTranslateY,
         );
         const slotHashAfterBg = hashNodeSlots(node);
         if (slotHashAfterBg !== slotHashBeforeBg) {
@@ -1033,9 +1143,37 @@ export class LeaferNodeUiLayer {
                 nodeComponents.slots(componentEnv);
             }
         }
+        const titleSignalStateAfterBg = [
+            node?.boxcolor || "",
+            node?.execute_triggered ?? 0,
+            node?.action_triggered ?? 0,
+            node?.mode ?? "",
+        ].join("|");
+        if (titleSignalStateAfterBg !== titleSignalStateBeforeBg) {
+            if (componentEnv && nodeComponents?.title) {
+                nodeComponents.title(componentEnv);
+            }
+            hashes.styleHash = this._computeHashes(node, host).styleHash;
+        }
         if (!collapsedConsumed) {
-            this._runCallbackLayer(fgLayer, node?.onDrawTitle, node, [fgLayer?.context], scale, titleHeight);
-            this._runCallbackLayer(fgLayer, node?.onDrawForeground, node, [fgLayer?.context, host, host?.canvas], scale, titleHeight);
+            this._runCallbackLayer(
+                fgLayer,
+                node?.onDrawTitle,
+                node,
+                [fgLayer?.context],
+                scale,
+                callbackTranslateX,
+                callbackTranslateY,
+            );
+            this._runCallbackLayer(
+                fgLayer,
+                node?.onDrawForeground,
+                node,
+                [fgLayer?.context, host, host?.canvas],
+                scale,
+                callbackTranslateX,
+                callbackTranslateY,
+            );
         }
 
         if (effectiveHasLegacyDraw) {
@@ -1044,7 +1182,9 @@ export class LeaferNodeUiLayer {
                 drawFns: effectiveLegacyWidgetDrawFns,
                 node,
                 scale,
-                titleHeight,
+                titleHeight: callbackTranslateY,
+                translateX: callbackTranslateX,
+                translateY: callbackTranslateY,
             });
         }
 

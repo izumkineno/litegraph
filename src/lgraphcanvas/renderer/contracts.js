@@ -40,6 +40,7 @@ export const RENDER_CONTEXT_COMPAT_PROPERTIES = Object.freeze([
     "shadowOffsetY",
     "shadowBlur",
     "imageSmoothingEnabled",
+    "globalCompositeOperation",
 ]);
 
 /**

@@ -1,5 +1,11 @@
 import { LiteGraph } from "../../litegraph.js";
-export function drawSubgraphPanel(ctx) {
+import { drawBackCanvasWithLeaferLayer } from "../renderer/leafer-back-layer.ts";
+import {
+    drawSubgraphPanelWithLeaferLayer,
+    renderInfoWithLeaferLayer,
+} from "../renderer/leafer-panel-layer.ts";
+
+function drawSubgraphPanelLegacy(ctx) {
     var subgraph = this.graph;
     if( !subgraph)
         return;
@@ -10,6 +16,10 @@ export function drawSubgraphPanel(ctx) {
     }
     this.drawSubgraphPanelLeft(subgraph, subnode, ctx)
     this.drawSubgraphPanelRight(subgraph, subnode, ctx)
+}
+
+export function drawSubgraphPanel(ctx) {
+    return drawSubgraphPanelWithLeaferLayer(this, () => drawSubgraphPanelLegacy.call(this, ctx));
 }
 
 export function drawSubgraphPanelLeft(subgraph, subnode, ctx) {
@@ -197,7 +207,7 @@ export function isAreaClicked(x, y, w, h, hold_click) {
     return was_clicked;
 }
 
-export function renderInfo(ctx, x, y) {
+function renderInfoLegacy(ctx, x, y) {
     x = x || 10;
     y = y || this.canvas.height - 80;
 
@@ -219,7 +229,11 @@ export function renderInfo(ctx, x, y) {
     ctx.restore();
 }
 
-export function drawBackCanvas() {
+export function renderInfo(ctx, x, y) {
+    return renderInfoWithLeaferLayer(this, () => renderInfoLegacy.call(this, ctx, x, y));
+}
+
+function drawBackCanvasLegacy() {
     var canvas = this.backSurface?.canvas || this.bgcanvas;
 
     if (!this.bgctx) {
@@ -384,6 +398,10 @@ export function drawBackCanvas() {
     this.rendererAdapter?.endFrame?.("back");
     this.dirty_bgcanvas = false;
     this.dirty_canvas = true; // to force to repaint the front canvas with the bgcanvas
+}
+
+export function drawBackCanvas() {
+    return drawBackCanvasWithLeaferLayer(this, () => drawBackCanvasLegacy.call(this));
 }
 
 export function drawGroups(canvas, ctx) {

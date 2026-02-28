@@ -24,6 +24,8 @@ export function runNodeLegacyCallbacks(options: {
     canvasLayer: CallbackLayerCtx | null | undefined;
     scale: number;
     titleHeight: number;
+    translateX?: number;
+    translateY?: number;
     callbacks: LegacyCallbackEntry[];
 }): unknown[] {
     const canvasLayer = options.canvasLayer;
@@ -39,8 +41,10 @@ export function runNodeLegacyCallbacks(options: {
     ctx.save?.();
     ctx.setTransform?.(1, 0, 0, 1, 0, 0);
     ctx.clearRect?.(0, 0, width, height);
+    const translateX = Number.isFinite(options.translateX) ? Number(options.translateX) : 0;
+    const translateY = Number.isFinite(options.translateY) ? Number(options.translateY) : options.titleHeight;
     ctx.scale?.(options.scale, options.scale);
-    ctx.translate?.(0, options.titleHeight);
+    ctx.translate?.(translateX, translateY);
 
     const results: unknown[] = [];
     for (const entry of options.callbacks) {
@@ -60,6 +64,8 @@ export function runWidgetLegacyDraws(options: {
     node: LeaferNodeLike;
     scale: number;
     titleHeight: number;
+    translateX?: number;
+    translateY?: number;
 }): void {
     const canvasLayer = options.canvasLayer;
     const ctx = canvasLayer?.context;
@@ -69,8 +75,10 @@ export function runWidgetLegacyDraws(options: {
 
     ensureRoundRectCompat(ctx);
     ctx.save?.();
+    const translateX = Number.isFinite(options.translateX) ? Number(options.translateX) : 0;
+    const translateY = Number.isFinite(options.translateY) ? Number(options.translateY) : options.titleHeight;
     ctx.scale?.(options.scale, options.scale);
-    ctx.translate?.(0, options.titleHeight);
+    ctx.translate?.(translateX, translateY);
     for (const drawFn of options.drawFns) {
         drawFn(ctx, options.node);
     }
