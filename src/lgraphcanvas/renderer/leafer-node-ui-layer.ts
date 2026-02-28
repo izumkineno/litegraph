@@ -12,6 +12,11 @@ import {
     snapPixel,
     widgetTextTop,
 } from "./leafer-components/text-layout.ts";
+import {
+    runNodeLegacyCallbacks,
+    runNodeLegacyFallback,
+    runWidgetLegacyDraws,
+} from "./legacy-compat-bridge.ts";
 import type {
     AddChildrenFn,
     ClearChildrenFn,
@@ -99,6 +104,22 @@ function removeChild(parent: LeaferUiLike | null | undefined, child: LeaferUiLik
             parent.children.splice(index, 1);
         }
     }
+}
+
+function reorderChildren(
+    parent: LeaferUiLike | null | undefined,
+    children: Array<LeaferUiLike | null | undefined>,
+): void {
+    if (!parent || !children?.length) {
+        return;
+    }
+    for (const child of children) {
+        if (!child) {
+            continue;
+        }
+        removeChild(parent, child);
+    }
+    addChildren(parent, ...children);
 }
 
 const setUiData: SetUiDataFn = (ui, data) => {
@@ -261,6 +282,7 @@ export class LeaferNodeUiLayer {
         this._nodeRenderMode = "uiapi-parity";
         this._renderStyleProfile = "legacy";
         this._parityContext = null;
+        this._legacyFallbackQueue = [];
     }
 
     _log(message, meta) {
@@ -340,6 +362,7 @@ export class LeaferNodeUiLayer {
         this._visibleNodeKeys.clear();
         this._nodeViews.clear();
         this._parityContext = null;
+        this._legacyFallbackQueue.length = 0;
         this._rootGroup = null;
         this._leafer?.destroy?.();
         this._leafer = null;
@@ -373,6 +396,7 @@ export class LeaferNodeUiLayer {
         this._renderStyleProfile = renderStyleProfile || "legacy";
         this._active = true;
         this._visibleNodeKeys.clear();
+        this._legacyFallbackQueue.length = 0;
         if ((nodeRenderMode === "uiapi-parity" || nodeRenderMode === "uiapi-components") && this._bridgeCanvas) {
             if (!this._parityContext) {
                 this._parityContext = this._bridgeCanvas.getContext("2d");
@@ -408,7 +432,59 @@ export class LeaferNodeUiLayer {
         if (this._nodeRenderMode !== "uiapi-parity") {
             this._leafer?.forceRender?.(undefined, true);
         }
+        this.flushLegacyFallbackQueue();
         targetCtx.drawImage(this._bridgeCanvas, 0, 0);
+    }
+
+    queueLegacyNodeFallback(
+        node: LeaferNodeLike,
+        host: LeaferHostLike,
+        drawLegacyWithCtx: ((ctx: RenderContextLike) => void) | null | undefined,
+    ): boolean {
+        if (!node || !host || typeof drawLegacyWithCtx !== "function") {
+            return false;
+        }
+        this._legacyFallbackQueue.push({ node, host, drawLegacyWithCtx });
+        return true;
+    }
+
+    flushLegacyFallbackQueue(): void {
+        if (!this._legacyFallbackQueue.length) {
+            return;
+        }
+        if (!this._parityContext && this._bridgeCanvas) {
+            this._parityContext = this._bridgeCanvas.getContext("2d");
+        }
+        const ctx = this._parityContext;
+        if (!ctx) {
+            this._legacyFallbackQueue.length = 0;
+            return;
+        }
+        for (const entry of this._legacyFallbackQueue) {
+            try {
+                runNodeLegacyFallback({
+                    ctx,
+                    node: entry.node,
+                    host: entry.host,
+                    drawLegacyWithCtx: entry.drawLegacyWithCtx,
+                });
+                if (entry.node && entry.node._render_error_internal) {
+                    delete entry.node._render_error;
+                    delete entry.node._render_error_internal;
+                    if (entry.node.has_errors) {
+                        entry.node.has_errors = false;
+                    }
+                }
+            } catch (error) {
+                const message = error instanceof Error ? error.message : String(error || "unknown render error");
+                if (entry.node) {
+                    entry.node.has_errors = true;
+                    entry.node._render_error = message;
+                    entry.node._render_error_internal = true;
+                }
+            }
+        }
+        this._legacyFallbackQueue.length = 0;
     }
 
     drawLegacyNode(
@@ -424,16 +500,12 @@ export class LeaferNodeUiLayer {
             return;
         }
         this._parityContext = ctx;
-
-        const scale = host?.ds?.scale || 1;
-        const offset = host?.ds?.offset || [0, 0];
-        const nodeX = node?.pos?.[0] || 0;
-        const nodeY = node?.pos?.[1] || 0;
-        ctx.save?.();
-        ctx.scale?.(scale, scale);
-        ctx.translate?.(nodeX + offset[0], nodeY + offset[1]);
-        drawLegacyWithCtx(ctx);
-        ctx.restore?.();
+        runNodeLegacyFallback({
+            ctx,
+            node,
+            host,
+            drawLegacyWithCtx,
+        });
     }
 
     _getNodeKey(node) {
@@ -463,11 +535,6 @@ export class LeaferNodeUiLayer {
 
         if (!view[key]) {
             view[key] = this._createCallbackCanvas(width, height, -titleHeightScaled);
-            if (type === "bg") {
-                addChildren(view.group, view[key], view.bodyGroup, view.titleGroup, view.slotsGroup, view.widgetsGroup, view.tooltipGroup);
-            } else {
-                addChildren(view.group, view[key]);
-            }
         } else {
             setUiData(view[key], {
                 y: -titleHeightScaled,
@@ -489,23 +556,19 @@ export class LeaferNodeUiLayer {
         if (!canvasLayer || typeof callback !== "function") {
             return undefined;
         }
-        const ctx = canvasLayer.context;
-        if (!ctx) {
-            return undefined;
-        }
-        ensureRoundRectCompat(ctx);
-
-        const width = canvasLayer.width ?? ctx.canvas?.width ?? 0;
-        const height = canvasLayer.height ?? ctx.canvas?.height ?? 0;
-        ctx.save?.();
-        ctx.setTransform?.(1, 0, 0, 1, 0, 0);
-        ctx.clearRect?.(0, 0, width, height);
-        ctx.scale?.(scale, scale);
-        ctx.translate?.(0, titleHeight);
-        const result = callback.apply(scope ?? null, args);
-        ctx.restore?.();
-        canvasLayer.paint?.();
-        return result;
+        const results = runNodeLegacyCallbacks({
+            canvasLayer,
+            scale,
+            titleHeight,
+            callbacks: [
+                {
+                    fn: callback,
+                    scope,
+                    args,
+                },
+            ],
+        });
+        return results[0];
     }
 
     _computeHashes(node: LeaferNodeLike, host: LeaferHostLike) {
@@ -599,6 +662,23 @@ export class LeaferNodeUiLayer {
         // remove+add guarantees the child is at the end (topmost) for current frame order.
         removeChild(this._rootGroup, view.group);
         addChildren(this._rootGroup, view.group);
+    }
+
+    _syncNodeLayerOrder(view: NodeViewRef): void {
+        if (!view?.group) {
+            return;
+        }
+        // Keep layer order aligned with legacy draw order:
+        // body/title -> background callback -> slots/widgets/tooltip -> foreground callback.
+        reorderChildren(view.group, [
+            view.bodyGroup,
+            view.titleGroup,
+            view.callbackBgCanvas,
+            view.slotsGroup,
+            view.widgetsGroup,
+            view.tooltipGroup,
+            view.callbackFgCanvas,
+        ]);
     }
 
     _isComponentMode(host) {
@@ -931,6 +1011,7 @@ export class LeaferNodeUiLayer {
         const callbackCanvasHeight = Math.max(1, Math.ceil(height + titleHeightScaled + 4));
         const bgLayer = this._ensureCallbackLayer(view, "bg", hasBgCallback, callbackCanvasWidth, callbackCanvasHeight, titleHeightScaled);
         const fgLayer = this._ensureCallbackLayer(view, "fg", hasFgCallback, callbackCanvasWidth, callbackCanvasHeight, titleHeightScaled);
+        this._syncNodeLayerOrder(view);
 
         const collapsedConsumed = showCollapsed
             ? this._runCallbackLayer(fgLayer, node?.onDrawCollapsed, node, [fgLayer?.context, host], scale, titleHeight) === true
@@ -958,18 +1039,13 @@ export class LeaferNodeUiLayer {
         }
 
         if (effectiveHasLegacyDraw) {
-            const fgCtx = fgLayer?.context;
-            if (fgCtx) {
-                ensureRoundRectCompat(fgCtx);
-                fgCtx.save?.();
-                fgCtx.scale?.(scale, scale);
-                fgCtx.translate?.(0, titleHeight);
-                for (const drawLegacy of effectiveLegacyWidgetDrawFns) {
-                    drawLegacy(fgCtx, node);
-                }
-                fgCtx.restore?.();
-                fgLayer.paint?.();
-            }
+            runWidgetLegacyDraws({
+                canvasLayer: fgLayer,
+                drawFns: effectiveLegacyWidgetDrawFns,
+                node,
+                scale,
+                titleHeight,
+            });
         }
 
         if (collapsedConsumed) {

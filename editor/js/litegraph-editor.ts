@@ -11,6 +11,7 @@ const RENDERER_PROFILE_OPTIONS = [
     { value: "legacy-canvas", label: "Legacy Canvas2D" },
     { value: "leafer-hybrid", label: "Leafer Hybrid (Back)" },
     { value: "leafer-parity", label: "Leafer UIAPI (Parity)" },
+    { value: "decoupled-compat", label: "Leafer Decoupled Compat" },
 ];
 const THEME_OPTIONS = [
     { value: "classic", label: "Classic Dark" },
@@ -449,8 +450,6 @@ function createDefaultRendererAdapter() {
     }
 
     if (LeaferAdapter && leaferRuntime) {
-        const graphTheme = getGraphTheme();
-        const useLeaferComponents = graphTheme === "pragmatic-slate" || graphTheme === "classic";
         if (profile === "leafer-hybrid") {
             return new LeaferAdapter({
                 mode: "hybrid-back",
@@ -461,7 +460,7 @@ function createDefaultRendererAdapter() {
 
         return new LeaferAdapter({
             mode: "full-leafer",
-            nodeRenderMode: useLeaferComponents ? "uiapi-components" : "uiapi-parity",
+            nodeRenderMode: "uiapi-components",
             nodeRenderLogs: true,
             leaferRuntime,
         });
@@ -477,19 +476,24 @@ function createDefaultRendererAdapter() {
 
 function createGraphCanvas(canvas, graph) {
     applyGraphTheme(getGraphTheme());
-    const graphTheme = getGraphTheme();
+    const rendererProfile = getRendererProfile();
     const rendererAdapter = createDefaultRendererAdapter();
+    const useLeaferComponentsProfile = rendererProfile === "leafer-parity" || rendererProfile === "decoupled-compat";
     const options = rendererAdapter
         ? {
             rendererAdapter,
-            renderStyleProfile: graphTheme === "pragmatic-slate"
+            renderStyleProfile: useLeaferComponentsProfile
                 ? "leafer-pragmatic-v1"
-                : graphTheme === "classic"
-                    ? "leafer-classic-v1"
-                    : "legacy",
-            renderStyleEngine: graphTheme === "pragmatic-slate" || graphTheme === "classic"
+                : "legacy",
+            renderStyleEngine: useLeaferComponentsProfile
                 ? "leafer-components"
                 : "legacy",
+            ...(rendererProfile === "decoupled-compat"
+                ? {
+                    renderForm: "leafer",
+                    renderStrategy: "decoupled-compat",
+                }
+                : {}),
         }
         : undefined;
     const graphcanvas = new LGraphCanvas(canvas, graph, options);

@@ -58,6 +58,24 @@ export interface IRenderEngineAdapter {
 
 export type RenderStyleProfile = "legacy" | "leafer-classic-v1" | "leafer-pragmatic-v1";
 export type RenderStyleEngine = "legacy" | "leafer-components";
+export type RenderForm = "legacy" | "leafer";
+export type RenderStrategy = "legacy" | "hybrid-back" | "full-leafer" | "decoupled-compat";
+
+export interface RenderModeRuntime {
+    form: RenderForm;
+    strategy: RenderStrategy;
+    capabilities: {
+        frontNative: boolean;
+        backNative: boolean;
+        forceLegacyNodeCtx: boolean;
+        useCompatBridge: boolean;
+    };
+    fallbackPolicy: {
+        nodeLevelLegacyFallback: boolean;
+        markNodeErrorOnFailure: boolean;
+    };
+    source: string;
+}
 
 export interface RenderStyleTokens {
     radius: number;
@@ -1346,6 +1364,8 @@ export declare class LGraphCanvas {
             free_resize?: boolean;
             skip_events?: boolean;
             viewport?: Vector4 | null;
+            renderForm?: RenderForm;
+            renderStrategy?: RenderStrategy;
             renderStyleProfile?: RenderStyleProfile;
             renderStyleEngine?: RenderStyleEngine;
             rendererAdapter?:
@@ -1473,6 +1493,9 @@ export declare class LGraphCanvas {
     render_shadows: boolean;
     render_title_colored: boolean;
     rendererAdapter: IRenderEngineAdapter | null;
+    renderForm: RenderForm | null;
+    renderStrategy: RenderStrategy | null;
+    _renderModeRuntime: RenderModeRuntime | null;
     renderStyleProfile: RenderStyleProfile;
     renderStyleEngine: RenderStyleEngine;
     round_radius: number;

@@ -2,16 +2,52 @@
 import { LiteGraph } from "../../litegraph.ts";
 import { LGraphCanvas } from "../../lgraphcanvas.js";
 import { Canvas2DRendererAdapter } from "../renderer/canvas2d-adapter.js";
+import { LeaferUIRendererAdapter } from "../renderer/leafer-ui-adapter.ts";
+import { createLegacyModeRuntime } from "../modes/forms/legacy/legacy-mode.ts";
+import { resolveRenderMode } from "../modes/resolve-render-mode.ts";
 
-function resolveRendererAdapter(instance) {
+function resolveRendererAdapter(instance, runtimeMode) {
+    const resolveLeaferDefaults = () => {
+        const mode = runtimeMode?.strategy === "hybrid-back" ? "hybrid-back" : "full-leafer";
+        const nodeRenderMode = runtimeMode?.strategy === "decoupled-compat"
+            ? "uiapi-components"
+            : (runtimeMode?.capabilities?.forceLegacyNodeCtx ? "legacy-ctx" : "uiapi-parity");
+        return { mode, nodeRenderMode };
+    };
+
+    const hasNewModeFields = instance?.options?.renderForm != null
+        || instance?.options?.renderStrategy != null
+        || instance?.renderForm != null
+        || instance?.renderStrategy != null;
     const candidate = instance.options?.rendererAdapter ?? instance.rendererAdapter;
-    if (!candidate) {
+
+    if (hasNewModeFields && runtimeMode?.form === "legacy") {
         return new Canvas2DRendererAdapter();
     }
-    if (typeof candidate === "function") {
-        return new candidate();
+
+    if (!candidate) {
+        if (runtimeMode?.form === "leafer") {
+            const { mode, nodeRenderMode } = resolveLeaferDefaults();
+            return new LeaferUIRendererAdapter({ mode, nodeRenderMode });
+        }
+        return new Canvas2DRendererAdapter();
     }
-    return candidate;
+    const candidateInstance = typeof candidate === "function"
+        ? new candidate()
+        : candidate;
+
+    if (hasNewModeFields && runtimeMode?.form === "leafer") {
+        const isCanvas2DOnly = candidateInstance instanceof Canvas2DRendererAdapter;
+        if (isCanvas2DOnly) {
+            const { mode, nodeRenderMode } = resolveLeaferDefaults();
+            return new LeaferUIRendererAdapter({ mode, nodeRenderMode });
+        }
+    }
+
+    if (typeof candidate === "function") {
+        return candidateInstance;
+    }
+    return candidateInstance;
 }
 
 /** 中文说明：clear 为迁移后的 TS 导出函数，负责 Leafer 渲染流程中的对应步骤。 */
@@ -133,7 +169,9 @@ export function getCurrentGraph() {
 
 /** 中文说明：setCanvas 为迁移后的 TS 导出函数，负责 Leafer 渲染流程中的对应步骤。 */
 export function setCanvas(canvas, skip_events) {
-
+    this._renderModeRuntime = resolveRenderMode(this);
+    this.renderForm = this._renderModeRuntime.form;
+    this.renderStrategy = this._renderModeRuntime.strategy;
     this.renderStyleProfile = this.options?.renderStyleProfile || this.renderStyleProfile || "legacy";
     this.renderStyleEngine = this.options?.renderStyleEngine
         || this.renderStyleEngine
@@ -187,11 +225,23 @@ export function setCanvas(canvas, skip_events) {
         throw new Error("This browser doesn't support Canvas");
     }
 
-    this.rendererAdapter = resolveRendererAdapter(this);
-    this.rendererAdapter.init?.({
-        canvas,
-        ownerDocument: canvas.ownerDocument,
-    });
+    this.rendererAdapter = resolveRendererAdapter(this, this._renderModeRuntime);
+    try {
+        this.rendererAdapter.init?.({
+            canvas,
+            ownerDocument: canvas.ownerDocument,
+        });
+    } catch (error) {
+        LiteGraph.warn?.("[RenderMode] Renderer adapter init failed. Falling back to Canvas2D.", error);
+        this.rendererAdapter = new Canvas2DRendererAdapter();
+        this.rendererAdapter.init?.({
+            canvas,
+            ownerDocument: canvas.ownerDocument,
+        });
+        this._renderModeRuntime = createLegacyModeRuntime("adapter-init-fallback");
+        this.renderForm = this._renderModeRuntime.form;
+        this.renderStrategy = this._renderModeRuntime.strategy;
+    }
 
     this.frontSurface = this.rendererAdapter.getFrontSurface?.() ?? null;
     this.backSurface = this.rendererAdapter.getBackSurface?.() ?? null;

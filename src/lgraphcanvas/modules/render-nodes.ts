@@ -2,6 +2,12 @@
 import { LiteGraph } from "../../litegraph.ts";
 import { temp_vec2, tmp_area } from "../shared/scratch.js";
 import { LeaferNodeUiLayer } from "../renderer/leafer-node-ui-layer.ts";
+import {
+    clearNodeRenderError,
+    markNodeRenderError,
+    shouldMarkNodeErrorOnFallbackFailure,
+    shouldUseNodeLevelLegacyFallback,
+} from "../modes/hybrid/hybrid-fallback.ts";
 
 /** @typedef {import("../renderer/contracts.js").IRenderContext2DCompat} IRenderContext2DCompat */
 
@@ -71,6 +77,10 @@ function getTitleGradientForContext(ctx, titleColor) {
 }
 
 function shouldUseLeaferNodeUiMode(host) {
+    const runtimeMode = host?._renderModeRuntime ?? null;
+    if (runtimeMode?.form === "legacy") {
+        return false;
+    }
     const adapter = host?.rendererAdapter;
     const nodeRenderMode = adapter?.options?.nodeRenderMode;
     if (!adapter || (nodeRenderMode !== "uiapi-parity" && nodeRenderMode !== "uiapi-components")) {
@@ -83,7 +93,7 @@ function shouldUseLeaferNodeUiMode(host) {
             return false;
         }
     }
-    if (adapter.isLayerNative?.("front") !== true) {
+    if (adapter.isLayerNative?.("front") !== true && runtimeMode?.capabilities?.useCompatBridge !== true) {
         return false;
     }
     if (typeof adapter.getLeaferRuntime !== "function") {
@@ -159,6 +169,15 @@ function ensureLeaferNodeUiLayer(host, ctx) {
 
 /** 中文说明：beginNodeFrameLeafer 为迁移后的 TS 导出函数，负责 Leafer 渲染流程中的对应步骤。 */
 export function beginNodeFrameLeafer(ctx, _visibleNodes) {
+    const runtimeMode = this?._renderModeRuntime ?? null;
+    if (
+        runtimeMode?.strategy
+        && runtimeMode.strategy !== "full-leafer"
+        && runtimeMode.strategy !== "decoupled-compat"
+    ) {
+        this._leaferNodeUiFrameActive = false;
+        return false;
+    }
     if (!shouldUseLeaferNodeUiMode(this)) {
         this._leaferNodeUiFrameActive = false;
         return false;
@@ -214,13 +233,35 @@ export function drawNode(node, ctx) {
             this.current_node = node;
             const rendered = this._leaferNodeUiLayer.upsertNode(node, this) !== false;
             if (!rendered) {
-                const frameActive = this._leaferNodeUiFrameActive;
-                this._leaferNodeUiFrameActive = false;
-                try {
-                    drawNode.call(this, node, ctx);
-                } finally {
-                    this._leaferNodeUiFrameActive = frameActive;
+                let fallbackSucceeded = false;
+                if (shouldUseNodeLevelLegacyFallback(this)) {
+                    try {
+                        fallbackSucceeded = this._leaferNodeUiLayer.queueLegacyNodeFallback(
+                            node,
+                            this,
+                            (legacyCtx) => {
+                                const frameActive = this._leaferNodeUiFrameActive;
+                                this._leaferNodeUiFrameActive = false;
+                                try {
+                                    drawNode.call(this, node, legacyCtx);
+                                } finally {
+                                    this._leaferNodeUiFrameActive = frameActive;
+                                }
+                            },
+                        ) === true;
+                    } catch (error) {
+                        if (shouldMarkNodeErrorOnFallbackFailure(this)) {
+                            markNodeRenderError(node, error);
+                        }
+                    }
                 }
+                if (fallbackSucceeded) {
+                    clearNodeRenderError(node);
+                } else if (!node?._render_error && shouldMarkNodeErrorOnFallbackFailure(this)) {
+                    markNodeRenderError(node, "node-level legacy fallback failed");
+                }
+            } else {
+                clearNodeRenderError(node);
             }
             decayTriggerCounters(node);
             return;

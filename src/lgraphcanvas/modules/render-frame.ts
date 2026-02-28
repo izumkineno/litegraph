@@ -60,8 +60,11 @@ export function draw(force_canvas, force_bgcanvas) {
 export function drawFrontCanvas() {
     this.dirty_canvas = false;
     const rendererAdapter = this.rendererAdapter ?? null;
-    const frontLayerNative = rendererAdapter?.isLayerNative?.("front") === true;
-    const backLayerNative = rendererAdapter?.isLayerNative?.("back") === true;
+    const runtimeMode = this._renderModeRuntime ?? null;
+    const frontLayerNative = runtimeMode?.capabilities?.frontNative
+        ?? (rendererAdapter?.isLayerNative?.("front") === true);
+    const backLayerNative = runtimeMode?.capabilities?.backNative
+        ?? (rendererAdapter?.isLayerNative?.("back") === true);
 
     if (!this.ctx) {
         this.ctx = rendererAdapter?.getFrontCtx?.() ?? this.frontSurface?.getContextCompat?.() ?? null;
@@ -127,7 +130,9 @@ export function drawFrontCanvas() {
             null,
             this.visible_nodes,
         );
-        const useLeaferNodeUi = this.beginNodeFrameLeafer?.(ctx, visible_nodes) === true;
+        const canUseLeaferNodeUi = !runtimeMode
+            || (runtimeMode.form === "leafer" && runtimeMode.strategy !== "legacy");
+        const useLeaferNodeUi = canUseLeaferNodeUi && this.beginNodeFrameLeafer?.(ctx, visible_nodes) === true;
 
         for (let i = 0; i < visible_nodes.length; ++i) {
             let node = visible_nodes[i];
